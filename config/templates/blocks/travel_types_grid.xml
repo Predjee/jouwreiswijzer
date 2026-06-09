@@ -1,0 +1,67 @@
+<?xml version="1.0" ?>
+<template xmlns="http://schemas.sulu.io/template/template">
+
+    <key>travel_types_grid</key>
+
+    <meta>
+        <title lang="nl">Reisvormen</title>
+    </meta>
+
+    <properties>
+
+        <property name="label" type="text_line">
+            <meta>
+                <title lang="nl">Sectielabel</title>
+            </meta>
+        </property>
+
+        <property name="title" type="text_line" mandatory="true">
+            <meta>
+                <title lang="nl">Titel</title>
+            </meta>
+        </property>
+
+        <property name="title_italic" type="text_line">
+            <meta>
+                <title lang="nl">Titel – cursief goud deel</title>
+            </meta>
+        </property>
+
+        <property name="cards" type="block" mandatory="true">
+            <meta>
+                <title lang="nl">Reiskaarten</title>
+            </meta>
+            <types>
+                <type name="card">
+                    <meta>
+                        <title lang="nl">Reiskaart</title>
+                    </meta>
+                    <properties>
+                        <property name="title" type="text_line" mandatory="true">
+                            <meta>
+                                <title lang="nl">Naam reistype</title>
+                            </meta>
+                        </property>
+                        <property name="body" type="text_area" mandatory="true">
+                            <meta>
+                                <title lang="nl">Omschrijving</title>
+                            </meta>
+                        </property>
+                        <property name="tag" type="text_line">
+                            <meta>
+                                <title lang="nl">Tag (bijv. "Vanaf 2 nachten")</title>
+                            </meta>
+                        </property>
+                        <property name="highlight" type="checkbox">
+                            <meta>
+                                <title lang="nl">Uitgelicht (gouden rand)</title>
+                            </meta>
+                        </property>
+                    </properties>
+                </type>
+            </types>
+        </property>
+
+    </properties>
+
+</template>

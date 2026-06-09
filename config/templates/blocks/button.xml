@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<template xmlns="http://schemas.sulu.io/template/template">
+
+    <key>button</key>
+
+    <meta>
+        <title lang="nl">Knop</title>
+    </meta>
+
+    <properties>
+
+        <property name="label" type="text_line" mandatory="true">
+            <meta>
+                <title lang="nl">Knoptekst</title>
+            </meta>
+        </property>
+
+        <property name="url" type="text_line" mandatory="true">
+            <meta>
+                <title lang="nl">URL of pad</title>
+            </meta>
+        </property>
+
+        <property name="style" type="single_select">
+            <meta>
+                <title lang="nl">Stijl</title>
+            </meta>
+            <params>
+                <param name="default_value" value="gold"/>
+                <param name="values" type="collection">
+                    <param name="gold">
+                        <meta>
+                            <title lang="nl">Goud – primair</title>
+                        </meta>
+                    </param>
+                    <param name="ghost">
+                        <meta>
+                            <title lang="nl">Omlijnd – secundair</title>
+                        </meta>
+                    </param>
+                </param>
+            </params>
+        </property>
+
+    </properties>
+
+</template>

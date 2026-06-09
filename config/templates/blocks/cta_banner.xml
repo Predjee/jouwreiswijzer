@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<template xmlns="http://schemas.sulu.io/template/template">
+
+    <key>cta_banner</key>
+
+    <meta>
+        <title lang="nl">CTA-banner</title>
+    </meta>
+
+    <properties>
+
+        <property name="title" type="text_line" mandatory="true">
+            <meta>
+                <title lang="nl">Titel</title>
+            </meta>
+        </property>
+
+        <property name="title_italic" type="text_line">
+            <meta>
+                <title lang="nl">Titel – cursief goud deel</title>
+            </meta>
+        </property>
+
+        <property name="body" type="text_area">
+            <meta>
+                <title lang="nl">Bodytekst</title>
+            </meta>
+        </property>
+
+        <property name="trust_items" type="text_area">
+            <meta>
+                <title lang="nl">Vertrouwensitems (één per regel)</title>
+            </meta>
+        </property>
+
+        <property name="buttons" type="block" mandatory="false">
+            <meta>
+                <title lang="nl">Knoppen</title>
+            </meta>
+            <types>
+                <type ref="button"/>
+            </types>
+        </property>
+
+    </properties>
+
+</template>

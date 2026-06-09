@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="{{ app.request.locale|split('_')[0] }}">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {% block meta %}
+        {{ include('@SuluWebsite/Extension/seo.html.twig', {
+            seo: extension.seo|default([]),
+            content: content|default([]),
+            localizations: localizations|default([]),
+            shadowBaseLocale: shadowBaseLocale|default(),
+        }) }}
+    {% endblock %}
+
+    {# Google Fonts #}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap"
+          rel="stylesheet">
+
+    {% block style %}{% endblock %}
+
+    {{ importmap('app') }}
+</head>
+<body class="bg-navy-deepest text-content-primary font-body antialiased
+             min-h-screen flex flex-col">
+
+<header class="relative z-20">
+    {% block header %}
+        {{ include('components/_nav.html.twig') }}
+    {% endblock %}
+</header>
+
+<main class="flex-1">
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+    {% block footer %}
+        {{ include('components/_footer.html.twig') }}
+    {% endblock %}
+</footer>
+
+{% block javascripts %}{% endblock %}
+
+</body>
+</html>

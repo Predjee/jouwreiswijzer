@@ -1,0 +1,31 @@
+<div class="block-steps-strip grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+
+    {% for step in block.steps|default([]) %}
+        <div class="flex items-center gap-3.5
+                    px-5 py-4 md:px-6 md:py-5
+                    border-b sm:border-b-0
+                    {{ not loop.last ? 'sm:border-r' : '' }}"
+             style="border-color: var(--color-gold-15);">
+
+            <span class="font-display font-light text-2xl shrink-0"
+                  style="color: var(--color-gold-20);">
+                {{ '%02d'|format(loop.index) }}
+            </span>
+
+            <div>
+                <span class="block font-body font-light text-[9px]
+                             tracking-[0.2em] uppercase text-gold mb-1">
+                    {{ step.label }}
+                </span>
+            {% if step.description|default %}
+                <span class="block font-body font-light text-[11px]
+                             leading-snug text-content-dim">
+                    {{ step.description }}
+                    </span>
+                {% endif %}
+            </div>
+
+        </div>
+    {% endfor %}
+
+</div>

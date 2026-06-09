@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+<template xmlns="http://schemas.sulu.io/template/template">
+
+    <key>hero</key>
+
+    <meta>
+        <title lang="nl">Hero</title>
+    </meta>
+
+    <properties>
+
+        <property name="eyebrow" type="text_line">
+            <meta>
+                <title lang="nl">Eyebrow tekst</title>
+            </meta>
+        </property>
+
+        <property name="title" type="text_line" mandatory="true">
+            <meta>
+                <title lang="nl">Titel</title>
+            </meta>
+        </property>
+
+        <property name="title_italic" type="text_line">
+            <meta>
+                <title lang="nl">Titel – cursief goud deel</title>
+            </meta>
+        </property>
+
+        <property name="subtitle" type="text_area">
+            <meta>
+                <title lang="nl">Subtitel</title>
+            </meta>
+        </property>
+
+        <property name="scroll_label" type="text_line">
+            <meta>
+                <title lang="nl">Scrolllabel onderaan</title>
+            </meta>
+        </property>
+
+        <property name="buttons" type="block" mandatory="false">
+            <meta>
+                <title lang="nl">Knoppen (max 2)</title>
+            </meta>
+            <types>
+                <type ref="button"/>
+            </types>
+        </property>
+
+    </properties>
+
+</template>

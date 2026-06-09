@@ -1,0 +1,25 @@
+{% set style = button.style ?? 'gold' %}
+
+{% if button.label|default and button.url|default %}
+    {% if style == 'gold' %}
+        <a href="{{ button.url }}"
+           class="inline-flex items-center gap-2.5
+                  bg-gold text-navy-deepest
+                  font-body font-medium text-[10px] tracking-[0.24em] uppercase
+                  px-7 py-3.5
+                  transition-opacity hover:opacity-90">
+            {{ button.label }}
+        </a>
+    {% else %}
+        <a href="{{ button.url }}"
+           class="inline-flex items-center gap-2
+                  text-content-secondary
+                  border-b border-content-secondary/30
+                  font-body font-light text-[10px] tracking-[0.18em] uppercase
+                  py-3.5
+                  transition-colors
+                  hover:text-content-primary hover:border-content-primary/40">
+            {{ button.label }}
+        </a>
+    {% endif %}
+{% endif %}

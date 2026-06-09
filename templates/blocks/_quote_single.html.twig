@@ -1,0 +1,20 @@
+<section class="block-quote-single px-5 py-12
+                md:px-10 md:py-16
+                lg:px-[52px] lg:py-[56px]">
+    {% if block.quote|default %}
+        <blockquote class="max-w-[640px] mx-auto text-center">
+            <p class="font-display font-light italic leading-[1.45]
+                      text-content-secondary mb-5
+                      text-[20px] md:text-[24px] lg:text-[26px]">
+                "{{ block.quote }}"
+            </p>
+            {% if block.author|default %}
+                <cite class="font-body font-light text-[10px]
+                             tracking-[0.18em] uppercase not-italic
+                             text-content-dim">
+                    — {{ block.author }}
+                </cite>
+            {% endif %}
+        </blockquote>
+    {% endif %}
+</section>

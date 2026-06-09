@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+<template xmlns="http://schemas.sulu.io/template/template">
+
+    <key>steps_grid</key>
+
+    <meta>
+        <title lang="nl">Werkwijze – stappenblok</title>
+    </meta>
+
+    <properties>
+
+        <property name="label" type="text_line">
+            <meta>
+                <title lang="nl">Sectielabel</title>
+            </meta>
+        </property>
+
+        <property name="title" type="text_line" mandatory="true">
+            <meta>
+                <title lang="nl">Titel</title>
+            </meta>
+        </property>
+
+        <property name="title_italic" type="text_line">
+            <meta>
+                <title lang="nl">Titel – cursief goud deel</title>
+            </meta>
+        </property>
+
+        <property name="steps" type="block" mandatory="true">
+            <meta>
+                <title lang="nl">Stappen</title>
+            </meta>
+            <types>
+                <type name="step">
+                    <meta>
+                        <title lang="nl">Stap</title>
+                    </meta>
+                    <properties>
+                        <property name="title" type="text_line" mandatory="true">
+                            <meta>
+                                <title lang="nl">Staptitel</title>
+                            </meta>
+                        </property>
+                        <property name="body" type="text_area" mandatory="true">
+                            <meta>
+                                <title lang="nl">Omschrijving</title>
+                            </meta>
+                        </property>
+                    </properties>
+                </type>
+            </types>
+        </property>
+
+    </properties>
+
+</template>

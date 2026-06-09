@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="JouwReisWijzer beeldmerk">
+    <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#b87333"/>
+            <stop offset="40%" stop-color="#d4af37"/>
+            <stop offset="100%" stop-color="#c9a84c"/>
+        </linearGradient>
+    </defs>
+
+    <!-- Buitenste ring -->
+    <circle cx="28" cy="28" r="26.5" fill="none" stroke="url(#g)" stroke-width="1.2"/>
+    <!-- Subtiele binnenring -->
+    <circle cx="28" cy="28" r="23" fill="none" stroke="url(#g)" stroke-width="0.35" opacity="0.4"/>
+
+    <!-- Horizonlijn -->
+    <line x1="5" y1="30" x2="51" y2="30" stroke="url(#g)" stroke-width="0.6" opacity="0.5"/>
+
+    <!-- Noord punt — lang -->
+    <polygon points="28,10 30,24 28,21 26,24" fill="url(#g)"/>
+    <!-- Zuid punt — kort, gedimpt -->
+    <polygon points="28,46 30,32 28,35 26,32" fill="url(#g)" opacity="0.45"/>
+    <!-- West punt -->
+    <polygon points="12,28 22,26.5 22,29.5" fill="url(#g)" opacity="0.45"/>
+    <!-- Oost punt -->
+    <polygon points="44,28 34,26.5 34,29.5" fill="url(#g)" opacity="0.45"/>
+
+    <!-- Diagonale accenten -->
+    <line x1="19" y1="19" x2="22.5" y2="22.5" stroke="url(#g)" stroke-width="0.6" opacity="0.35"/>
+    <line x1="37" y1="19" x2="33.5" y2="22.5" stroke="url(#g)" stroke-width="0.6" opacity="0.35"/>
+    <line x1="19" y1="37" x2="22.5" y2="33.5" stroke="url(#g)" stroke-width="0.6" opacity="0.35"/>
+    <line x1="37" y1="37" x2="33.5" y2="33.5" stroke="url(#g)" stroke-width="0.6" opacity="0.35"/>
+
+    <!-- Centrum -->
+    <circle cx="28" cy="28" r="1.8" fill="url(#g)"/>
+    <circle cx="28" cy="28" r="0.7" fill="#07141d"/>
+
+    <!-- Kardinale stippen op ring -->
+    <circle cx="28" cy="1.5" r="1.2" fill="url(#g)"/>
+    <circle cx="54.5" cy="28" r="1.2" fill="url(#g)" opacity="0.5"/>
+    <circle cx="28" cy="54.5" r="1.2" fill="url(#g)" opacity="0.5"/>
+    <circle cx="1.5" cy="28" r="1.2" fill="url(#g)" opacity="0.5"/>
+</svg>

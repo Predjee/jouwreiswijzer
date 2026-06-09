@@ -1,0 +1,9 @@
+{% if title|default %}
+    <h2 class="font-display font-light text-[36px] leading-[1.15]
+               text-content-primary mb-4 {{ class ?? '' }}">
+        {{ title }}
+        {% if title_italic|default %}
+            <em class="not-italic text-gold">{{ title_italic }}</em>
+        {% endif %}
+    </h2>
+{% endif %}

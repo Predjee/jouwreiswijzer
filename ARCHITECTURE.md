@@ -356,10 +356,30 @@ de gekozen SVG.
 
 ---
 
+## Entiteiten
+
+- `Contact` heeft meerdere `TravelRequest`-entiteiten met cascade persist/remove.
+  Statussen: `lead`, `in_gesprek`, `actieve_klant`, `terugkerende_klant`.
+- `TravelRequest` hoort bij één `Contact` en kan aan één `TravelPlan` worden
+  gekoppeld. Statussen: `new`, `in_progress`, `needs_info`,
+  `plan_in_progress`, `proposal_ready`, `completed`, `cancelled`.
+- `TravelPlan` hoort bij één `TravelRequest` en heeft meerdere `TravelDay`-
+  entiteiten met cascade persist/remove, gesorteerd op `dayNumber`. Statussen:
+  `draft`, `published`.
+- `TravelDay` hoort bij één `TravelPlan` en heeft meerdere `TravelDayPart`-
+  entiteiten met cascade persist/remove, gesorteerd op `position`.
+- `TravelDayPart` hoort bij één `TravelDay`. Types: `activity`,
+  `accommodation`, `transport`, `meal`, `free_text`.
+
+Applicatie-entiteiten gebruiken Doctrine attributes en migraties in
+`App\Migrations`, los van Sulu's migraties.
+
+---
+
 ## Wat nog gebouwd moet worden
 - [ ] `default.xml` page type
 - [ ] Aanvraagflow via Form Wizard Bundle
-- [ ] Reisplan entiteiten (Doctrine)
+- [x] Reisplan entiteiten (Doctrine)
 - [ ] Sulu maatwerkmodule voor aanvragen
 - [ ] PDF-export via mPDF
 - [x] Stimulus nav-toggle controller

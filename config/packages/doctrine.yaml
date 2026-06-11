@@ -54,3 +54,7 @@ when@prod: &prod
                     adapter: cache.system
 
 when@stage: *prod
+
+doctrine_migrations:
+    migrations_paths:
+        'App\Migrations': '%kernel.project_dir%/migrations'

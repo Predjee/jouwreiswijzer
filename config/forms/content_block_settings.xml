@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<form xmlns="http://schemas.sulu.io/template/template"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://schemas.sulu.io/template/template
+      http://schemas.sulu.io/template/form-1.0.xsd">
+
+    <key>content_block_settings</key>
+
+    <properties>
+        <section name="decor">
+            <meta>
+                <title lang="nl">Decoratie</title>
+            </meta>
+            <properties>
+                <property name="decor" type="block" mandatory="false">
+                    <meta>
+                        <title lang="nl">Decoratieve elementen</title>
+                    </meta>
+                    <types>
+                        <type ref="decor_item"/>
+                    </types>
+                </property>
+            </properties>
+        </section>
+    </properties>
+
+</form>

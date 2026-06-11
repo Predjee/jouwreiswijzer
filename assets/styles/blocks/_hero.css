@@ -1,0 +1,99 @@
+:root {
+    --hero-atmosphere:
+        linear-gradient(90deg, color-mix(in srgb, #04080c 88%, transparent) 0%, color-mix(in srgb, #04080c 62%, transparent) 32%, transparent 58%),
+        linear-gradient(270deg, color-mix(in srgb, #04080c 44%, transparent) 0%, transparent 42%),
+        linear-gradient(0deg, color-mix(in srgb, #020508 92%, transparent) 0%, transparent 38%),
+        linear-gradient(180deg, color-mix(in srgb, #020508 48%, transparent) 0%, transparent 30%),
+        radial-gradient(ellipse 55% 60% at 22% 72%, color-mix(in srgb, #b45014 14%, transparent) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 35% at 58% 76%, color-mix(in srgb, #ffa028 8%, transparent) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 50% at 80% 65%, color-mix(in srgb, #143c64 24%, transparent) 0%, transparent 70%),
+        radial-gradient(ellipse 30% 35% at 86% 18%, var(--color-gold-10) 0%, transparent 65%),
+        linear-gradient(160deg, #0a1a28 0%, #050c14 40%, #080f18 70%, #060a10 100%);
+}
+
+.page-blocks > .block-hero {
+    background: var(--hero-atmosphere);
+    background-color: var(--color-navy-deepest);
+}
+
+.block-hero {
+    position: relative;
+    min-height: 32rem;
+    padding-block: 5rem 4rem;
+}
+
+.hero-bg-image {
+    z-index: 0;
+}
+
+.block-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+        to right,
+        rgba(7, 20, 29, 0.88) 0%,
+        rgba(7, 20, 29, 0.65) 50%,
+        rgba(7, 20, 29, 0.45) 100%
+    );
+}
+
+.block-hero--image::before {
+    background: linear-gradient(
+        to right,
+        rgba(7, 20, 29, 0.82) 0%,
+        rgba(7, 20, 29, 0.55) 55%,
+        rgba(7, 20, 29, 0.30) 100%
+    );
+}
+
+.block-hero > *:not(.hero-bg-image) {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-copy {
+    max-width: min(100%, 46rem);
+}
+
+.hero-title {
+    text-shadow: 0 2px 40px color-mix(in srgb, black 66%, transparent);
+}
+
+.hero-grain {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 180px 180px;
+    opacity: 0.035;
+    pointer-events: none;
+}
+
+.hero-scroll-line {
+    width: 1px;
+    height: 1.75rem;
+    background: linear-gradient(var(--color-gold), transparent);
+    animation: heroScrollCue 1.8s ease-in-out infinite;
+}
+
+@keyframes heroScrollCue {
+    50% {
+        opacity: 0.35;
+        transform: scaleY(0.75);
+    }
+}
+
+@media (min-width: 1024px) {
+    .block-hero {
+        height: 100svh;
+        max-height: 680px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-scroll-line {
+        animation: none;
+    }
+}

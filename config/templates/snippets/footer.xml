@@ -1,0 +1,107 @@
+<?xml version="1.0" ?>
+<template xmlns="http://schemas.sulu.io/template/template"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/template-1.0.xsd">
+
+    <key>footer</key>
+
+    <meta>
+        <title lang="nl">Footer</title>
+    </meta>
+
+    <areas>
+        <area key="footer">
+            <meta>
+                <title lang="nl">Footer</title>
+            </meta>
+        </area>
+    </areas>
+
+    <properties>
+        <property name="title" type="text_line" mandatory="true">
+            <meta>
+                <title lang="nl">Interne naam</title>
+            </meta>
+
+        </property>
+
+        <property name="tagline" type="text_area">
+            <meta>
+                <title lang="nl">Introductietekst</title>
+            </meta>
+        </property>
+
+        <property name="navigation_title" type="text_line">
+            <meta>
+                <title lang="nl">Titel navigatiekolom</title>
+            </meta>
+        </property>
+
+        <property name="legal_title" type="text_line">
+            <meta>
+                <title lang="nl">Titel linkenkolom</title>
+            </meta>
+        </property>
+
+        <property name="legal_links" type="block">
+            <meta>
+                <title lang="nl">Links</title>
+            </meta>
+            <types>
+                <type name="link">
+                    <meta>
+                        <title lang="nl">Link</title>
+                    </meta>
+                    <properties>
+                        <property name="label" type="text_line" mandatory="true">
+                            <meta>
+                                <title lang="nl">Linktekst</title>
+                            </meta>
+                        </property>
+
+                        <property name="link" type="link" mandatory="true">
+                            <meta>
+                                <title lang="nl">Bestemming</title>
+                            </meta>
+                            <params>
+                                <param name="enable_anchor" value="true"/>
+                                <param name="enable_query" value="true"/>
+                                <param name="enable_attributes" value="true"/>
+                            </params>
+                        </property>
+                    </properties>
+                </type>
+            </types>
+        </property>
+
+        <property name="contact_title" type="text_line">
+            <meta>
+                <title lang="nl">Titel contactkolom</title>
+            </meta>
+        </property>
+
+        <property name="cta_label" type="text_line">
+            <meta>
+                <title lang="nl">Tekst contactknop</title>
+            </meta>
+        </property>
+
+        <property name="cta_link" type="link">
+            <meta>
+                <title lang="nl">Bestemming contactknop</title>
+            </meta>
+            <params>
+                <param name="enable_anchor" value="true"/>
+                <param name="enable_query" value="true"/>
+                <param name="enable_attributes" value="true"/>
+            </params>
+        </property>
+
+        <property name="copyright_text" type="text_line">
+            <meta>
+                <title lang="nl">Copyrighttekst na het jaartal</title>
+            </meta>
+        </property>
+    </properties>
+
+</template>

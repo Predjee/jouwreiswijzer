@@ -1,5 +1,7 @@
 sulu_admin:
     email: "%env(SULU_ADMIN_EMAIL)%"
+    icon_sets:
+        decor: "svg://%kernel.project_dir%/assets/images/icons"
     forms:
         directories:
             - "%kernel.project_dir%/config/forms"

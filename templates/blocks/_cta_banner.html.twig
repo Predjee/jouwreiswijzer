@@ -1,74 +1,38 @@
-<section class="block-cta-banner relative overflow-hidden
-                px-5 py-12
-                md:px-10 md:py-16
-                lg:px-[52px] lg:py-[70px]">
+<section class="section block-cta-banner relative overflow-hidden">
 
-    <svg class="deco-svg absolute left-0 bottom-0 pointer-events-none"
-         style="width:160px; height:120px; opacity:0.07;"
-         viewBox="0 0 160 120" fill="none"
-         aria-hidden="true">
-        <circle cx="80" cy="38" r="16" stroke="var(--color-gold)" stroke-width="1"/>
-        <circle cx="80" cy="38" r="9"  fill="var(--color-gold)" opacity="0.25"/>
-        <line x1="80"  y1="16" x2="80"  y2="8"   stroke="var(--color-gold)" stroke-width="0.8"/>
-        <line x1="98"  y1="22" x2="104" y2="16"  stroke="var(--color-gold)" stroke-width="0.8"/>
-        <line x1="106" y1="38" x2="114" y2="38"  stroke="var(--color-gold)" stroke-width="0.8"/>
-        <line x1="62"  y1="22" x2="56"  y2="16"  stroke="var(--color-gold)" stroke-width="0.8"/>
-        <line x1="54"  y1="38" x2="46"  y2="38"  stroke="var(--color-gold)" stroke-width="0.8"/>
-        <line x1="0"   y1="62" x2="160" y2="62"  stroke="var(--color-gold)" stroke-width="0.6" opacity="0.5"/>
-        <path d="M0,72  C22,66  38,78  60,72  C82,66  98,78  120,72 C138,66 152,74 160,72"
-              stroke="var(--color-gold)" stroke-width="1" fill="none"/>
-        <path d="M0,84  C28,78  48,90  72,84  C96,78  112,90 140,84 C152,80 158,86 160,84"
-              stroke="var(--color-gold)" stroke-width="0.8" fill="none"/>
-        <path d="M0,96  C30,91  55,102 80,96  C105,91 130,102 160,96"
-              stroke="var(--color-gold)" stroke-width="0.6" fill="none"/>
-        <path d="M0,108 C35,104 60,114 90,108 C118,102 140,112 160,108"
-              stroke="var(--color-gold)" stroke-width="0.4" fill="none"/>
-    </svg>
+    {% include 'components/_decor.html.twig' with { block: block } %}
 
-    <div class="relative z-10 flex flex-col gap-8
-                lg:flex-row lg:justify-between lg:items-center lg:gap-10">
+    <div class="cta-banner-content relative z-10 flex flex-col gap-5">
+        <h2 class="type-section-title">
+            {{ block.title|raw }}
+        </h2>
 
-        <div>
-            <h2 class="font-display font-light leading-[1.15]
-                       text-content-primary mb-3
-                       text-[28px] md:text-[32px] lg:text-[36px]">
-                {{ block.title }}
-                {% if block.title_italic|default %}
-                    <em class="not-italic text-gold">
-                        {{ block.title_italic }}
-                    </em>
-                {% endif %}
-            </h2>
+        {% if block.body|default %}
+            <p class="type-body">
+                {{ block.body }}
+            </p>
+        {% endif %}
 
-            {% if block.body|default %}
-                <p class="font-body font-light text-[13px] leading-[1.75]
-                          text-content-muted mb-[18px]
-                          md:max-w-[400px] lg:max-w-[340px]">
-                    {{ block.body }}
-                </p>
-            {% endif %}
-
-            {% if block.trust_items|default %}
-                <ul class="flex flex-wrap gap-4">
-                    {% for item in block.trust_items|split('\n') %}
-                        {% if item|trim %}
-                            <li class="flex items-center gap-1.5
-                                       font-body font-light text-[10px]
-                                       tracking-[0.1em] text-content-dim">
-                                <span class="text-[7px] text-gold/20"
-                                      aria-hidden="true">✦</span>
-                                {{ item|trim }}
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
+        {% if block.trust_items|default %}
+            <ul class="flex flex-wrap gap-x-5 gap-y-3">
+                {% for item in block.trust_items|split('\n') %}
+                    {% if item|trim %}
+                        <li class="type-meta flex items-center gap-2">
+                            <span class="cta-banner-trust-icon" aria-hidden="true">✦</span>
+                            {{ item|trim }}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        {% endif %}
 
         {% if block.buttons|default %}
-            <div class="flex flex-col gap-4 sm:flex-row lg:flex-col lg:shrink-0">
+            <div class="cta-banner-actions flex flex-col gap-4 sm:flex-row">
                 {% for button in block.buttons %}
-                    {{ include('components/_button.html.twig', {button: button}) }}
+                    {{ include('components/_button.html.twig', {
+                        button: button,
+                        class: 'shrink-0',
+                    }) }}
                 {% endfor %}
             </div>
         {% endif %}

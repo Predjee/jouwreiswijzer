@@ -1,0 +1,26 @@
+.cta-banner-content {
+    max-width: var(--measure-text);
+}
+
+.cta-banner-actions {
+    width: 100%;
+}
+
+.cta-banner-actions .btn-primary,
+.cta-banner-actions .btn-ghost {
+    width: 100%;
+    justify-content: center;
+}
+
+.cta-banner-trust-icon {
+    color: var(--color-gold);
+    opacity: 0.25;
+}
+
+@media (min-width: 640px) {
+    .cta-banner-actions,
+    .cta-banner-actions .btn-primary,
+    .cta-banner-actions .btn-ghost {
+        width: fit-content;
+    }
+}

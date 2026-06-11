@@ -1,0 +1,77 @@
+{% set layout = block.layout|default('text_only') %}
+
+<section class="section block-text-media relative overflow-hidden">
+
+    {% include 'components/_decor.html.twig' with { block: block } %}
+
+    {% if layout == 'image_grid' %}
+        {% set images = block.images|default([]) %}
+
+        <div class="relative z-10 flex flex-col gap-8">
+            {{ include('components/_section_label.html.twig', {
+                label: block.label|default,
+            }) }}
+
+            {% if images %}
+                <div class="text-media__grid
+                            {{ images|length == 3 ? 'text-media__grid--three' : '' }}">
+                    {% for image in images %}
+                        <figure class="text-media__grid-item">
+                            <img src="{{ image.thumbnails['text-media-grid'] }}"
+                                 alt="{{ image.title|default('') }}"
+                                 loading="lazy">
+                        </figure>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    {% else %}
+        {% set has_image = layout in ['image_left', 'image_right'] and block.image|default %}
+
+        <div class="text-media text-media--{{ layout|replace({'_': '-'}) }}
+                    {{ has_image ? 'text-media--has-image' : '' }}
+                    relative z-10">
+
+            {% if has_image %}
+                <figure class="text-media__media">
+                    <img src="{{ block.image.thumbnails['text-media-landscape'] }}"
+                         alt="{{ block.image.title|default('') }}"
+                         loading="lazy">
+                    {% if block.image_caption|default %}
+                        <figcaption class="text-media__caption">
+                            {{ block.image_caption }}
+                        </figcaption>
+                    {% endif %}
+                </figure>
+            {% endif %}
+
+            <div class="text-media__content flex flex-col gap-5">
+                {{ include('components/_section_label.html.twig', {
+                    label: block.label|default,
+                }) }}
+
+                {% if block.title|default %}
+                    <h2 class="type-section-title">
+                        {{ block.title|raw }}
+                    </h2>
+                {% endif %}
+
+                {% if block.body|default %}
+                    <div class="type-body">
+                        {{ block.body|raw }}
+                    </div>
+                {% endif %}
+
+                {% if block.buttons|default %}
+                    <div class="flex flex-col gap-4 pt-2 sm:flex-row sm:flex-wrap">
+                        {% for button in block.buttons %}
+                            {{ include('components/_button.html.twig', { button: button }) }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    {% endif %}
+
+</section>

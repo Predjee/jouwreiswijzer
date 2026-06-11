@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<template xmlns="http://schemas.sulu.io/template/template">
+
+    <key>decor_item</key>
+
+    <meta>
+        <title lang="nl">Decoratief element</title>
+    </meta>
+
+    <properties>
+
+        <property name="icon" type="single_icon_selection">
+            <meta>
+                <title lang="nl">Icoon</title>
+            </meta>
+            <params>
+                <param name="icon_set" value="decor"/>
+            </params>
+        </property>
+
+        <property name="mode" type="single_select">
+            <meta>
+                <title lang="nl">Weergave</title>
+            </meta>
+            <params>
+                <param name="default_value" value="repeat"/>
+                <param name="values" type="collection">
+                    <param name="single">
+                        <meta>
+                            <title lang="nl">Enkel op positie</title>
+                        </meta>
+                    </param>
+                    <param name="repeat">
+                        <meta>
+                            <title lang="nl">Herhalend verspreid</title>
+                        </meta>
+                    </param>
+                </param>
+            </params>
+        </property>
+
+        <property name="position"
+                  type="single_select"
+                  visibleCondition='__parent.mode == "single"'>
+            <meta>
+                <title lang="nl">Positie</title>
+            </meta>
+            <params>
+                <param name="default_value" value="top-right"/>
+                <param name="values" type="collection">
+                    <param name="top-left"><meta><title lang="nl">Boven links</title></meta></param>
+                    <param name="top-right"><meta><title lang="nl">Boven rechts</title></meta></param>
+                    <param name="bottom-left"><meta><title lang="nl">Onder links</title></meta></param>
+                    <param name="bottom-right"><meta><title lang="nl">Onder rechts</title></meta></param>
+                </param>
+            </params>
+        </property>
+
+        <property name="count"
+                  type="number"
+                  visibleCondition='__parent.mode == "repeat"'>
+            <meta>
+                <title lang="nl">Aantal</title>
+            </meta>
+            <params>
+                <param name="default_value" value="10"/>
+                <param name="min" value="1"/>
+                <param name="max" value="40"/>
+                <param name="step" value="1"/>
+            </params>
+        </property>
+
+    </properties>
+</template>

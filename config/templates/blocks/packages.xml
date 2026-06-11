@@ -1,0 +1,118 @@
+<?xml version="1.0" ?>
+<template xmlns="http://schemas.sulu.io/template/template">
+
+    <key>packages</key>
+
+    <meta>
+        <title lang="nl">Pakketten</title>
+    </meta>
+
+    <properties>
+
+        <property name="label" type="text_line">
+            <meta>
+                <title lang="nl">Sectielabel</title>
+            </meta>
+        </property>
+
+        <property name="title" type="text_editor">
+            <meta>
+                <title lang="nl">Titel</title>
+            </meta>
+            <params>
+                <param name="toolbar" type="collection">
+                    <param name="italic"/>
+                </param>
+            </params>
+        </property>
+
+        <property name="subtitle" type="text_line">
+            <meta>
+                <title lang="nl">Subtitel</title>
+            </meta>
+        </property>
+
+        <property name="cards" type="block" mandatory="true">
+            <meta>
+                <title lang="nl">Pakketten</title>
+            </meta>
+            <types>
+                <type name="card">
+                    <meta>
+                        <title lang="nl">Pakket</title>
+                    </meta>
+                    <properties>
+
+                        <property name="image" type="single_media_selection">
+                            <meta>
+                                <title lang="nl">Sfeerbeeld</title>
+                            </meta>
+                            <params>
+                                <param name="types" value="image"/>
+                            </params>
+                        </property>
+
+                        <property name="title" type="text_line" mandatory="true">
+                            <meta>
+                                <title lang="nl">Naam</title>
+                            </meta>
+                        </property>
+
+                        <property name="tag" type="text_line">
+                            <meta>
+                                <title lang="nl">Label (bijv. "Meest gekozen")</title>
+                            </meta>
+                        </property>
+
+                        <property name="description" type="text_editor">
+                            <meta>
+                                <title lang="nl">Omschrijving</title>
+                            </meta>
+                        </property>
+
+                        <property name="highlights" type="block" mandatory="false">
+                            <meta>
+                                <title lang="nl">Kenmerken</title>
+                            </meta>
+                            <types>
+                                <type name="highlight">
+                                    <meta>
+                                        <title lang="nl">Kenmerk</title>
+                                    </meta>
+                                    <properties>
+                                        <property name="text" type="text_line" mandatory="true">
+                                            <meta>
+                                                <title lang="nl">Kenmerk</title>
+                                            </meta>
+                                        </property>
+                                    </properties>
+                                </type>
+                            </types>
+                        </property>
+
+                        <property name="highlight" type="checkbox">
+                            <meta>
+                                <title lang="nl">Uitgelicht (gouden rand)</title>
+                            </meta>
+                        </property>
+
+                        <property name="button_label" type="text_line">
+                            <meta>
+                                <title lang="nl">Knoptekst</title>
+                            </meta>
+                        </property>
+
+                        <property name="button_url" type="text_line">
+                            <meta>
+                                <title lang="nl">Knop URL</title>
+                            </meta>
+                        </property>
+
+                    </properties>
+                </type>
+            </types>
+        </property>
+
+    </properties>
+
+</template>

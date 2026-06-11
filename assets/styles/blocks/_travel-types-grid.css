@@ -1,0 +1,19 @@
+.travel-type-tag {
+    padding-block-end: 0.25rem;
+    border-bottom: 1px solid var(--color-gold-15);
+}
+
+.card-base--highlight .travel-type-tag {
+    color: var(--color-content-secondary);
+    border-color: var(--color-gold-20);
+}
+
+.travel-type-orbit {
+    position: absolute;
+    right: -1.125rem;
+    bottom: -1.125rem;
+    width: 4.375rem;
+    height: 4.375rem;
+    border: 1px solid var(--color-gold-08);
+    border-radius: 9999px;
+}

@@ -37,11 +37,9 @@
     {% block content %}{% endblock %}
 </main>
 
-<footer>
-    {% block footer %}
-        {{ include('components/_footer.html.twig') }}
-    {% endblock %}
-</footer>
+{% block footer %}
+    {{ include('components/_footer.html.twig') }}
+{% endblock %}
 
 {% block javascripts %}{% endblock %}
 

@@ -8,7 +8,6 @@
     <key>jouwreiswijzer</key>
 
     <localizations>
-        <!-- See: http://docs.sulu.io/en/latest/book/localization.html how to add new localizations -->
         <localization language="nl" default="true"/>
     </localizations>
 

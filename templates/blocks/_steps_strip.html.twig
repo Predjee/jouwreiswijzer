@@ -1,31 +1,32 @@
-<div class="block-steps-strip grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+<section class="block-steps-strip" aria-label="Stappen">
+    <ol class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
 
-    {% for step in block.steps|default([]) %}
-        <div class="flex items-center gap-3.5
-                    px-5 py-4 md:px-6 md:py-5
-                    border-b sm:border-b-0
-                    {{ not loop.last ? 'sm:border-r' : '' }}"
-             style="border-color: var(--color-gold-15);">
+        {% for step in block.steps|default([]) %}
+            <li class="steps-strip-item flex items-center gap-4
+                       border-b px-5 py-5 sm:border-b-0 md:px-7 md:py-6
+                       {{ loop.last and loop.length is odd ? 'sm:col-span-2' : '' }}
+                       {{ loop.last and loop.length % 4 == 1 ? 'lg:col-span-4' : '' }}
+                       {{ loop.last and loop.length % 4 == 2 ? 'lg:col-span-3' : '' }}
+                       {{ loop.last and loop.length % 4 == 3 ? 'lg:col-span-2' : '' }}
+                       {{ not loop.last ? 'sm:border-r' : '' }}">
 
-            <span class="font-display font-light text-2xl shrink-0"
-                  style="color: var(--color-gold-20);">
-                {{ '%02d'|format(loop.index) }}
-            </span>
-
-            <div>
-                <span class="block font-body font-light text-[9px]
-                             tracking-[0.2em] uppercase text-gold mb-1">
-                    {{ step.label }}
+                <span class="type-step-number shrink-0" aria-hidden="true">
+                    {{ '%02d'|format(loop.index) }}
                 </span>
-            {% if step.description|default %}
-                <span class="block font-body font-light text-[11px]
-                             leading-snug text-content-dim">
-                    {{ step.description }}
-                    </span>
-                {% endif %}
-            </div>
 
-        </div>
-    {% endfor %}
+                <div class="flex flex-col gap-1">
+                    <p class="type-kicker">
+                        {{ step.label }}
+                    </p>
+                    {% if step.description|default %}
+                        <p class="steps-strip-copy type-meta">
+                            {{ step.description }}
+                        </p>
+                    {% endif %}
+                </div>
 
-</div>
+            </li>
+        {% endfor %}
+
+    </ol>
+</section>

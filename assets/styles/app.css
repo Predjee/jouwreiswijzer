@@ -1,143 +1,65 @@
 @import "tailwindcss";
 
+@import "./_base.css";
+@import "./_components.css";
+@import "./_blocks.css";
+@import "./blocks/_hero.css";
+@import "./blocks/_steps-strip.css";
+@import "./blocks/_steps-grid.css";
+@import "./blocks/_intro-two-col.css";
+@import "./blocks/_travel-types-grid.css";
+@import "./blocks/_text-media.css";
+@import "./blocks/_packages.css";
+@import "./blocks/_cta-banner.css";
+@import "./blocks/_quote-single.css";
+@import "./_animations.css";
+
 @theme {
-    --color-navy-deepest: #07141d;
-    --color-navy-deep:    #071420;
-    --color-navy-mid:     #091a26;
-    --color-navy-light:   #0b1e2c;
-    --color-navy:         #0f293a;
+    --color-content-primary: #f0ece4;
+    --color-content-secondary: #d8dde3;
+    --color-content-muted: #c0c8d0;
+    --color-content-dim: #a0aab2;
+    --color-navy-light: #102840;
+    --color-navy-mid: #0c2030;
 
-    --color-gold:              #d4af37;
-    --color-content-primary:   #f0ece4;
-    --color-content-secondary: #c8ccd0;
-    --color-content-muted:     #a8b0b8;
-    --color-content-dim:       #7a8088;
-
-    --font-display: "Cormorant Garamond", Georgia, serif;
-    --font-body:    "Jost", system-ui, sans-serif;
-
-    /* Consistente sectie-padding als token */
-    --spacing-section-x: 1.25rem;   /* mobiel */
-    --spacing-section-y: 3rem;      /* mobiel */
+    --text-display-hero: clamp(2.25rem, 5vw, 3.75rem);
+    --text-display-section: clamp(1.75rem, 3.5vw, 2.75rem);
+    --text-display-card: clamp(1.125rem, 2vw, 1.375rem);
+    --text-body: clamp(0.9375rem, 1.5vw, 1rem);
+    --text-kicker: 0.8125rem;
+    --text-meta: 0.9375rem;
+    --text-tag: 0.75rem;
+    --text-step-number: clamp(2rem, 4vw, 3.5rem);
+    --text-card-number: 0.8125rem;
 }
 
 :root {
-    --color-gold-08: rgba(212, 175, 55, 0.08);
-    --color-gold-10: rgba(212, 175, 55, 0.10);
-    --color-gold-15: rgba(212, 175, 55, 0.15);
-    --color-gold-20: rgba(212, 175, 55, 0.20);
-    --color-gold-28: rgba(212, 175, 55, 0.28);
-    --color-gold-30: rgba(212, 175, 55, 0.30);
-
-    --hero-atmosphere:
-        linear-gradient(90deg,  rgba(4,8,12,.75)  0%, transparent 44%),
-        linear-gradient(270deg, rgba(4,8,12,.50)  0%, transparent 40%),
-        linear-gradient(0deg,   rgba(2,5,8,.92)   0%, transparent 36%),
-        linear-gradient(180deg, rgba(2,5,8,.50)   0%, transparent 28%),
-        radial-gradient(ellipse 55% 60% at 22% 72%, rgba(180,80,20,.20)  0%, transparent 70%),
-        radial-gradient(ellipse 40% 35% at 58% 76%, rgba(255,160,40,.12) 0%, transparent 65%),
-        radial-gradient(ellipse 50% 50% at 80% 65%, rgba(20,60,100,.32)  0%, transparent 70%),
-        radial-gradient(ellipse 30% 35% at 86% 18%, rgba(212,175,55,.16) 0%, transparent 65%),
-        linear-gradient(160deg, #0a1a28 0%, #050c14 40%, #080f18 70%, #060a10 100%);
+    --section-padding-x: 1.25rem;
+    --section-padding-y: 3rem;
 }
 
-/* ── Sectie-achtergronden via nth-child ────────────────────────────────── */
-.page-blocks > .block-hero {
-    background: var(--hero-atmosphere);
-    background-color: var(--color-navy-deepest);
-}
-
-.page-blocks > .block-steps-strip {
-    background-color: var(--color-navy-deep);
-    border-top:    0.5px solid var(--color-gold-15);
-    border-bottom: 0.5px solid var(--color-gold-15);
-}
-
-.page-blocks > section:nth-child(odd) {
-    background-color: var(--color-navy-light);
-}
-
-.page-blocks > section:nth-child(even) {
-    background-color: var(--color-navy-mid);
-}
-
-/* ── Gedeelde componenten ──────────────────────────────────────────────── */
-.wave-sep {
-    display: block;
-    width: 100%;
-    line-height: 0;
-    margin-top: -1px;
-}
-
-.step-gold-line-top::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, var(--color-gold), transparent);
-    opacity: 0.28;
-}
-
-.card-gold-line-top::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        var(--color-gold-30),
-        transparent
-    );
-}
-
-.hero-grain {
-    position: absolute;
-    inset: 0;
-    opacity: 0.04;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-    background-size: 180px 180px;
-    background-repeat: repeat;
-    pointer-events: none;
-}
-
-.hero-title {
-    text-shadow: 0 2px 40px rgba(0, 0, 0, 0.6);
-}
-
-/* ── Decoratieve SVG's verbergen op mobiel ─────────────────────────────── */
-.deco-svg {
-    display: none;
-}
-
-@media (min-width: 1024px) {
-    .deco-svg {
-        display: block;
+@media (min-width: 768px) {
+    :root {
+        --section-padding-x: 3rem;
+        --section-padding-y: 4rem;
     }
 }
 
-/* ── Sparkle animaties ─────────────────────────────────────────────────── */
-@keyframes jrwTwinkle {
-    0%, 100% { opacity: .18 }
-    50%      { opacity: 1   }
-}
-@keyframes jrwTwinkle2 {
-    0%, 100% { opacity: .75 }
-    50%      { opacity: .1  }
-}
-@keyframes jrwTwinkle3 {
-    0%, 100% { opacity: .38 }
-    50%      { opacity: .92 }
-}
-@keyframes jrwRotate {
-    from { transform: rotate(0deg)   }
-    to   { transform: rotate(360deg) }
+@media (min-width: 1024px) {
+    :root {
+        --section-padding-x: 5rem;
+        --section-padding-y: 3.875rem;
+    }
 }
 
-/* ── Reduced motion ────────────────────────────────────────────────────── */
-@media (prefers-reduced-motion: reduce) {
-    [style*="jrwTwinkle"],
-    [style*="jrwRotate"] {
-        animation: none;
+@media (min-width: 1280px) {
+    :root {
+        --section-padding-x: 6rem;
+    }
+}
+
+@media (min-width: 1536px) {
+    :root {
+        --section-padding-x: 8rem;
     }
 }

@@ -1,14 +1,14 @@
-<nav class="relative z-10 flex justify-between items-center
+{% set root_path = sulu_content_root_path() %}
+
+<nav class="site-nav relative z-10 flex justify-between items-center
             px-5 py-4
             md:px-10
             lg:px-[44px]
-            bg-navy-deepest/65 backdrop-blur-md
             border-b"
-     style="border-color: var(--color-gold-15);"
      aria-label="Hoofdnavigatie">
 
     {# Logo #}
-    <a href="{{ sulu_content_root_path() }}"
+    <a href="{{ root_path }}"
        class="flex items-center shrink-0"
        aria-label="JouwReiswijzer – naar homepage">
 
@@ -17,30 +17,35 @@
              alt="JouwReiswijzer"
              width="160"
              height="85"
-             class="hidden sm:block h-[48px] w-auto">
+             loading="lazy"
+             class="site-logo-full hidden w-auto sm:block">
 
         {# Mobiel: alleen beeldmerk #}
         <img src="{{ asset('images/logo-mark.svg') }}"
              alt="JouwReiswijzer"
              width="50"
              height="53"
-             class="sm:hidden h-[40px] w-auto">
+             loading="lazy"
+             class="site-logo-mark w-auto sm:hidden">
 
     </a>
 
     {# Desktop navigatie #}
     <ul class="hidden md:flex items-center gap-6 lg:gap-7"
         role="list">
+        <li>
+            <a href="{{ root_path }}"
+               class="nav-link {{ app.request.pathInfo == root_path ? 'is-active' : '' }}">
+                Home
+            </a>
+        </li>
         {% for item in sulu_page_navigation_root_tree('main', 1, {
             title: 'title',
             url: 'url',
         }) %}
             <li>
                 <a href="{{ sulu_content_path(item.url) }}"
-                   class="font-body font-light text-[11px] tracking-[0.15em]
-                          uppercase text-content-dim
-                          transition-colors hover:text-gold
-                          {{ item.url == app.request.pathInfo ? 'text-gold' : '' }}">
+                   class="nav-link {{ item.url == app.request.pathInfo ? 'is-active' : '' }}">
                     {{ item.title }}
                 </a>
             </li>
@@ -50,11 +55,8 @@
     {# CTA knop #}
     <div class="flex items-center gap-4">
         <a href="/aanvragen"
-           class="hidden sm:inline-flex items-center
-                  font-body font-light text-[10px] tracking-[0.2em] uppercase
-                  text-gold border px-5 py-2.5
-                  transition-colors hover:bg-gold hover:text-navy-deepest"
-           style="border-color: var(--color-gold-30);">
+           class="nav-request-link hidden sm:inline-flex items-center gap-2.5
+                  type-tag px-5 py-2.5">
             Reis aanvragen
         </a>
 
@@ -66,38 +68,38 @@
                 aria-label="Menu openen"
                 data-controller="nav-toggle"
                 data-action="click->nav-toggle#toggle">
-            <span class="block w-6 h-px bg-content-secondary transition-all"></span>
-            <span class="block w-6 h-px bg-content-secondary transition-all"></span>
-            <span class="block w-4 h-px bg-content-secondary transition-all"></span>
+            <span class="nav-toggle-line block w-6" aria-hidden="true"></span>
+            <span class="nav-toggle-line block w-6" aria-hidden="true"></span>
+            <span class="nav-toggle-line block w-4" aria-hidden="true"></span>
         </button>
     </div>
 
     {# Mobiel menu #}
     <div id="mobile-menu"
-         class="absolute top-full left-0 right-0 hidden
-                bg-navy-deepest/95 backdrop-blur-md
+         class="mobile-menu absolute top-full left-0 right-0 hidden
                 border-b"
-         style="border-color: var(--color-gold-15);"
-         aria-hidden="true">
+        aria-hidden="true">
         <ul class="flex flex-col px-5 py-6 gap-5" role="list">
+            <li>
+                <a href="{{ root_path }}"
+                   class="nav-link {{ app.request.pathInfo == root_path ? 'is-active' : '' }}">
+                    Home
+                </a>
+            </li>
             {% for item in sulu_page_navigation_root_tree('main', 1, {
                 title: 'title',
                 url: 'url',
             }) %}
                 <li>
                     <a href="{{ sulu_content_path(item.url) }}"
-                       class="font-body font-light text-[12px] tracking-[0.15em]
-                              uppercase text-content-secondary
-                              hover:text-gold transition-colors">
+                       class="nav-link">
                         {{ item.title }}
                     </a>
                 </li>
             {% endfor %}
-            <li class="pt-2 border-t" style="border-color: var(--color-gold-10);">
+            <li class="mobile-menu-request pt-2 border-t">
                 <a href="/aanvragen"
-                   class="inline-flex items-center
-                          font-body font-light text-[10px] tracking-[0.2em] uppercase
-                          text-gold">
+                   class="btn-ghost">
                     Reis aanvragen →
                 </a>
             </li>

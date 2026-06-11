@@ -15,16 +15,15 @@
             </meta>
         </property>
 
-        <property name="title" type="text_line" mandatory="true">
+        <property name="title" type="text_editor" mandatory="true">
             <meta>
                 <title lang="nl">Titel</title>
             </meta>
-        </property>
-
-        <property name="title_italic" type="text_line">
-            <meta>
-                <title lang="nl">Titel – cursief goud deel</title>
-            </meta>
+            <params>
+                <param name="toolbar" type="collection">
+                    <param name="italic"/>
+                </param>
+            </params>
         </property>
 
         <property name="subtitle" type="text_area">
@@ -33,10 +32,13 @@
             </meta>
         </property>
 
-        <property name="scroll_label" type="text_line">
+        <property name="background_image" type="single_media_selection">
             <meta>
-                <title lang="nl">Scrolllabel onderaan</title>
+                <title lang="nl">Achtergrondafbeelding</title>
             </meta>
+            <params>
+                <param name="types" value="image"/>
+            </params>
         </property>
 
         <property name="buttons" type="block" mandatory="false">

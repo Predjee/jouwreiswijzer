@@ -1,0 +1,100 @@
+.package-card {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    overflow: hidden;
+    flex-direction: column;
+    border: 1px solid var(--color-gold-10);
+    background: var(--color-navy-mid);
+}
+
+.package-card--highlight {
+    border-color: var(--color-gold-30);
+    background: color-mix(in srgb, var(--color-navy-mid) 92%, var(--color-gold) 8%);
+}
+
+.package-card__image {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    aspect-ratio: 3 / 2;
+}
+
+.package-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.package-card:hover .package-card__image img {
+    transform: scale(1.04);
+}
+
+.package-card__image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        transparent 45%,
+        var(--color-navy-mid) 100%
+    );
+    pointer-events: none;
+}
+
+.package-card--highlight .package-card__image-overlay {
+    background: linear-gradient(
+        to bottom,
+        transparent 45%,
+        color-mix(in srgb, var(--color-navy-mid) 92%, var(--color-gold) 8%) 100%
+    );
+}
+
+.package-card__tag {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 2;
+    padding-block: 0.375rem;
+    padding-inline: 0.625rem;
+    background: var(--color-gold);
+    color: var(--color-navy-deepest);
+}
+
+.package-card__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem 1.25rem;
+}
+
+.package-card:not(:has(.package-card__image)) .package-card__tag + .package-card__body {
+    padding-block-start: 4rem;
+}
+
+.package-card__highlights span {
+    color: var(--color-gold);
+}
+
+.package-card__button {
+    width: 100%;
+    justify-content: center;
+    margin-block-start: auto;
+}
+
+@media (min-width: 768px) {
+    .package-card__body {
+        padding: 2rem 1.5rem;
+    }
+
+    .package-card__button {
+        width: fit-content;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .package-card__image img {
+        transition: none;
+    }
+}

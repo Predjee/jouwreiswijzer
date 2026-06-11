@@ -1,0 +1,9 @@
+.quote-single-content {
+    max-width: 64rem;
+    margin-inline: auto;
+    text-align: center;
+}
+
+.quote-single-cite {
+    color: var(--color-content-muted);
+}

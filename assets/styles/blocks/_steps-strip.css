@@ -1,0 +1,17 @@
+.page-blocks > .block-steps-strip {
+    background-color: var(--color-navy-deep);
+    border-top: 1px solid var(--color-gold-10);
+    border-bottom: 1px solid var(--color-gold-10);
+}
+
+.block-hero + .block-steps-strip {
+    border-top-color: var(--color-gold-15);
+}
+
+.steps-strip-item {
+    border-color: var(--color-gold-15);
+}
+
+.steps-strip-copy {
+    color: var(--color-content-muted);
+}

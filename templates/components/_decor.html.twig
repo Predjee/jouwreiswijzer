@@ -1,0 +1,21 @@
+{% set decor = block.settings.decor|default([]) %}
+
+{% if decor %}
+    {% for item in decor %}
+        {% set icon = item.icon.icon|default(item.icon|default(null)) %}
+        {% set mode = item.mode|default('repeat') %}
+        {% set position = item.position|default('top-right') %}
+
+        {% if icon %}
+            <div data-controller="decor"
+                 data-decor-icon-value="{{ icon }}"
+                 data-decor-icon-url-value="{{ asset('images/icons/' ~ icon ~ '.svg') }}"
+                 data-decor-mode-value="{{ mode }}"
+                 data-decor-position-value="{{ mode == 'single' ? position : '' }}"
+                 data-decor-count-value="{{ item.count|default(8) }}"
+                 data-decor-base-path-value="{{ asset('images/icons/') }}"
+                 class="absolute inset-0 pointer-events-none overflow-hidden"
+                 aria-hidden="true"></div>
+        {% endif %}
+    {% endfor %}
+{% endif %}

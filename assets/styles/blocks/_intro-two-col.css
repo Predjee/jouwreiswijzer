@@ -1,0 +1,8 @@
+.intro-two-col-quote {
+    padding-inline-start: clamp(1.25rem, 3vw, 1.75rem);
+    border-inline-start: 1px solid var(--color-gold-30);
+}
+
+.intro-two-col-cite {
+    color: var(--color-content-muted);
+}

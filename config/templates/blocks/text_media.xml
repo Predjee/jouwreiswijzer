@@ -1,0 +1,109 @@
+<?xml version="1.0" ?>
+<template xmlns="http://schemas.sulu.io/template/template">
+
+    <key>text_media</key>
+
+    <meta>
+        <title lang="nl">Tekst + Media</title>
+    </meta>
+
+    <properties>
+
+        <property name="layout" type="single_select">
+            <meta>
+                <title lang="nl">Layout</title>
+            </meta>
+            <params>
+                <param name="default_value" value="text_only"/>
+                <param name="values" type="collection">
+                    <param name="text_only">
+                        <meta>
+                            <title lang="nl">Alleen tekst</title>
+                        </meta>
+                    </param>
+                    <param name="image_left">
+                        <meta>
+                            <title lang="nl">Afbeelding links</title>
+                        </meta>
+                    </param>
+                    <param name="image_right">
+                        <meta>
+                            <title lang="nl">Afbeelding rechts</title>
+                        </meta>
+                    </param>
+                    <param name="image_grid">
+                        <meta>
+                            <title lang="nl">Afbeeldingenraster</title>
+                        </meta>
+                    </param>
+                </param>
+            </params>
+        </property>
+
+        <property name="label" type="text_line">
+            <meta>
+                <title lang="nl">Sectielabel</title>
+            </meta>
+        </property>
+
+        <property name="title" type="text_editor"
+                  visibleCondition="__parent.layout != 'image_grid'">
+            <meta>
+                <title lang="nl">Titel</title>
+            </meta>
+            <params>
+                <param name="toolbar" type="collection">
+                    <param name="italic"/>
+                </param>
+            </params>
+        </property>
+
+        <property name="body" type="text_editor"
+                  visibleCondition="__parent.layout != 'image_grid'">
+            <meta>
+                <title lang="nl">Tekst</title>
+            </meta>
+        </property>
+
+        <property name="buttons" type="block" mandatory="false"
+                  visibleCondition="__parent.layout != 'image_grid'">
+            <meta>
+                <title lang="nl">Knoppen</title>
+            </meta>
+            <types>
+                <type ref="button"/>
+            </types>
+        </property>
+
+        <property name="image" type="single_media_selection"
+                  visibleCondition="__parent.layout == 'image_left' || __parent.layout == 'image_right'">
+            <meta>
+                <title lang="nl">Afbeelding</title>
+            </meta>
+            <params>
+                <param name="types" value="image"/>
+            </params>
+        </property>
+
+        <property name="image_caption" type="text_line"
+                  visibleCondition="__parent.layout == 'image_left' || __parent.layout == 'image_right'">
+            <meta>
+                <title lang="nl">Bijschrift afbeelding</title>
+            </meta>
+        </property>
+
+        <property name="images" type="media_selection"
+                  visibleCondition="__parent.layout == 'image_grid'">
+            <meta>
+                <title lang="nl">Afbeeldingen</title>
+            </meta>
+            <params>
+                <param name="types" value="image"/>
+                <param name="min" value="2"/>
+                <param name="max" value="9"/>
+            </params>
+        </property>
+
+    </properties>
+
+</template>

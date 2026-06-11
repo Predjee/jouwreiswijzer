@@ -3,10 +3,6 @@
 {% block content %}
     <div class="page-blocks">
         {% for block in content.blocks|default([]) %}
-            {% if loop.index > 1 and block.type != 'steps_strip' %}
-                {{ include('components/_wave.html.twig') }}
-            {% endif %}
-
             {{ include(
                 'blocks/_' ~ block.type ~ '.html.twig',
                 {block: block},

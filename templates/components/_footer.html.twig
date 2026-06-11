@@ -1,102 +1,142 @@
-<footer class="border-t" style="border-color: var(--color-gold-08); background: var(--color-navy-deepest);">
+{% set footer_snippet = sulu_snippet_load_by_area('footer', {
+    tagline: 'tagline',
+    navigation_title: 'navigation_title',
+    legal_title: 'legal_title',
+    legal_links: 'legal_links',
+    contact_title: 'contact_title',
+    cta_label: 'cta_label',
+    cta_link: 'cta_link',
+    copyright_text: 'copyright_text',
+})|default({}) %}
+{% set footer = {
+    tagline: '',
+    navigation_title: '',
+    legal_title: '',
+    legal_links: [],
+    contact_title: '',
+    cta_label: '',
+    cta_link: '',
+    copyright_text: '',
+}|merge(footer_snippet ?: {}) %}
+{% set footer_view = footer.view|default({}) %}
+{% set legal_links_view = footer_view.legal_links|default([]) %}
+{% set cta_link_view = footer_view.cta_link|default({}) %}
+{% set footer_navigation = sulu_page_navigation_root_tree('main', 1, {
+    title: 'title',
+    url: 'url',
+})|default([]) %}
 
-    <div class="px-5 py-10 md:px-10 lg:px-[52px]">
+<footer class="site-footer border-t">
+
+    <div class="flex flex-col gap-10 px-5 py-10 md:px-10 lg:px-[52px]">
 
         <div class="grid grid-cols-1 gap-10 md:grid-cols-3 lg:grid-cols-4">
 
-            <div class="md:col-span-1">
+            <div class="flex flex-col gap-4 md:col-span-1">
                 <a href="{{ sulu_content_root_path() }}"
-                   class="inline-block mb-4"
+                   class="inline-block"
                    aria-label="JouwReiswijzer homepage">
                     <img src="{{ asset('images/logo.svg') }}"
                          alt="JouwReiswijzer"
                          width="200"
                          height="106"
-                         class="h-[60px] w-auto opacity-90">
+                         loading="lazy"
+                         class="footer-logo w-auto">
                 </a>
 
-                <p class="font-body font-light text-[12px] leading-[1.8]
-                          text-content-dim max-w-[240px]">
-                    Persoonlijk reisadvies op maat. Van eerste idee tot het laatste moment.
+                {% if footer.tagline|default %}
+                    <p class="type-body max-w-[24rem]">
+                        {{ footer.tagline }}
+                    </p>
+                {% endif %}
+            </div>
+
+            {% if footer.navigation_title or footer_navigation %}
+                <div class="flex flex-col gap-4">
+                    {% if footer.navigation_title %}
+                        <h2 class="type-kicker">
+                            {{ footer.navigation_title }}
+                        </h2>
+                    {% endif %}
+                    <ul class="flex flex-col gap-3" role="list">
+                        {% for item in footer_navigation %}
+                            <li>
+                                <a href="{{ sulu_content_path(item.url) }}"
+                                   class="footer-link">
+                                    {{ item.title }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% if footer.legal_title|default or footer.legal_links|default %}
+                <div class="flex flex-col gap-4">
+                    {% if footer.legal_title|default %}
+                        <h2 class="type-kicker">
+                            {{ footer.legal_title }}
+                        </h2>
+                    {% endif %}
+                    {% if footer.legal_links|default %}
+                        <ul class="flex flex-col gap-3" role="list">
+                            {% for item in footer.legal_links %}
+                                {% if item.label|default and item.link|default %}
+                                    {% set link_view = legal_links_view[loop.index0].link|default({}) %}
+                                    <li>
+                                        <a href="{{ item.link }}"
+                                           {% if link_view.target|default %}
+                                               target="{{ link_view.target }}"
+                                           {% endif %}
+                                           {% if link_view.rel|default %}
+                                               rel="{{ link_view.rel }}"
+                                           {% endif %}
+                                           class="footer-link">
+                                            {{ item.label }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if footer.contact_title|default or (footer.cta_label|default and footer.cta_link|default) %}
+                <div class="flex flex-col gap-4">
+                    {% if footer.contact_title|default %}
+                        <h2 class="type-kicker">
+                            {{ footer.contact_title }}
+                        </h2>
+                    {% endif %}
+                    {% if footer.cta_label|default and footer.cta_link|default %}
+                        <a href="{{ footer.cta_link }}"
+                           {% if cta_link_view.target|default %}
+                               target="{{ cta_link_view.target }}"
+                           {% endif %}
+                           {% if cta_link_view.rel|default %}
+                               rel="{{ cta_link_view.rel }}"
+                           {% endif %}
+                           class="btn-primary">
+                            {{ footer.cta_label }}
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+        </div>
+
+        {% if footer.copyright_text|default %}
+            <div class="site-footer-bottom flex flex-col gap-2 pt-6
+                        sm:flex-row sm:justify-between border-t">
+                <p class="type-meta">
+                    © {{ 'now'|date('Y') }} {{ footer.copyright_text }}
                 </p>
+                <span class="footer-mark type-meta" aria-hidden="true">
+                    ✦
+                </span>
             </div>
-
-            <div>
-                <h3 class="font-body font-light text-[9px] tracking-[0.24em]
-                           uppercase text-gold mb-4">
-                    Ontdekken
-                </h3>
-                <ul class="flex flex-col gap-3" role="list">
-                    {% for item in sulu_page_navigation_root_tree('main', 1, {
-                        title: 'title',
-                        url: 'url',
-                    }) %}
-                        <li>
-                            <a href="{{ sulu_content_path(item.url) }}"
-                               class="font-body font-light text-[12px]
-                                      text-content-dim hover:text-content-secondary
-                                      transition-colors">
-                                {{ item.title }}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div>
-                <h3 class="font-body font-light text-[9px] tracking-[0.24em]
-                           uppercase text-gold mb-4">
-                    Juridisch
-                </h3>
-                <ul class="flex flex-col gap-3" role="list">
-                    <li>
-                        <a href="/privacyverklaring"
-                           class="font-body font-light text-[12px]
-                                  text-content-dim hover:text-content-secondary
-                                  transition-colors">
-                            Privacyverklaring
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/algemene-voorwaarden"
-                           class="font-body font-light text-[12px]
-                                  text-content-dim hover:text-content-secondary
-                                  transition-colors">
-                            Algemene voorwaarden
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div>
-                <h3 class="font-body font-light text-[9px] tracking-[0.24em]
-                           uppercase text-gold mb-4">
-                    Direct contact
-                </h3>
-                <a href="/aanvragen"
-                   class="inline-flex items-center gap-2
-                          bg-gold text-navy-deepest
-                          font-body font-medium text-[10px]
-                          tracking-[0.22em] uppercase
-                          px-6 py-3
-                          transition-opacity hover:opacity-90">
-                    Reis aanvragen
-                </a>
-            </div>
-
-        </div>
-
-        <div class="mt-10 pt-6 flex flex-col gap-2 sm:flex-row sm:justify-between
-                    border-t"
-             style="border-color: var(--color-gold-08);">
-            <p class="font-body font-light text-[11px] tracking-[0.08em] text-content-dim">
-                © {{ 'now'|date('Y') }} JouwReiswijzer. Alle rechten voorbehouden.
-            </p>
-            <p class="font-body font-light text-[11px] text-content-dim"
-               style="color: var(--color-gold-20);">
-                ✦
-            </p>
-        </div>
+        {% endif %}
 
     </div>
 

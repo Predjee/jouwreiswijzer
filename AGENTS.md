@@ -1,61 +1,19 @@
-# AGENTS.md
+# AGENTS.md - Role & Execution Rules
 
-## Project
+## 1. The Roles
+- **Claude (Architect):** High-level decision maker. Designs database structures, workflows, and dictates exactly *which* files need to be created or modified.
+- **Codex (Executor):** Purely writes code based on Claude's instructions. Codex does NOT make architectural decisions and does NOT touch uninstructed files.
 
-JouwReiswijzer is een premium reisadviesplatform gebouwd met Symfony en Sulu CMS.
+## 2. Strict Execution Rules for Codex
+- **Scope Limit:** Only look at and modify files explicitly mentioned by the user/Claude.
+- **NO Autonomous Testing:** Do NOT run `phpunit`, `rector`, `phpstan` or any testing suites unless explicitly ordered to do so. The user will handle testing locally.
+- **NO Vendor Searching:** Never look inside the `vendor/` or `var/` directories. Trust the standard Symfony 7.4 and Sulu 3.x APIs.
+- **Token Efficiency:** Keep responses strictly limited to the requested code changes or file creations. Do not output full files if only a single method changes.
+- **Keep it Simple:** Follow standard Symfony and Sulu conventions. No overengineering.
 
-De volledige projectspecificatie staat in Claude en geldt als bron van waarheid.
-
-## Stack
-
-- Symfony 7.4
-- Sulu CMS 3.0.7
-- Twig
-- Tailwind CSS
-- Hotwire Turbo
-- Stimulus
-- MySQL
-- mPDF
-
-## Hosting
-
-- Shared hosting bij KeurigOnline
-- Geen Docker
-- Geen Puppeteer
-- Geen Playwright
-- Geen wkhtmltopdf
-- Geen headless browsers
-- Geen zware achtergrondprocessen
-
-## Ontwikkelregels
-
-- Volg Symfony best practices.
-- Houd oplossingen eenvoudig en onderhoudbaar.
-- Vermijd overengineering.
-- Geef voorkeur aan server-side rendering.
-- Gebruik Tailwind voor styling.
-- Gebruik Turbo voor interacties.
-- Gebruik Stimulus alleen wanneer nodig.
-- Denk aan SEO en performance.
-
-## Werkwijze
-
-Voordat je code schrijft:
-
-1. Lees relevante bestanden.
-2. Leg kort uit wat je gaat aanpassen.
-3. Maak kleine, controleerbare wijzigingen.
-4. Geef na afloop een korte samenvatting.
-
-## Design
-
-De uitstraling moet premium, rustig, persoonlijk en luxe zijn.
-
-Kernwoorden:
-
-- boutique travel
-- donkerblauw
-- subtiele goudaccenten
-- veel witruimte
-- elegante animaties
-- snelle laadtijden
+## 3. Project Stack Reference
+- Symfony 7.4 & Sulu CMS 3.0.7 (Server-side rendered)
+- Tailwind CSS 4 (via Symfonycasts bundle, no config.js)
+- Hotwire Turbo & Stimulus
+- mPDF (No headless browsers, shared hosting proof)
+- MySQL + Doctrine ORM

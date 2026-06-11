@@ -1,0 +1,16 @@
+.page-blocks > section {
+    border-top: 1px solid var(--color-gold-08);
+}
+
+.section {
+    padding-inline: var(--section-padding-x);
+    padding-block: var(--section-padding-y);
+}
+
+.page-blocks > section:nth-child(odd) {
+    background-color: var(--color-navy-light);
+}
+
+.page-blocks > section:nth-child(even) {
+    background-color: var(--color-navy-mid);
+}

@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@import "./_base.css";
+@import "./_components.css";
+@import "./_blocks.css";
+@import "./_hero.css";
+@import "./_animations.css";

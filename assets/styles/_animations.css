@@ -1,0 +1,71 @@
+.decor-icon-motion {
+    animation: jrwDecorFloat 12s ease-in-out infinite alternate;
+}
+
+.jrwTwinkle {
+    animation: jrwTwinkle 3.6s ease-in-out infinite;
+}
+
+.jrwTwinkle2 {
+    animation: jrwTwinkle2 4.4s ease-in-out infinite;
+}
+
+.jrwTwinkle3 {
+    animation: jrwTwinkle3 5.2s ease-in-out infinite;
+}
+
+@keyframes jrwDecorFloat {
+    from {
+        translate: 0 0;
+    }
+
+    to {
+        translate: 0 -6px;
+    }
+}
+
+@keyframes jrwTwinkle {
+    0%,
+    100% {
+        opacity: var(--decor-opacity-low, 0.05);
+    }
+
+    50% {
+        opacity: var(--decor-opacity, 0.15);
+    }
+}
+
+@keyframes jrwTwinkle2 {
+    0%,
+    100% {
+        opacity: var(--decor-opacity, 0.15);
+    }
+
+    45% {
+        opacity: var(--decor-opacity-low, 0.05);
+    }
+}
+
+@keyframes jrwTwinkle3 {
+    0%,
+    100% {
+        opacity: var(--decor-opacity-mid, 0.08);
+    }
+
+    35% {
+        opacity: var(--decor-opacity, 0.15);
+    }
+
+    70% {
+        opacity: var(--decor-opacity-low, 0.05);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .decor-icon-motion,
+    .jrwTwinkle,
+    .jrwTwinkle2,
+    .jrwTwinkle3 {
+        animation: none;
+    }
+}

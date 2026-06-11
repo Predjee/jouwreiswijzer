@@ -1,0 +1,60 @@
+@theme {
+    --color-navy-deepest: #07141d;
+    --color-navy-deep: #071420;
+    --color-navy-mid: #071828;
+    --color-navy-light: #0d2236;
+    --color-navy: #0f293a;
+
+    --color-gold: #d4af37;
+    --color-content-primary: #f0ece4;
+    --color-content-secondary: #d8dde2;
+    --color-content-muted: #cbd3da;
+    --color-content-dim: #9ca6ad;
+
+    --font-display: "Cormorant Garamond", Georgia, serif;
+    --font-body: "Jost", system-ui, sans-serif;
+
+    --spacing-section-x: 1.25rem;
+    --spacing-section-y: clamp(3.75rem, 6vw, 6.25rem);
+
+}
+
+:root {
+    --color-gold-08: color-mix(in srgb, var(--color-gold) 8%, transparent);
+    --color-gold-10: color-mix(in srgb, var(--color-gold) 10%, transparent);
+    --color-gold-15: color-mix(in srgb, var(--color-gold) 15%, transparent);
+    --color-gold-20: color-mix(in srgb, var(--color-gold) 20%, transparent);
+    --color-gold-28: color-mix(in srgb, var(--color-gold) 28%, transparent);
+    --color-gold-30: color-mix(in srgb, var(--color-gold) 30%, transparent);
+    --content-max-width: 76rem;
+    --content-gutter: clamp(1.25rem, 3vw, 3.25rem);
+    --measure-text: 64ch;
+    --measure-text-narrow: 48ch;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100%;
+    margin: 0;
+    font-family: var(--font-body);
+    color: var(--color-content-secondary);
+    background: var(--color-navy-deepest);
+    font-size: 1rem;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+::selection {
+    color: var(--color-navy-deepest);
+    background: var(--color-gold);
+}

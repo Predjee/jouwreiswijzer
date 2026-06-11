@@ -1,17 +1,14 @@
-<section class="block-quote-single px-5 py-12
-                md:px-10 md:py-16
-                lg:px-[52px] lg:py-[56px]">
+<section class="section block-quote-single relative overflow-hidden">
+
+    {% include 'components/_decor.html.twig' with { block: block } %}
+
     {% if block.quote|default %}
-        <blockquote class="max-w-[640px] mx-auto text-center">
-            <p class="font-display font-light italic leading-[1.45]
-                      text-content-secondary mb-5
-                      text-[20px] md:text-[24px] lg:text-[26px]">
-                "{{ block.quote }}"
+        <blockquote class="quote-single-content relative z-10 flex max-w-full flex-col gap-6">
+            <p class="type-quote">
+                “{{ block.quote }}”
             </p>
             {% if block.author|default %}
-                <cite class="font-body font-light text-[10px]
-                             tracking-[0.18em] uppercase not-italic
-                             text-content-dim">
+                <cite class="quote-single-cite type-kicker not-italic">
                     — {{ block.author }}
                 </cite>
             {% endif %}

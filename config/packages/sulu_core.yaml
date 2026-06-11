@@ -1,0 +1,5 @@
+sulu_core:
+    locales:
+        nl: Nederlands
+    translations:
+        - nl

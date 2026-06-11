@@ -37,7 +37,7 @@ class TravelDay
     private \DateTime $updatedAt;
 
     /** @var Collection<int, TravelDayPart> */
-    #[ORM\OneToMany(mappedBy: 'travelDay', targetEntity: TravelDayPart::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(targetEntity: TravelDayPart::class, mappedBy: 'travelDay', cascade: ['persist', 'remove'])]
     #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $parts;
 

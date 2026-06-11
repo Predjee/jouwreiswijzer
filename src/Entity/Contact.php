@@ -51,7 +51,7 @@ class Contact
     private \DateTime $updatedAt;
 
     /** @var Collection<int, TravelRequest> */
-    #[ORM\OneToMany(mappedBy: 'contact', targetEntity: TravelRequest::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(targetEntity: TravelRequest::class, mappedBy: 'contact', cascade: ['persist', 'remove'])]
     private Collection $travelRequests;
 
     public function __construct()

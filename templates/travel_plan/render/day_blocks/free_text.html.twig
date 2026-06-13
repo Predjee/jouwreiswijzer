@@ -1,0 +1,4 @@
+<article class="travel-plan-block travel-plan-block--free-text">
+    {% if block.title|default %}<h3>{{ block.title }}</h3>{% endif %}
+    {% if block.text|default %}<div>{{ block.text|raw }}</div>{% endif %}
+</article>

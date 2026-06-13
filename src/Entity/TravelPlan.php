@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Repository\TravelPlanRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: TravelPlanRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class TravelPlan
 {
@@ -22,22 +21,16 @@ class TravelPlan
 
     #[ORM\OneToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?TravelRequest $travelRequest = null;
+    private TravelRequest $travelRequest;
 
     #[ORM\Column(length: 255)]
     private string $title;
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $introduction = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $destination = null;
-
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $summary = null;
-
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $practicalInfo = null;
+    /**
+     * @var array<string, mixed>
+     */
+    #[ORM\Column(type: 'json')]
+    private array $content = [];
 
     #[ORM\Column(length: 30, options: ['default' => self::STATUS_DRAFT])]
     private string $status = self::STATUS_DRAFT;
@@ -45,22 +38,22 @@ class TravelPlan
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $publishedAt = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $pdfMediaId = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $pdfGeneratedAt = null;
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
     #[ORM\Column]
     private \DateTime $updatedAt;
 
-    /** @var Collection<int, TravelDay> */
-    #[ORM\OneToMany(mappedBy: 'travelPlan', targetEntity: TravelDay::class, cascade: ['persist', 'remove'])]
-    #[ORM\OrderBy(['dayNumber' => 'ASC'])]
-    private Collection $days;
-
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTime();
-        $this->days = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -68,12 +61,12 @@ class TravelPlan
         return $this->id;
     }
 
-    public function getTravelRequest(): ?TravelRequest
+    public function getTravelRequest(): TravelRequest
     {
         return $this->travelRequest;
     }
 
-    public function setTravelRequest(?TravelRequest $travelRequest): self
+    public function setTravelRequest(TravelRequest $travelRequest): self
     {
         $this->travelRequest = $travelRequest;
 
@@ -92,50 +85,20 @@ class TravelPlan
         return $this;
     }
 
-    public function getIntroduction(): ?string
+    /**
+     * @return array<string, mixed>
+     */
+    public function getContent(): array
     {
-        return $this->introduction;
+        return $this->content;
     }
 
-    public function setIntroduction(?string $introduction): self
+    /**
+     * @param array<string, mixed> $content
+     */
+    public function setContent(array $content): self
     {
-        $this->introduction = $introduction;
-
-        return $this;
-    }
-
-    public function getDestination(): ?string
-    {
-        return $this->destination;
-    }
-
-    public function setDestination(?string $destination): self
-    {
-        $this->destination = $destination;
-
-        return $this;
-    }
-
-    public function getSummary(): ?string
-    {
-        return $this->summary;
-    }
-
-    public function setSummary(?string $summary): self
-    {
-        $this->summary = $summary;
-
-        return $this;
-    }
-
-    public function getPracticalInfo(): ?string
-    {
-        return $this->practicalInfo;
-    }
-
-    public function setPracticalInfo(?string $practicalInfo): self
-    {
-        $this->practicalInfo = $practicalInfo;
+        $this->content = $content;
 
         return $this;
     }
@@ -164,6 +127,30 @@ class TravelPlan
         return $this;
     }
 
+    public function getPdfMediaId(): ?int
+    {
+        return $this->pdfMediaId;
+    }
+
+    public function setPdfMediaId(?int $pdfMediaId): self
+    {
+        $this->pdfMediaId = $pdfMediaId;
+
+        return $this;
+    }
+
+    public function getPdfGeneratedAt(): ?\DateTimeImmutable
+    {
+        return $this->pdfGeneratedAt;
+    }
+
+    public function setPdfGeneratedAt(?\DateTimeImmutable $pdfGeneratedAt): self
+    {
+        $this->pdfGeneratedAt = $pdfGeneratedAt;
+
+        return $this;
+    }
+
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
@@ -172,31 +159,6 @@ class TravelPlan
     public function getUpdatedAt(): \DateTime
     {
         return $this->updatedAt;
-    }
-
-    /** @return Collection<int, TravelDay> */
-    public function getDays(): Collection
-    {
-        return $this->days;
-    }
-
-    public function addDay(TravelDay $day): self
-    {
-        if (!$this->days->contains($day)) {
-            $this->days->add($day);
-            $day->setTravelPlan($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDay(TravelDay $day): self
-    {
-        if ($this->days->removeElement($day) && $day->getTravelPlan() === $this) {
-            $day->setTravelPlan(null);
-        }
-
-        return $this;
     }
 
     #[ORM\PreUpdate]

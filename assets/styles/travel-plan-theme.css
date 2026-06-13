@@ -1,0 +1,255 @@
+@font-face {
+    font-family: "Jost";
+    src: url("../fonts/Jost-VariableFont_wght.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 100 900;
+}
+
+@font-face {
+    font-family: "Jost";
+    src: url("../fonts/Jost-Italic-VariableFont_wght.ttf") format("truetype");
+    font-style: italic;
+    font-weight: 100 900;
+}
+
+@font-face {
+    font-family: "Cormorant";
+    src: url("../fonts/CormorantGaramond-VariableFont_wght.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 100 900;
+}
+
+@font-face {
+    font-family: "Cormorant";
+    src: url("../fonts/CormorantGaramond-Italic-VariableFont_wght.ttf") format("truetype");
+    font-style: italic;
+    font-weight: 100 900;
+}
+
+:root {
+    --color-primary: #12213d;
+    --color-gold: #b99550;
+    --color-text: #17233b;
+    --font-body: "Jost", sans-serif;
+    --font-heading: "Cormorant", serif;
+}
+
+body {
+    font-family: "Jost", sans-serif;
+    font-family: var(--font-body);
+    font-weight: 300;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Cormorant", serif;
+    font-family: var(--font-heading);
+}
+
+.travel-plan {
+    color: #17233b;
+    font-family: "Jost", sans-serif;
+    font-size: 10.5pt;
+    font-weight: 300;
+    line-height: 1.55;
+}
+
+.travel-plan h1,
+.travel-plan h2,
+.travel-plan h3 {
+    color: #12213d;
+    font-family: "Cormorant", serif;
+    font-weight: normal;
+    margin: 0 0 4mm;
+}
+
+.travel-plan h1 {
+    font-size: 31pt;
+    line-height: 1.15;
+}
+
+.travel-plan h2 {
+    border-bottom: 0.6mm solid #b99550;
+    font-size: 19pt;
+    padding-bottom: 2mm;
+}
+
+.travel-plan h3 {
+    font-size: 13pt;
+    font-weight: 500;
+}
+
+.travel-plan p {
+    margin: 0 0 3mm;
+}
+
+.travel-plan a {
+    color: #8d6d31;
+    text-decoration: none;
+}
+
+.travel-plan-cover {
+    background-color: #12213d;
+    box-sizing: border-box;
+    color: #ffffff;
+    height: 297mm;
+    padding: 35mm 25mm 25mm;
+    text-align: center;
+    width: 210mm;
+}
+
+.travel-plan-cover__logo {
+    display: block;
+    margin: 0 auto 42mm;
+    max-height: 24mm;
+    max-width: 65mm;
+}
+
+.travel-plan-cover__eyebrow {
+    color: #d2b06c;
+    font-size: 9pt;
+    letter-spacing: 2px;
+    margin-bottom: 7mm;
+    text-transform: uppercase;
+}
+
+.travel-plan-cover h1 {
+    color: #ffffff;
+    margin: 0 auto 9mm;
+    max-width: 145mm;
+}
+
+.travel-plan-cover__customer {
+    color: #d2b06c;
+    font-family: "Cormorant", serif;
+    font-size: 14pt;
+    font-style: italic;
+}
+
+.travel-plan-cover__profile {
+    border-top: 0.2mm solid #b99550;
+    color: #ffffff;
+    display: inline-block;
+    font-size: 9pt;
+    letter-spacing: 0.5px;
+    margin-top: 14mm;
+    padding-top: 4mm;
+}
+
+.travel-plan__header {
+    margin-bottom: 14mm;
+}
+
+.travel-plan__intro {
+    color: #36445c;
+    font-size: 12pt;
+    margin-bottom: 10mm;
+}
+
+.travel-plan__profile {
+    border-collapse: collapse;
+    font-family: "JostRegular", "Jost", sans-serif;
+    margin: 10mm 0 16mm;
+    width: 100%;
+}
+
+.travel-plan__profile th,
+.travel-plan__profile td {
+    border-bottom: 0.2mm solid #d9d3c8;
+    padding: 3mm 2mm;
+    text-align: left;
+    vertical-align: top;
+}
+
+.travel-plan__profile th {
+    color: #8d6d31;
+    font-size: 8.5pt;
+    font-weight: normal;
+    text-transform: uppercase;
+    width: 34%;
+}
+
+.travel-plan-section {
+    margin-bottom: 14mm;
+}
+
+.travel-plan-icon {
+    float: left;
+    height: 6mm;
+    margin: 0 3mm 2mm 0;
+    width: 6mm;
+}
+
+.travel-plan-section--day {
+    page-break-before: always;
+}
+
+.travel-plan-section--checklist {
+    page-break-after: always;
+    page-break-before: always;
+}
+
+.travel-plan-checklist {
+    border-collapse: collapse;
+    margin: 7mm 0 0;
+    width: 100%;
+}
+
+.travel-plan-checklist td {
+    border-bottom: 0.2mm solid #ddd7cc;
+    padding: 3mm 0;
+    page-break-inside: avoid;
+    vertical-align: top;
+}
+
+.travel-plan-checklist__box-cell {
+    width: 8mm;
+}
+
+.travel-plan-checklist__box {
+    border: 0.4mm solid #b99550;
+    display: block;
+    height: 3.5mm;
+    width: 3.5mm;
+}
+
+.travel-plan-section--day > header {
+    background-color: #f3efe7;
+    border-left: 1.2mm solid #b99550;
+    margin-bottom: 8mm;
+    padding: 6mm 7mm;
+}
+
+.travel-plan-section--day > header > p:first-child,
+.travel-plan-section__location {
+    color: #8d6d31;
+    font-size: 9pt;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.travel-plan-block,
+.travel-plan-route li {
+    border-bottom: 0.2mm solid #ddd7cc;
+    margin-bottom: 6mm;
+    padding: 0 0 5mm 5mm;
+    page-break-inside: avoid;
+}
+
+.travel-plan-route {
+    margin: 7mm 0 0;
+    padding-left: 7mm;
+}
+
+.travel-plan-footer {
+    border-top: 0.2mm solid #c9c1b2;
+    color: #687184;
+    font-family: "JostRegular", "Jost", sans-serif;
+    font-size: 8pt;
+    padding-top: 2mm;
+    text-align: center;
+}

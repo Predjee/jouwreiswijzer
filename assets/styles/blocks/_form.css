@@ -1,0 +1,159 @@
+.aanvraag-layout {
+    width: min(100%, var(--content-max-width));
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2rem, 4vw, 3.5rem);
+}
+
+.aanvraag-intro {
+    max-width: var(--measure-text-narrow);
+}
+
+.aanvraag-intro .type-body {
+    margin-top: 1.25rem;
+}
+
+.aanvraag-form {
+    min-width: 0;
+}
+
+/* Formulier grid */
+.jrw-form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem 1.5rem;
+}
+
+.jrw-form-grid > div {
+    display: contents;
+}
+
+@media (min-width: 768px) {
+    .jrw-form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Veld breedte */
+.jrw-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.jrw-field--full {
+    grid-column: 1 / -1;
+}
+
+.jrw-field--half {
+    grid-column: span 1;
+}
+
+.jrw-field--third {
+    grid-column: span 1;
+}
+
+.jrw-field--submit {
+    grid-column: 1 / -1;
+    padding-top: 0.75rem;
+}
+
+@media (min-width: 768px) {
+    .jrw-field--third {
+        grid-column: span 1;
+    }
+}
+
+/* Label */
+.jrw-label {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+    line-height: 1;
+}
+
+/* Input */
+.jrw-input {
+    width: 100%;
+    background-color: var(--color-navy-mid);
+    border: 0.5px solid var(--color-gold-20);
+    color: var(--color-content-primary);
+    padding-block: 0.8125rem;
+    padding-inline: 1rem;
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 300;
+    line-height: 1.5;
+    border-radius: 2px;
+    transition: border-color 0.2s ease;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.jrw-input:focus {
+    outline: none;
+    border-color: var(--color-gold);
+}
+
+.jrw-input::placeholder {
+    color: var(--color-content-dim);
+    opacity: 1;
+}
+
+.jrw-input--error {
+    border-color: #e07070;
+}
+
+/* Textarea */
+.jrw-textarea {
+    min-height: 9rem;
+    resize: vertical;
+}
+
+/* Select */
+.jrw-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23d4af37' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-inline-end: 2.5rem;
+    cursor: pointer;
+}
+
+.jrw-select option {
+    background-color: var(--color-navy-mid);
+    color: var(--color-content-primary);
+}
+
+/* Foutmelding */
+.jrw-error {
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    color: #e07070;
+}
+
+/* Sulu blokken */
+.jrw-headline {
+    padding-bottom: 0.25rem;
+}
+
+.jrw-freetext {
+    padding-bottom: 0.5rem;
+    border-bottom: 0.5px solid var(--color-gold-10);
+}
+
+.jrw-honeypot {
+    display: none;
+    visibility: hidden;
+}
+
+.aanvraag-success {
+    padding-block: 2rem;
+}
+
+.aanvraag-success .type-section-title {
+    margin-bottom: 1rem;
+}

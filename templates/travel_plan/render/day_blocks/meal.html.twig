@@ -1,0 +1,7 @@
+<article class="travel-plan-block travel-plan-block--meal">
+    {% if block.timeLabel|default %}<p>{{ block.timeLabel }}</p>{% endif %}
+    {% if block.title|default %}<h3>{{ block.title }}</h3>{% endif %}
+    {% if block.location|default %}<p>{{ block.location }}</p>{% endif %}
+    {% if block.text|default %}<p>{{ block.text }}</p>{% endif %}
+    {% if block.bookingUrl|default %}<p><a href="{{ block.bookingUrl }}">Bekijk of reserveer</a></p>{% endif %}
+</article>

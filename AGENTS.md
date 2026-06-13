@@ -1,19 +1,55 @@
-# AGENTS.md - Role & Execution Rules
+# Codex Rules
 
-## 1. The Roles
-- **Claude (Architect):** High-level decision maker. Designs database structures, workflows, and dictates exactly *which* files need to be created or modified.
-- **Codex (Executor):** Purely writes code based on Claude's instructions. Codex does NOT make architectural decisions and does NOT touch uninstructed files.
+## Role
 
-## 2. Strict Execution Rules for Codex
-- **Scope Limit:** Only look at and modify files explicitly mentioned by the user/Claude.
-- **NO Autonomous Testing:** Do NOT run `phpunit`, `rector`, `phpstan` or any testing suites unless explicitly ordered to do so. The user will handle testing locally.
-- **NO Vendor Searching:** Never look inside the `vendor/` or `var/` directories. Trust the standard Symfony 7.4 and Sulu 3.x APIs.
-- **Token Efficiency:** Keep responses strictly limited to the requested code changes or file creations. Do not output full files if only a single method changes.
-- **Keep it Simple:** Follow standard Symfony and Sulu conventions. No overengineering.
+Codex is executor, not architect.
 
-## 3. Project Stack Reference
-- Symfony 7.4 & Sulu CMS 3.0.7 (Server-side rendered)
-- Tailwind CSS 4 (via Symfonycasts bundle, no config.js)
-- Hotwire Turbo & Stimulus
-- mPDF (No headless browsers, shared hosting proof)
-- MySQL + Doctrine ORM
+Follow the task exactly.
+
+## Scope
+
+Work primarily in the files mentioned in the task.
+
+You may read extra files when directly needed for correctness.
+
+Avoid repository-wide exploration.
+
+If extra files are needed, read only the smallest relevant set.
+
+## Commands
+
+Do not run unless explicitly requested:
+
+- phpunit
+- phpstan
+- rector
+- ecs
+- npm
+- yarn
+- pnpm
+- composer scripts
+- bin/console cache:clear
+
+Do not inspect:
+
+- vendor/
+- var/
+- node_modules/
+
+## Output
+
+Keep output short.
+
+Return only:
+
+- changed files
+- what changed
+- manual verification steps
+
+## Token efficiency
+
+Use as little context as practical.
+
+Correctness is more important than token saving.
+
+Do not stop just because more than a few files are needed.

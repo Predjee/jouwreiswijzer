@@ -1,0 +1,111 @@
+{% use 'tailwind_2_layout.html.twig' %}
+
+{#
+    JouwReisWijzer form theme
+    Gebaseerd op tailwind_2_layout.html.twig
+    Alle classes gebruiken CSS custom properties uit app.css
+#}
+
+{# Grid wrapper om formulier #}
+{% block form_start %}
+    {{ parent() }}
+    <div class="jrw-form-grid">
+{% endblock %}
+
+{% block form_end %}
+    </div>
+    {{ parent() }}
+{% endblock %}
+
+{# Rij wrapper met breedte uit Sulu #}
+{%- block form_row -%}
+    {%- set row_class = row_class|default(
+        'jrw-field ' ~
+        (attr.width|default('full') == 'half'  ? 'jrw-field--half'  :
+         attr.width|default('full') == 'third' ? 'jrw-field--third' :
+         'jrw-field--full')
+    ) -%}
+    {{- parent() -}}
+{%- endblock -%}
+
+{# Knop rij #}
+{%- block button_row -%}
+    {%- set row_class = row_class|default('jrw-field jrw-field--full jrw-field--submit') -%}
+    {{- parent() -}}
+{%- endblock -%}
+
+{# Label #}
+{%- block form_label -%}
+    {%- set label_class = label_class|default('jrw-label') -%}
+    {{- parent() -}}
+{%- endblock -%}
+
+{# Input #}
+{%- block widget_attributes -%}
+    {%- set widget_class = widget_class|default('jrw-input') -%}
+    {%- set widget_errors_class = widget_errors_class|default('jrw-input--error') -%}
+    {{- parent() -}}
+{%- endblock -%}
+
+{# Textarea #}
+{%- block textarea_widget -%}
+    {%- set widget_class = widget_class|default('jrw-input jrw-textarea') -%}
+    {{- parent() -}}
+{%- endblock -%}
+
+{# Select #}
+{%- block choice_widget_collapsed -%}
+    {%- set widget_class = widget_class|default('jrw-input jrw-select') -%}
+    {{- parent() -}}
+{%- endblock -%}
+
+{# Submit knop #}
+{%- block submit_widget -%}
+    {%- set attr = attr|merge({class: 'btn-primary'}) -%}
+    {{- parent() -}}
+{%- endblock -%}
+
+{# Foutmeldingen #}
+{%- block form_errors -%}
+    {%- set error_item_class = error_item_class|default('jrw-error') -%}
+    {{- parent() -}}
+{%- endblock -%}
+
+{# Sulu: CSRF token #}
+{%- block csrf_token_widget %}
+    {% set controller = controller('Sulu\\Bundle\\FormBundle\\Controller\\FormTokenController::tokenAction', {
+        'form': form.parent.vars.name,
+        'html': true,
+        _requestAnalyzer: false
+    }) %}
+    {{ render(controller) }}
+{%- endblock -%}
+
+{# Sulu: Headline #}
+{%- block headline_row -%}
+    <div class="jrw-field jrw-field--full jrw-headline">
+        {{- form_widget(form) -}}
+    </div>
+{%- endblock -%}
+
+{%- block headline_widget -%}
+    <h3 class="type-section-title">{{- label|raw -}}</h3>
+{%- endblock -%}
+
+{# Sulu: FreeText #}
+{%- block freeText_row -%}
+    <div class="jrw-field jrw-field--full jrw-freetext">
+        {{- form_widget(form) -}}
+    </div>
+{%- endblock -%}
+
+{%- block freeText_widget -%}
+    <p class="type-body">{{- label|raw -}}</p>
+{%- endblock -%}
+
+{# Sulu: Honeypot #}
+{%- block honeypot_row -%}
+    <div class="jrw-honeypot" aria-hidden="true">
+        {{- block('form_row') -}}
+    </div>
+{%- endblock -%}

@@ -1,0 +1,18 @@
+<section class="travel-plan-section travel-plan-section--route">
+    {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
+    {% if section.text|default %}<div>{{ section.text|raw }}</div>{% endif %}
+    {% if section.routeStops|default %}
+        <ol class="travel-plan-route">
+            {% for stop in section.routeStops %}
+                <li>
+                    {% if stop._iconSvg|default %}
+                        {{ stop._iconSvg|raw }}
+                    {% endif %}
+                    {% if stop.title|default %}<h3>{{ stop.title }}</h3>{% endif %}
+                    {% if stop.location|default %}<p>{{ stop.location }}</p>{% endif %}
+                    {% if stop.text|default %}<div>{{ stop.text|raw }}</div>{% endif %}
+                </li>
+            {% endfor %}
+        </ol>
+    {% endif %}
+</section>

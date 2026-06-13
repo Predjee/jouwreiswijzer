@@ -20,5 +20,17 @@ services:
     App\:
         resource: '../src/'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    App\EventListener\FormSubmitListener:
+        tags:
+            - { name: kernel.event_listener, event: sulu_form.handler.saved, method: onFormSaved }
+
+    App\Sulu\RequestFormMetadataLoader:
+        arguments:
+            $inner: '@sulu_form.metadata.dynamic_form_metadata_loader'
+        tags:
+            - { name: 'sulu.context', context: 'admin' }
+            - { name: sulu_admin.form_metadata_loader, priority: 257 }
+
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: [ 'controller.service_arguments' ]

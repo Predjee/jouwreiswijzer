@@ -1,6 +1,6 @@
 sulu_media:
-    format_manager:
-        default_imagine_options:
-            jpeg_quality: 82
-            webp_quality: 82
-            avif_quality: 90
+    system_collections:
+        travel_plan_documents:
+            meta_title:
+                nl: Reisplannen
+                en: Travel plans

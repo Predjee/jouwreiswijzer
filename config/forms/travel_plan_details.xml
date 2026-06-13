@@ -1,0 +1,226 @@
+<?xml version="1.0" ?>
+<form xmlns="http://schemas.sulu.io/template/template"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/form-1.0.xsd">
+    <key>travel_plan_details</key>
+
+    <properties>
+        <property name="title" type="text_line" mandatory="true">
+            <meta><title>Titel</title></meta>
+            <params><param name="headline" value="true"/></params>
+        </property>
+
+        <property name="status" type="single_select" mandatory="true" colspan="6">
+            <meta><title>Status</title></meta>
+            <params>
+                <param name="values" type="collection">
+                    <param name="draft" value="draft"/>
+                    <param name="published" value="published"/>
+                </param>
+            </params>
+        </property>
+
+        <property name="pdfGeneratedAt" type="text_line" colspan="6" disabledCondition="true">
+            <meta><title>Laatste PDF-generatie</title></meta>
+        </property>
+
+        <property name="pdfMediaId" type="text_line" colspan="6" disabledCondition="true">
+            <meta><title>Media ID</title></meta>
+        </property>
+
+        <section name="intro">
+            <meta><title>Introductie</title></meta>
+            <properties>
+                <property name="introTitle" type="text_line"><meta><title>Titel</title></meta></property>
+                <property name="introText" type="text_editor"><meta><title>Tekst</title></meta></property>
+            </properties>
+        </section>
+
+        <section name="tripProfile">
+            <meta><title>Reisprofiel</title></meta>
+            <properties>
+                <property name="period" type="text_line" colspan="6"><meta><title>Periode</title></meta></property>
+                <property name="duration" type="text_line" colspan="6"><meta><title>Duur</title></meta></property>
+                <property name="travelParty" type="text_line" colspan="6"><meta><title>Reisgezelschap</title></meta></property>
+                <property name="travelStyle" type="text_line" colspan="6"><meta><title>Reisstijl</title></meta></property>
+                <property name="packageType" type="text_line" colspan="6"><meta><title>Pakkettype</title></meta></property>
+            </properties>
+        </section>
+
+        <block name="sections" default-type="destination">
+            <meta><title>Reisgids</title></meta>
+            <types>
+                <type name="destination">
+                    <meta><title>Bestemming</title></meta>
+                    <properties>
+                        <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
+                        <property name="country" type="text_line" colspan="4"><meta><title>Land</title></meta></property>
+                        <property name="region" type="text_line" colspan="4"><meta><title>Regio</title></meta></property>
+                        <property name="city" type="text_line" colspan="4"><meta><title>Stad</title></meta></property>
+                        <property name="text" type="text_editor"><meta><title>Tekst</title></meta></property>
+                        <property name="icon" type="single_icon_selection">
+                            <meta><title>Icoon</title></meta>
+                            <params><param name="icon_set" value="travel_plan_icons"/></params>
+                        </property>
+                    </properties>
+                </type>
+
+                <type name="route_overview">
+                    <meta><title>Routeoverzicht</title></meta>
+                    <properties>
+                        <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
+                        <property name="text" type="text_editor"><meta><title>Tekst</title></meta></property>
+                        <block name="routeStops" default-type="route_stop">
+                            <meta><title>Routestops</title></meta>
+                            <types>
+                                <type name="route_stop">
+                                    <meta><title>Routestop</title></meta>
+                                    <properties>
+                                        <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
+                                        <property name="location" type="text_line"><meta><title>Locatie</title></meta></property>
+                                        <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
+                                        <property name="icon" type="single_icon_selection">
+                                            <meta><title>Icoon</title></meta>
+                                            <params><param name="icon_set" value="travel_plan_icons"/></params>
+                                        </property>
+                                    </properties>
+                                </type>
+                            </types>
+                        </block>
+                    </properties>
+                </type>
+
+                <type name="day">
+                    <meta><title>Dag</title></meta>
+                    <properties>
+                        <property name="dayNumber" type="number" colspan="3"><meta><title>Dagnummer</title></meta></property>
+                        <property name="dateLabel" type="text_line" colspan="9"><meta><title>Datumlabel</title></meta></property>
+                        <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
+                        <property name="intro" type="text_area"><meta><title>Introductie</title></meta></property>
+                        <block name="blocks" default-type="activity">
+                            <meta><title>Dagonderdelen</title></meta>
+                            <types>
+                                <type name="activity">
+                                    <meta><title>Activiteit</title></meta>
+                                    <properties>
+                                        <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
+                                        <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
+                                        <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
+                                        <property name="location" type="text_line" colspan="4"><meta><title>Locatie</title></meta></property>
+                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijd</title></meta></property>
+                                        <property name="bookingUrl" type="url"><meta><title>Boekingslink</title></meta></property>
+                                    </properties>
+                                </type>
+                                <type name="accommodation">
+                                    <meta><title>Accommodatie</title></meta>
+                                    <properties>
+                                        <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
+                                        <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
+                                        <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
+                                        <property name="location" type="text_line" colspan="4"><meta><title>Locatie</title></meta></property>
+                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijd</title></meta></property>
+                                        <property name="bookingUrl" type="url"><meta><title>Boekingslink</title></meta></property>
+                                    </properties>
+                                </type>
+                                <type name="transport">
+                                    <meta><title>Vervoer</title></meta>
+                                    <properties>
+                                        <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
+                                        <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
+                                        <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
+                                        <property name="location" type="text_line" colspan="4"><meta><title>Locatie</title></meta></property>
+                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijd</title></meta></property>
+                                        <property name="bookingUrl" type="url"><meta><title>Boekingslink</title></meta></property>
+                                    </properties>
+                                </type>
+                                <type name="meal">
+                                    <meta><title>Maaltijd</title></meta>
+                                    <properties>
+                                        <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
+                                        <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
+                                        <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
+                                        <property name="location" type="text_line" colspan="4"><meta><title>Locatie</title></meta></property>
+                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijd</title></meta></property>
+                                        <property name="bookingUrl" type="url"><meta><title>Boekingslink</title></meta></property>
+                                    </properties>
+                                </type>
+                                <type name="tip">
+                                    <meta><title>Tip</title></meta>
+                                    <properties>
+                                        <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
+                                        <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
+                                        <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
+                                        <property name="location" type="text_line" colspan="4"><meta><title>Locatie</title></meta></property>
+                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijd</title></meta></property>
+                                    </properties>
+                                </type>
+                                <type name="note">
+                                    <meta><title>Notitie</title></meta>
+                                    <properties>
+                                        <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
+                                        <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
+                                        <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
+                                        <property name="location" type="text_line" colspan="4"><meta><title>Locatie</title></meta></property>
+                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijd</title></meta></property>
+                                    </properties>
+                                </type>
+                                <type name="free_text">
+                                    <meta><title>Vrije tekst</title></meta>
+                                    <properties>
+                                        <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
+                                        <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
+                                        <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
+                                        <property name="location" type="text_line" colspan="4"><meta><title>Locatie</title></meta></property>
+                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijd</title></meta></property>
+                                    </properties>
+                                </type>
+                            </types>
+                        </block>
+                    </properties>
+                </type>
+
+                <type name="practical_info">
+                    <meta><title>Praktische informatie</title></meta>
+                    <properties>
+                        <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
+                        <property name="text" type="text_editor"><meta><title>Tekst</title></meta></property>
+                        <property name="icon" type="single_icon_selection"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
+                    </properties>
+                </type>
+                <type name="checklist">
+                    <meta><title>Checklist</title></meta>
+                    <properties>
+                        <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
+                        <property name="text" type="text_area"><meta><title>Checklistregels</title></meta></property>
+                    </properties>
+                </type>
+                <type name="budget_note">
+                    <meta><title>Budgetnotitie</title></meta>
+                    <properties>
+                        <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
+                        <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
+                        <property name="icon" type="single_icon_selection"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
+                    </properties>
+                </type>
+                <type name="personal_note">
+                    <meta><title>Persoonlijke notitie</title></meta>
+                    <properties>
+                        <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
+                        <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
+                        <property name="icon" type="single_icon_selection"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
+                    </properties>
+                </type>
+                <type name="free_text">
+                    <meta><title>Vrije tekst</title></meta>
+                    <properties>
+                        <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
+                        <property name="text" type="text_editor"><meta><title>Tekst</title></meta></property>
+                        <property name="icon" type="single_icon_selection"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
+                        <property name="location" type="text_line"><meta><title>Locatie</title></meta></property>
+                        <property name="timeLabel" type="text_line"><meta><title>Tijd</title></meta></property>
+                    </properties>
+                </type>
+            </types>
+        </block>
+    </properties>
+</form>

@@ -1,0 +1,10 @@
+<section class="travel-plan-section travel-plan-section--day">
+    <header>
+        <p>Dag {{ section.dayNumber|default(1) }}{% if section.dateLabel|default %} · {{ section.dateLabel }}{% endif %}</p>
+        {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
+        {% if section.intro|default %}<p>{{ section.intro }}</p>{% endif %}
+    </header>
+    {% for renderedBlock in renderedBlocks %}
+        {{ renderedBlock|raw }}
+    {% endfor %}
+</section>

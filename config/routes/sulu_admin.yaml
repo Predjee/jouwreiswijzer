@@ -1,3 +1,17 @@
+sulu_travel_plan_preview:
+    path: /admin/travel-plans/{id}/preview
+    controller: App\Controller\Admin\TravelPlanPreviewController
+    methods: [GET]
+    requirements:
+        id: '\d+'
+
+sulu_travel_plan_pdf:
+    path: /admin/travel-plans/{id}/pdf
+    controller: App\Controller\Admin\TravelPlanPdfController
+    methods: [GET]
+    requirements:
+        id: '\d+'
+
 sulu_tag_api:
     resource: "@SuluTagBundle/Resources/config/routing_api.yaml"
     prefix: /admin/api
@@ -8,6 +22,14 @@ sulu_admin:
 
 sulu_admin_api:
     resource: "@SuluAdminBundle/Resources/config/routing_api.yaml"
+    prefix: /admin/api
+
+travel_request_admin:
+    resource: "../routes_admin.yaml"
+    prefix: /admin/api
+
+sulu_form_api:
+    resource: "@SuluFormBundle/Resources/config/routing_api.yaml"
     prefix: /admin/api
 
 sulu_contact_api:

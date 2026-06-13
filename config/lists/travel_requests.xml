@@ -1,0 +1,61 @@
+<?xml version="1.0" ?>
+<list xmlns="http://schemas.sulu.io/list-builder/list">
+    <key>travel_requests</key>
+
+    <joins name="contact">
+        <join>
+            <entity-name>contact</entity-name>
+            <field-name>App\Entity\TravelRequest.contact</field-name>
+        </join>
+    </joins>
+
+    <properties>
+        <property name="id" visibility="no" searchability="yes" translation="ID">
+            <field-name>id</field-name>
+            <entity-name>App\Entity\TravelRequest</entity-name>
+        </property>
+
+        <concatenation-property name="contactName" visibility="always" searchability="yes" translation="Contact">
+            <field>
+                <field-name>firstName</field-name>
+                <entity-name>contact</entity-name>
+                <joins ref="contact"/>
+            </field>
+            <field>
+                <field-name>lastName</field-name>
+                <entity-name>contact</entity-name>
+                <joins ref="contact"/>
+            </field>
+        </concatenation-property>
+
+        <property name="status" visibility="always" searchability="yes" translation="Status">
+            <field-name>status</field-name>
+            <entity-name>App\Entity\TravelRequest</entity-name>
+            <filter type="select">
+                <params>
+                    <param name="options" type="collection">
+                        <param name="new" value="new"/>
+                        <param name="in_progress" value="in_progress"/>
+                        <param name="needs_info" value="needs_info"/>
+                        <param name="plan_in_progress" value="plan_in_progress"/>
+                        <param name="proposal_ready" value="proposal_ready"/>
+                        <param name="completed" value="completed"/>
+                        <param name="cancelled" value="cancelled"/>
+                    </param>
+                </params>
+            </filter>
+        </property>
+
+        <property name="summary" visibility="yes" searchability="yes" translation="Samenvatting">
+            <field-name>summary</field-name>
+            <entity-name>App\Entity\TravelRequest</entity-name>
+        </property>
+
+        <property name="createdAt" visibility="always" translation="Datum">
+            <field-name>createdAt</field-name>
+            <entity-name>App\Entity\TravelRequest</entity-name>
+            <transformer type="datetime"/>
+            <filter type="datetime"/>
+        </property>
+    </properties>
+</list>

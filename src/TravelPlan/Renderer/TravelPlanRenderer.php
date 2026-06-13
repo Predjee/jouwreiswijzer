@@ -1,0 +1,199 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\TravelPlan\Renderer;
+
+use App\Entity\TravelPlan;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Twig\Environment;
+
+final readonly class TravelPlanRenderer
+{
+    private const DEFAULT_SECTION_ICONS = [
+        'destination' => 'map',
+        'route_overview' => 'map',
+        'practical_info' => 'info',
+        'checklist' => 'list-check',
+        'budget_note' => 'wallet',
+        'personal_note' => 'heart',
+        'free_text' => 'info',
+    ];
+
+    private const DEFAULT_DAY_BLOCK_ICONS = [
+        'activity' => 'compass',
+        'accommodation' => 'bed',
+        'transport' => 'car',
+        'meal' => 'utensils',
+        'tip' => 'lightbulb',
+        'note' => 'sticky-note',
+        'free_text' => 'info',
+    ];
+
+    private const SECTION_TEMPLATES = [
+        'destination' => 'travel_plan/render/sections/destination.html.twig',
+        'route_overview' => 'travel_plan/render/sections/route_overview.html.twig',
+        'day' => 'travel_plan/render/sections/day.html.twig',
+        'practical_info' => 'travel_plan/render/sections/practical_info.html.twig',
+        'checklist' => 'travel_plan/render/sections/checklist.html.twig',
+        'budget_note' => 'travel_plan/render/sections/budget_note.html.twig',
+        'personal_note' => 'travel_plan/render/sections/personal_note.html.twig',
+        'free_text' => 'travel_plan/render/sections/free_text.html.twig',
+    ];
+
+    private const DAY_BLOCK_TEMPLATES = [
+        'activity' => 'travel_plan/render/day_blocks/activity.html.twig',
+        'accommodation' => 'travel_plan/render/day_blocks/accommodation.html.twig',
+        'transport' => 'travel_plan/render/day_blocks/transport.html.twig',
+        'meal' => 'travel_plan/render/day_blocks/meal.html.twig',
+        'tip' => 'travel_plan/render/day_blocks/tip.html.twig',
+        'note' => 'travel_plan/render/day_blocks/note.html.twig',
+        'free_text' => 'travel_plan/render/day_blocks/free_text.html.twig',
+    ];
+
+    public function __construct(
+        private Environment $twig,
+        #[Autowire('%kernel.project_dir%')]
+        private string $projectDir,
+    ) {
+    }
+
+    public function render(TravelPlan $travelPlan): string
+    {
+        $content = $travelPlan->getContent();
+        $renderedSections = [];
+
+        foreach ($content['sections'] ?? [] as $section) {
+            if (!\is_array($section)) {
+                continue;
+            }
+
+            $type = $section['type'] ?? null;
+
+            if (!\is_string($type) || !isset(self::SECTION_TEMPLATES[$type])) {
+                continue;
+            }
+
+            if ('route_overview' === $type && \is_array($section['routeStops'] ?? null)) {
+                $section['routeStops'] = array_map(function (mixed $stop): mixed {
+                    if (!\is_array($stop)) {
+                        return $stop;
+                    }
+
+                    $stop['_iconSvg'] = $this->iconSvg($stop['icon'] ?? 'map');
+
+                    return $stop;
+                }, $section['routeStops']);
+            }
+
+            $context = ['section' => $section];
+
+            if ('day' === $type) {
+                $context['renderedBlocks'] = $this->renderDayBlocks($section['blocks'] ?? []);
+            }
+
+            $renderedSection = $this->twig->render(self::SECTION_TEMPLATES[$type], $context);
+            $renderedSections[] = $this->prependIcon(
+                $renderedSection,
+                $section['icon'] ?? self::DEFAULT_SECTION_ICONS[$type] ?? null,
+            );
+        }
+
+        return $this->twig->render('travel_plan/render/base.html.twig', [
+            'travelPlan' => $travelPlan,
+            'intro' => \is_array($content['intro'] ?? null) ? $content['intro'] : [],
+            'tripProfile' => \is_array($content['tripProfile'] ?? null) ? $content['tripProfile'] : [],
+            'renderedSections' => $renderedSections,
+            'logoSrc' => $this->assetDataUri('assets/images/pdf/logo-pdf.png', 'image/png'),
+        ]);
+    }
+
+    /**
+     * @return string[]
+     */
+    private function renderDayBlocks(mixed $blocks): array
+    {
+        if (!\is_array($blocks)) {
+            return [];
+        }
+
+        $renderedBlocks = [];
+
+        foreach ($blocks as $block) {
+            if (!\is_array($block)) {
+                continue;
+            }
+
+            $type = $block['type'] ?? null;
+
+            if (!\is_string($type) || !isset(self::DAY_BLOCK_TEMPLATES[$type])) {
+                continue;
+            }
+
+            $renderedBlock = $this->twig->render(
+                self::DAY_BLOCK_TEMPLATES[$type],
+                ['block' => $block],
+            );
+            $renderedBlocks[] = $this->prependIcon(
+                $renderedBlock,
+                $block['icon'] ?? self::DEFAULT_DAY_BLOCK_ICONS[$type],
+            );
+        }
+
+        return $renderedBlocks;
+    }
+
+    private function prependIcon(string $html, mixed $icon): string
+    {
+        $iconSvg = $this->iconSvg($icon);
+
+        if (null === $iconSvg) {
+            return $html;
+        }
+
+        return preg_replace(
+            '/(<(?:section|article|aside)\b[^>]*>)/',
+            '$1'.$iconSvg,
+            $html,
+            1,
+        ) ?? $html;
+    }
+
+    private function iconSvg(mixed $icon): ?string
+    {
+        if (!\is_string($icon) || 1 !== preg_match('/^[a-z0-9][a-z0-9-]*$/', $icon)) {
+            return null;
+        }
+
+        $path = $this->projectDir.'/assets/images/icons/'.$icon.'.svg';
+
+        if (!is_file($path) || false === $contents = file_get_contents($path)) {
+            return null;
+        }
+
+        $contents = str_replace(
+            ['currentColor', '#000000', '#000'],
+            '#d4af37',
+            $contents,
+        );
+        $contents = preg_replace(
+            '/<svg\b/',
+            '<svg class="travel-plan-icon" color="#d4af37"',
+            $contents,
+            1,
+        ) ?? $contents;
+
+        return $contents;
+    }
+
+    private function assetDataUri(string $relativePath, string $mimeType): ?string
+    {
+        $path = $this->projectDir.'/'.$relativePath;
+
+        if (!is_file($path) || false === $contents = file_get_contents($path)) {
+            return null;
+        }
+
+        return 'data:'.$mimeType.';base64,'.base64_encode($contents);
+    }
+}

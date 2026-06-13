@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Nieuwe reisaanvraag</title>
+</head>
+<body style="margin:0;background:#0f293a;color:#f0ece4;font-family:Arial,sans-serif;">
+    <div style="max-width:680px;margin:0 auto;padding:40px 24px;">
+        <h1 style="margin:0 0 24px;color:#d4af37;font-family:'Cormorant Garamond',Georgia,serif;font-size:34px;font-weight:400;">
+            Nieuwe reisaanvraag
+        </h1>
+        <table role="presentation" style="width:100%;border-collapse:collapse;background:#243a4e;">
+            {% for field in formEntity.fields|default([]) %}
+                {% if field.value is not empty %}
+                    <tr>
+                        <th style="padding:12px 16px;border-bottom:1px solid rgba(212,175,55,.2);color:#d4af37;text-align:left;vertical-align:top;font-size:12px;text-transform:uppercase;">
+                            {{ field.shortTitle|default(field.title)|striptags }}
+                        </th>
+                        <td style="padding:12px 16px;border-bottom:1px solid rgba(212,175,55,.2);color:#f0ece4;">
+                            {% if field.value is iterable %}
+                                {{ field.value|join(', ') }}
+                            {% else %}
+                                {{ field.value|nl2br }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

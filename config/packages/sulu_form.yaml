@@ -1,0 +1,20 @@
+sulu_form:
+#   csrf_protection: true # requires additional changes see: https://github.com/sulu/SuluFormBundle/blob/3.0/Resources/doc/csrf.md
+    mail:
+        from: "%env(FROM_EMAIL)%"
+        to: "%env(NOTIFICATION_EMAIL)%"
+        sender: "%env(FROM_EMAIL)%"
+        templates:
+            notify: 'emails/notify.html.twig'
+            customer: 'emails/confirmation.html.twig'
+    media:
+        protected: true
+    honeypot:
+        field: "website"
+        strategy: no_save
+    dynamic_lists:
+        sulu_page.page_edit_form:
+            aanvraag:
+                template: aanvraag
+                property: form
+                type: page

@@ -1,0 +1,130 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controller\Admin;
+
+use App\Admin\TravelRequestAdmin;
+use App\Entity\TravelPlan;
+use App\Repository\TravelPlanRepository;
+use App\Repository\TravelRequestRepository;
+use App\TravelPlan\Pdf\TravelPlanPdfGenerator;
+use App\TravelPlan\Pdf\TravelPlanPdfStorage;
+use Sulu\Component\Security\Authorization\PermissionTypes;
+use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+final readonly class TravelPlanPdfController
+{
+    public function __construct(
+        private TravelPlanRepository $repository,
+        private TravelRequestRepository $travelRequestRepository,
+        private TravelPlanPdfGenerator $pdfGenerator,
+        private TravelPlanPdfStorage $pdfStorage,
+        private SecurityCheckerInterface $securityChecker,
+        private UrlGeneratorInterface $urlGenerator,
+    ) {
+    }
+
+    public function __invoke(int $id): Response
+    {
+        if (!$this->securityChecker->hasPermission(
+            TravelRequestAdmin::SECURITY_CONTEXT,
+            PermissionTypes::VIEW,
+        )) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $travelPlan = $this->repository->find($id);
+
+        if (!$travelPlan instanceof TravelPlan) {
+            throw new NotFoundHttpException(sprintf('TravelPlan "%d" was not found.', $id));
+        }
+
+        $response = new Response($this->pdfGenerator->generate($travelPlan));
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set(
+            'Content-Disposition',
+            $response->headers->makeDisposition(
+                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                sprintf('reisplan-%d.pdf', $id),
+            ),
+        );
+
+        return $response;
+    }
+
+    public function generate(int $id): JsonResponse
+    {
+        if (!$this->securityChecker->hasPermission(
+            TravelRequestAdmin::SECURITY_CONTEXT,
+            PermissionTypes::EDIT,
+        )) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $travelPlan = $this->findTravelPlan($id);
+        $mediaId = $this->pdfStorage->generateAndStore($travelPlan);
+
+        return new JsonResponse([
+            'id' => $travelPlan->getId(),
+            'pdfMediaId' => $mediaId,
+            'pdfGeneratedAt' => $travelPlan->getPdfGeneratedAt()?->format(\DateTimeInterface::ATOM),
+            'downloadUrl' => $this->urlGenerator->generate('sulu_travel_plan_pdf', ['id' => $id]),
+        ]);
+    }
+
+    public function generateForRequest(int $id): JsonResponse
+    {
+        if (!$this->securityChecker->hasPermission(
+            TravelRequestAdmin::SECURITY_CONTEXT,
+            PermissionTypes::EDIT,
+        )) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $travelRequest = $this->travelRequestRepository->find($id);
+
+        if (null === $travelRequest) {
+            throw new NotFoundHttpException(sprintf('TravelRequest "%d" was not found.', $id));
+        }
+
+        $travelPlan = $this->repository->findOneBy(['travelRequest' => $travelRequest]);
+
+        if (!$travelPlan instanceof TravelPlan) {
+            throw new NotFoundHttpException(sprintf(
+                'No TravelPlan was found for TravelRequest "%d".',
+                $id,
+            ));
+        }
+
+        $mediaId = $this->pdfStorage->generateAndStore($travelPlan);
+
+        return new JsonResponse([
+            'id' => $id,
+            'travelPlanId' => $travelPlan->getId(),
+            'pdfMediaId' => $mediaId,
+            'pdfGeneratedAt' => $travelPlan->getPdfGeneratedAt()?->format(\DateTimeInterface::ATOM),
+            'downloadUrl' => $this->urlGenerator->generate(
+                'sulu_travel_plan_pdf',
+                ['id' => $travelPlan->getId()],
+            ),
+        ]);
+    }
+
+    private function findTravelPlan(int $id): TravelPlan
+    {
+        $travelPlan = $this->repository->find($id);
+
+        if (!$travelPlan instanceof TravelPlan) {
+            throw new NotFoundHttpException(sprintf('TravelPlan "%d" was not found.', $id));
+        }
+
+        return $travelPlan;
+    }
+}

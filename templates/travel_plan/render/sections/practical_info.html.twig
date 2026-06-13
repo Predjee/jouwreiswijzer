@@ -1,0 +1,4 @@
+<section class="travel-plan-section travel-plan-section--practical-info">
+    {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
+    {% if section.text|default %}<div>{{ section.text|raw }}</div>{% endif %}
+</section>

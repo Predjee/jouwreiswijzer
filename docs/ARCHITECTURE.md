@@ -179,33 +179,68 @@ Mobiele navigatie mag met Stimulus worden afgehandeld.
 
 ## 9. Forms and Request Flow
 
+## Aanvraagflow en klantidentiteit
+
 De aanvraagflow gebruikt `sulu/form-bundle`.
 
-De aanvraagpagina gebruikt page type:
+Een Sulu-formulier wordt alleen als aanvraag verwerkt wanneer het formulier expliciet is gemarkeerd als aanvraagformulier.
 
-```text
-aanvraag
-```
+De applicatie vertrouwt niet op de formuliernaam en niet op vaste frontend veldnamen, behalve voor het herkennen van standaard contactvelden zoals e-mail, voornaam, achternaam en telefoon.
 
-De pagina selecteert een dynamisch Sulu-formulier via `single_form_selection`.
+Bij een succesvolle inzending:
 
-Na succesvolle formulierinzending verwerkt een listener het form event en maakt een `TravelRequest`.
+1. De listener controleert of het formulier als aanvraagformulier is gemarkeerd.
+2. De listener zoekt het e-mailveld in de formulierdefinitie of submission data.
+3. Het e-mailadres wordt gebruikt om een bestaand Sulu Contact te vinden of een nieuw Contact aan te maken.
+4. Bestaande Contact-gegevens worden nooit automatisch overschreven door publieke formulierdata.
+5. Voornaam, achternaam en telefoonnummer uit de inzending worden opgeslagen op de TravelRequest als ingediende contactgegevens.
+6. Wanneer deze gegevens afwijken van een bestaand Contact, wordt de aanvraag gemarkeerd als contact-conflict of review nodig.
+7. De volledige formulierinzending wordt generiek opgeslagen op de TravelRequest.
+8. TravelRequest krijgt standaard status `new`.
 
-Event:
+Een klantaccount voor een toekomstige Mijn Omgeving wordt niet direct bij iedere aanvraag aangemaakt.  
+Een account wordt pas aangemaakt of uitgenodigd wanneer een beheerder een reisplan wil delen of publiceren.
 
-```text
-sulu_form.handler.saved
-```
+Toekomstige klantaccounts gebruiken minimaal de rol:
 
-Listener:
+`ROLE_CUSTOMER`
 
-```text
-App\EventListener\FormSubmitListener
-```
+Een klantaccount mag pas toegang krijgen na e-mailverificatie of expliciete uitnodiging.
 
-Elke inzending maakt een nieuwe aanvraag.
+## Customer Identity Model
 
-Contactgegevens worden gekoppeld aan of aangemaakt als Sulu Contact.
+JouwReiswijzer gebruikt bestaande Sulu-entiteiten waar mogelijk.
+
+### Contact
+
+Sulu Contact is de primaire plek voor klant/contactpersoongegevens.
+
+Publieke formulierdata mag bestaande Contact-gegevens niet automatisch overschrijven.
+
+### TravelRequest
+
+TravelRequest bewaart de aanvraag zoals ingezonden:
+
+- submittedEmail
+- submittedFirstName
+- submittedLastName
+- submittedPhone
+- submittedData
+- contactDataConflict
+
+### Sulu User
+
+Voor een toekomstige Mijn Omgeving wordt gebruikgemaakt van Sulu's bestaande user-systeem (`se_users`).
+
+Er wordt geen eigen klant-user entity gebouwd tenzij Sulu hiervoor onvoldoende blijkt.
+
+Een klantlogin wordt pas aangemaakt of geactiveerd na expliciete uitnodiging of publicatie van een reisplan.
+
+Toekomstige klantgebruikers krijgen een aparte rol, bijvoorbeeld:
+
+ROLE_CUSTOMER
+
+Publieke aanvraagformulieren maken niet automatisch een loginaccount aan.
 
 ---
 

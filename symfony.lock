@@ -191,6 +191,19 @@
             "config/packages/stof_doctrine_extensions.yaml"
         ]
     },
+    "sulu/form-bundle": {
+        "version": "3.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "3.0",
+            "ref": "81eb45accd3783bde40cb768bf931ec98e6307a8"
+        },
+        "files": [
+            "config/packages/sulu_form.yaml",
+            "config/routes/sulu_form_admin.yaml"
+        ]
+    },
     "symfony-cmf/routing-bundle": {
         "version": "3.1.2"
     },
@@ -244,6 +257,18 @@
         "files": [
             ".env",
             ".env.dev"
+        ]
+    },
+    "symfony/form": {
+        "version": "7.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "7.2",
+            "ref": "7d86a6723f4a623f59e2bf966b6aad2fc461d36b"
+        },
+        "files": [
+            "config/packages/csrf.yaml"
         ]
     },
     "symfony/framework-bundle": {

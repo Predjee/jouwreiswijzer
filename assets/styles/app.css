@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+@import "./travel-plan-theme.css";
 @import "./_base.css";
 @import "./_components.css";
 @import "./_blocks.css";
@@ -12,9 +13,13 @@
 @import "./blocks/_packages.css";
 @import "./blocks/_cta-banner.css";
 @import "./blocks/_quote-single.css";
+@import "./blocks/_form.css";
 @import "./_animations.css";
 
 @theme {
+    --font-body: "Jost", sans-serif;
+    --font-heading: "Cormorant", serif;
+
     --color-content-primary: #f0ece4;
     --color-content-secondary: #d8dde3;
     --color-content-muted: #c0c8d0;

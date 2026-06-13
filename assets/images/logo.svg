@@ -10,7 +10,6 @@
 
     <circle cx="28" cy="28" r="26.5" fill="none" stroke="url(#g)" stroke-width="1.2"/>
     <circle cx="28" cy="28" r="23" fill="none" stroke="url(#g)" stroke-width="0.35" opacity="0.4"/>
-    <line x1="5" y1="30" x2="51" y2="30" stroke="url(#g)" stroke-width="0.6" opacity="0.5"/>
     <polygon points="28,10 30,24 28,21 26,24" fill="url(#g)"/>
     <polygon points="28,46 30,32 28,35 26,32" fill="url(#g)" opacity="0.45"/>
     <polygon points="12,28 22,26.5 22,29.5" fill="url(#g)" opacity="0.45"/>

@@ -1,0 +1,52 @@
+travel_request.get_collection:
+    path: /admin/api/travel-requests
+    controller: App\Controller\Admin\TravelRequestController::cgetAction
+    methods: [GET]
+    defaults:
+        _format: json
+
+travel_request.get:
+    path: /admin/api/travel-requests/{id}
+    controller: App\Controller\Admin\TravelRequestController::getAction
+    methods: [GET]
+    defaults:
+        _format: json
+
+travel_request.put:
+    path: /admin/api/travel-requests/{id}
+    controller: App\Controller\Admin\TravelRequestController::putAction
+    methods: [PUT]
+    defaults:
+        _format: json
+
+travel_request_plan.get:
+    path: /admin/api/travel-request-plans/{id}
+    controller: App\Controller\Admin\TravelRequestController::getPlanAction
+    methods: [GET]
+    defaults:
+        _format: json
+
+travel_request_plan.put:
+    path: /admin/api/travel-request-plans/{id}
+    controller: App\Controller\Admin\TravelRequestController::putPlanAction
+    methods: [PUT]
+    defaults:
+        _format: json
+
+travel_request_plan.generate_pdf:
+    path: /admin/api/travel-request-plans/{id}/generate-pdf
+    controller: App\Controller\Admin\TravelPlanPdfController::generateForRequest
+    methods: [POST]
+    defaults:
+        _format: json
+    options:
+        expose: true
+
+travel_plan.generate_pdf:
+    path: /admin/api/travel-plans/{id}/generate-pdf
+    controller: App\Controller\Admin\TravelPlanPdfController::generate
+    methods: [POST]
+    defaults:
+        _format: json
+    options:
+        expose: true

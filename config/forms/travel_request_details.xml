@@ -1,0 +1,81 @@
+<?xml version="1.0" ?>
+<form xmlns="http://schemas.sulu.io/template/template"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/form-1.0.xsd">
+    <key>travel_request_details</key>
+
+    <properties>
+        <section name="request">
+            <meta>
+                <title>Aanvraag</title>
+            </meta>
+            <properties>
+                <property name="status" type="single_select" mandatory="true" colspan="6">
+                    <meta>
+                        <title>Status</title>
+                    </meta>
+                    <params>
+                        <param name="values" type="collection">
+                            <param name="new" value="new"/>
+                            <param name="in_progress" value="in_progress"/>
+                            <param name="needs_info" value="needs_info"/>
+                            <param name="plan_in_progress" value="plan_in_progress"/>
+                            <param name="proposal_ready" value="proposal_ready"/>
+                            <param name="completed" value="completed"/>
+                            <param name="cancelled" value="cancelled"/>
+                        </param>
+                    </params>
+                </property>
+
+                <property name="createdAt" type="text_line" colspan="6" disabledCondition="true">
+                    <meta>
+                        <title>Datum</title>
+                    </meta>
+                </property>
+
+                <property name="summary" type="text_area" disabledCondition="true">
+                    <meta>
+                        <title>Samenvatting</title>
+                    </meta>
+                </property>
+
+                <property name="internalNotes" type="text_area">
+                    <meta>
+                        <title>Interne notities</title>
+                    </meta>
+                </property>
+
+                <property name="travelPlanStatus" type="text_line" disabledCondition="true">
+                    <meta>
+                        <title>Reisplan</title>
+                    </meta>
+                </property>
+
+            </properties>
+        </section>
+
+        <section name="contact">
+            <meta>
+                <title>Contact</title>
+            </meta>
+            <properties>
+                <property name="contactName" type="text_line" disabledCondition="true">
+                    <meta>
+                        <title>Naam</title>
+                    </meta>
+                </property>
+                <property name="contactEmail" type="text_line" colspan="6" disabledCondition="true">
+                    <meta>
+                        <title>E-mail</title>
+                    </meta>
+                </property>
+                <property name="contactPhone" type="text_line" colspan="6" disabledCondition="true">
+                    <meta>
+                        <title>Telefoon</title>
+                    </meta>
+                </property>
+            </properties>
+        </section>
+
+    </properties>
+</form>

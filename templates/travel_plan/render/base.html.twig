@@ -1,0 +1,72 @@
+{% set request = travelPlan.travelRequest|default(null) %}
+{% set contact = request ? request.contact|default(null) : null %}
+{% set customerName = contact
+    ? [contact.firstName|default, contact.lastName|default]|filter(value => value)|join(' ')
+    : ''
+%}
+
+<link rel="stylesheet" href="{{ asset('styles/travel-plan-theme.css') }}" media="screen">
+
+<htmlpagefooter name="travelPlanFooter">
+    <div class="travel-plan-footer">
+        JouwReisWijzer &nbsp;&middot;&nbsp; {{ travelPlan.title }} &nbsp;&middot;&nbsp; pagina {PAGENO}
+    </div>
+</htmlpagefooter>
+
+<article class="travel-plan">
+    <section class="travel-plan-cover">
+        {% if logoSrc %}
+            <img class="travel-plan-cover__logo" src="{{ logoSrc }}" alt="JouwReisWijzer">
+        {% endif %}
+        <p class="travel-plan-cover__eyebrow">Persoonlijke reisgids</p>
+        <h1>{{ travelPlan.title }}</h1>
+        {% if customerName %}
+            <p class="travel-plan-cover__customer">Samengesteld voor {{ customerName }}</p>
+        {% endif %}
+        {% set coverProfile = [tripProfile.period|default, tripProfile.duration|default]|filter(value => value) %}
+        {% if coverProfile %}
+            <p class="travel-plan-cover__profile">{{ coverProfile|join(' · ') }}</p>
+        {% endif %}
+    </section>
+
+    <pagebreak margin-left="18mm"
+               margin-right="18mm"
+               margin-top="20mm"
+               margin-bottom="23mm"
+               resetpagenum="1"
+               suppress="off"
+               odd-footer-name="travelPlanFooter"
+               odd-footer-value="on"
+               even-footer-name="travelPlanFooter"
+               even-footer-value="on" />
+
+    <header class="travel-plan__header">
+        {% if intro.title|default %}
+            <h2>{{ intro.title }}</h2>
+        {% endif %}
+
+        {% if intro.text|default %}
+            <div class="travel-plan__intro">{{ intro.text|raw }}</div>
+        {% endif %}
+
+        {% if tripProfile|default %}
+            <table class="travel-plan__profile">
+                {% for label, value in {
+                    'Periode': tripProfile.period|default,
+                    'Duur': tripProfile.duration|default,
+                    'Reisgezelschap': tripProfile.travelParty|default,
+                    'Reisstijl': tripProfile.travelStyle|default,
+                    'Pakket': tripProfile.packageType|default
+                } %}
+                    {% if value %}
+                        <tr><th>{{ label }}</th><td>{{ value }}</td></tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+        {% endif %}
+    </header>
+
+    {% for renderedSection in renderedSections %}
+        {{ renderedSection|raw }}
+    {% endfor %}
+</article>

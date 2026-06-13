@@ -108,14 +108,14 @@ final readonly class TravelPlanPdfStorage
         }
     }
 
-    private function createFilename(TravelPlan $travelPlan): string
+    public function createFilename(TravelPlan $travelPlan): string
     {
-        $contact = $travelPlan->getTravelRequest()->getContact();
-        $contactName = trim($contact->getFullName());
-        $contactSlug = strtolower((string) $this->slugger->slug(
-            '' !== $contactName ? $contactName : 'contact-'.$contact->getId(),
-        ));
+        $titleSlug = strtolower((string) $this->slugger->slug($travelPlan->getTitle()));
 
-        return sprintf('reisplan-%s-%d.pdf', $contactSlug, $travelPlan->getId());
+        return sprintf(
+            '%s-%d.pdf',
+            '' !== $titleSlug ? $titleSlug : 'reisplan',
+            $travelPlan->getId(),
+        );
     }
 }

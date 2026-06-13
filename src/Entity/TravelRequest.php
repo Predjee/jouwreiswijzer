@@ -38,6 +38,9 @@ class TravelRequest
     #[ORM\Column(type: 'json')]
     private array $formData = [];
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $contactDataConflict = false;
+
     #[ORM\Column(length: 30, options: ['default' => self::STATUS_NEW])]
     private string $status = self::STATUS_NEW;
 
@@ -99,6 +102,18 @@ class TravelRequest
     public function setFormData(array $formData): self
     {
         $this->formData = $formData;
+
+        return $this;
+    }
+
+    public function hasContactDataConflict(): bool
+    {
+        return $this->contactDataConflict;
+    }
+
+    public function setContactDataConflict(bool $contactDataConflict): self
+    {
+        $this->contactDataConflict = $contactDataConflict;
 
         return $this;
     }

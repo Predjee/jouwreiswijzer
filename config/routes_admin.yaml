@@ -50,3 +50,10 @@ travel_plan.generate_pdf:
         _format: json
     options:
         expose: true
+
+travel_plan.pdf_download:
+    path: /admin/api/travel-plans/{id}/pdf/download
+    controller: App\Controller\Admin\TravelPlanPdfController::download
+    methods: [GET]
+    defaults:
+        _format: binary

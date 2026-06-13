@@ -7,41 +7,51 @@
 
 <link rel="stylesheet" href="{{ asset('styles/travel-plan-theme.css') }}" media="screen">
 
-<htmlpagefooter name="travelPlanFooter">
-    <div class="travel-plan-footer">
-        JouwReisWijzer &nbsp;&middot;&nbsp; {{ travelPlan.title }} &nbsp;&middot;&nbsp; pagina {PAGENO}
-    </div>
-</htmlpagefooter>
+{% if not accountView %}
+    <htmlpagefooter name="travelPlanFooter">
+        <div class="travel-plan-footer">
+            JouwReisWijzer &nbsp;&middot;&nbsp; {{ travelPlan.title }} &nbsp;&middot;&nbsp; pagina {PAGENO}
+        </div>
+    </htmlpagefooter>
+{% endif %}
 
 <article class="travel-plan">
-    <section class="travel-plan-cover">
-        {% if logoSrc %}
-            <img class="travel-plan-cover__logo" src="{{ logoSrc }}" alt="JouwReisWijzer">
-        {% endif %}
-        <p class="travel-plan-cover__eyebrow">Persoonlijke reisgids</p>
-        <h1>{{ travelPlan.title }}</h1>
-        {% if customerName %}
-            <p class="travel-plan-cover__customer">Samengesteld voor {{ customerName }}</p>
-        {% endif %}
-        {% set coverProfile = [tripProfile.period|default, tripProfile.duration|default]|filter(value => value) %}
-        {% if coverProfile %}
-            <p class="travel-plan-cover__profile">{{ coverProfile|join(' · ') }}</p>
-        {% endif %}
-    </section>
+    {% if not accountView %}
+        <section class="travel-plan-cover">
+            {% if logoSrc %}
+                <img class="travel-plan-cover__logo" src="{{ logoSrc }}" alt="JouwReisWijzer">
+            {% endif %}
+            <p class="travel-plan-cover__eyebrow">Persoonlijke reisgids</p>
+            <h1>{{ travelPlan.title }}</h1>
+            {% if customerName %}
+                <p class="travel-plan-cover__customer">Samengesteld voor {{ customerName }}</p>
+            {% endif %}
+            {% set coverProfile = [tripProfile.period|default, tripProfile.duration|default]|filter(value => value) %}
+            {% if coverProfile %}
+                <p class="travel-plan-cover__profile">{{ coverProfile|join(' · ') }}</p>
+            {% endif %}
+        </section>
 
-    <pagebreak margin-left="18mm"
-               margin-right="18mm"
-               margin-top="20mm"
-               margin-bottom="23mm"
-               resetpagenum="1"
-               suppress="off"
-               odd-footer-name="travelPlanFooter"
-               odd-footer-value="on"
-               even-footer-name="travelPlanFooter"
-               even-footer-value="on" />
+        <pagebreak margin-left="18mm"
+                   margin-right="18mm"
+                   margin-top="20mm"
+                   margin-bottom="23mm"
+                   resetpagenum="1"
+                   suppress="off"
+                   odd-footer-name="travelPlanFooter"
+                   odd-footer-value="on"
+                   even-footer-name="travelPlanFooter"
+                   even-footer-value="on" />
+    {% endif %}
 
     <header class="travel-plan__header">
-        {% if intro.title|default %}
+        {% if accountView %}
+            <p class="travel-plan-cover__eyebrow">Persoonlijke reisgids</p>
+            <h1>{{ intro.title|default(travelPlan.title, true) }}</h1>
+            {% if customerName %}
+                <p class="travel-plan-cover__customer">Samengesteld voor {{ customerName }}</p>
+            {% endif %}
+        {% elseif intro.title|default %}
             <h2>{{ intro.title }}</h2>
         {% endif %}
 
@@ -67,6 +77,15 @@
     </header>
 
     {% for renderedSection in renderedSections %}
-        {{ renderedSection|raw }}
+        {{ renderedSection.html|raw }}
+        {% if accountView %}
+            {{ include('account/_travel_plan_feedback_form.html.twig', {
+                travelPlan: travelPlan,
+                blockPath: renderedSection.blockPath,
+                feedback: renderedSection.feedback,
+                feedbackLabel: 'Feedback op dit onderdeel',
+                feedbackContext: 'section'
+            }) }}
+        {% endif %}
     {% endfor %}
 </article>

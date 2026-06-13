@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <section class="account-profile-section">
+        <div class="account-profile-shell">
+            <div class="account-profile-header">
+                <div>
+                    <p class="type-kicker">Mijn Omgeving</p>
+                    <h1 class="type-section-title">Mijn profiel</h1>
+                    <p class="type-body">Beheer hier je persoonlijke contactgegevens.</p>
+                </div>
+                <a href="{{ path('account') }}" class="btn-ghost">Mijn reisplannen</a>
+            </div>
+
+            {% for message in app.flashes('account_profile_success') %}
+                <p class="account-profile-success" role="status">{{ message }}</p>
+            {% endfor %}
+
+            <form method="post" action="{{ path('account_profile') }}" class="account-profile-card">
+                <div class="account-profile-grid">
+                    <div class="account-field">
+                        <label for="firstName" class="account-label">Voornaam</label>
+                        <input
+                            id="firstName"
+                            name="firstName"
+                            type="text"
+                            value="{{ form.firstName }}"
+                            autocomplete="given-name"
+                            required
+                            class="account-input {{ errors.firstName is defined ? 'account-input--error' : '' }}"
+                        >
+                        {% if errors.firstName is defined %}
+                            <p class="account-field-error">{{ errors.firstName }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="account-field">
+                        <label for="lastName" class="account-label">Achternaam</label>
+                        <input
+                            id="lastName"
+                            name="lastName"
+                            type="text"
+                            value="{{ form.lastName }}"
+                            autocomplete="family-name"
+                            required
+                            class="account-input {{ errors.lastName is defined ? 'account-input--error' : '' }}"
+                        >
+                        {% if errors.lastName is defined %}
+                            <p class="account-field-error">{{ errors.lastName }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="account-field account-profile-field--full">
+                        <label for="email" class="account-label">E-mailadres</label>
+                        <input
+                            id="email"
+                            type="email"
+                            value="{{ email }}"
+                            autocomplete="email"
+                            readonly
+                            aria-describedby="email-help"
+                            class="account-input account-input--readonly"
+                        >
+                        <p id="email-help" class="account-field-help">
+                            Het e-mailadres kan hier nog niet worden gewijzigd.
+                        </p>
+                    </div>
+
+                    <div class="account-field account-profile-field--full">
+                        <label for="phone" class="account-label">Telefoonnummer</label>
+                        <input
+                            id="phone"
+                            name="phone"
+                            type="tel"
+                            value="{{ form.phone }}"
+                            autocomplete="tel"
+                            class="account-input"
+                        >
+                    </div>
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('account_profile') }}">
+
+                <button type="submit" class="btn-primary account-profile-submit">
+                    Profiel opslaan
+                </button>
+            </form>
+        </div>
+    </section>
+{% endblock %}

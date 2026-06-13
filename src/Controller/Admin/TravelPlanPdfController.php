@@ -10,8 +10,10 @@ use App\Repository\TravelPlanRepository;
 use App\Repository\TravelRequestRepository;
 use App\TravelPlan\Pdf\TravelPlanPdfGenerator;
 use App\TravelPlan\Pdf\TravelPlanPdfStorage;
+use Mpdf\MpdfException;
 use Sulu\Component\Security\Authorization\PermissionTypes;
 use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -43,7 +45,7 @@ final readonly class TravelPlanPdfController
         $travelPlan = $this->repository->find($id);
 
         if (!$travelPlan instanceof TravelPlan) {
-            throw new NotFoundHttpException(sprintf('TravelPlan "%d" was not found.', $id));
+            throw new NotFoundHttpException(\sprintf('TravelPlan "%d" was not found.', $id));
         }
 
         $response = new Response($this->pdfGenerator->generate($travelPlan));
@@ -52,7 +54,7 @@ final readonly class TravelPlanPdfController
             'Content-Disposition',
             $response->headers->makeDisposition(
                 ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                sprintf('reisplan-%d.pdf', $id),
+                $this->pdfStorage->createFilename($travelPlan),
             ),
         );
 
@@ -91,13 +93,13 @@ final readonly class TravelPlanPdfController
         $travelRequest = $this->travelRequestRepository->find($id);
 
         if (null === $travelRequest) {
-            throw new NotFoundHttpException(sprintf('TravelRequest "%d" was not found.', $id));
+            throw new NotFoundHttpException(\sprintf('TravelRequest "%d" was not found.', $id));
         }
 
         $travelPlan = $this->repository->findOneBy(['travelRequest' => $travelRequest]);
 
         if (!$travelPlan instanceof TravelPlan) {
-            throw new NotFoundHttpException(sprintf(
+            throw new NotFoundHttpException(\sprintf(
                 'No TravelPlan was found for TravelRequest "%d".',
                 $id,
             ));
@@ -122,9 +124,53 @@ final readonly class TravelPlanPdfController
         $travelPlan = $this->repository->find($id);
 
         if (!$travelPlan instanceof TravelPlan) {
-            throw new NotFoundHttpException(sprintf('TravelPlan "%d" was not found.', $id));
+            throw new NotFoundHttpException(\sprintf('TravelPlan "%d" was not found.', $id));
         }
 
         return $travelPlan;
+    }
+
+    /**
+     * @throws MpdfException
+     */
+    public function download(int $id): Response
+    {
+        if (!$this->securityChecker->hasPermission(
+            TravelRequestAdmin::SECURITY_CONTEXT,
+            PermissionTypes::EDIT,
+        )) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $travelRequest = $this->travelRequestRepository->find($id);
+
+        if (null === $travelRequest) {
+            throw new NotFoundHttpException(\sprintf('TravelRequest "%d" was not found.', $id));
+        }
+
+        $travelPlan = $this->repository->findOneBy(['travelRequest' => $travelRequest]);
+
+        if (!$travelPlan instanceof TravelPlan) {
+            throw new NotFoundHttpException(\sprintf(
+                'No TravelPlan was found for TravelRequest "%d".',
+                $id,
+            ));
+        }
+
+        $pdfContent = $this->pdfGenerator->generate($travelPlan);
+
+        $filename = $this->pdfStorage->createFilename($travelPlan);
+
+        $response = new Response($pdfContent);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set(
+            'Content-Disposition',
+            HeaderUtils::makeDisposition(
+                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                $filename,
+            ),
+        );
+
+        return $response;
     }
 }

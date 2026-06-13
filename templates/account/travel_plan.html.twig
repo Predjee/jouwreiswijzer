@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <section class="account-travel-plan-page">
+        <div class="account-travel-plan-toolbar">
+            <a href="{{ path('account') }}" class="account-travel-plan-back">
+                <span aria-hidden="true">←</span>
+                Mijn reisplannen
+            </a>
+
+            {% if travel_plan.pdfMediaId %}
+                <a
+                    href="{{ path('account_travel_plan_pdf', {id: travel_plan.id}) }}"
+                    class="btn-primary"
+                    download
+                >
+                    PDF downloaden
+                </a>
+            {% endif %}
+        </div>
+
+        {% for message in app.flashes('account_feedback_success') %}
+            <div class="account-feedback-notice account-feedback-notice--success" role="status">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('account_feedback_error') %}
+            <div class="account-feedback-notice account-feedback-notice--error" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {{ include('account/_travel_plan_feedback_form.html.twig', {
+            travelPlan: travel_plan,
+            blockPath: null,
+            feedback: travel_plan_feedback,
+            feedbackContext: 'plan'
+        }) }}
+
+        <div class="account-travel-plan-content">
+            {{ travel_plan_html|raw }}
+        </div>
+    </section>
+{% endblock %}

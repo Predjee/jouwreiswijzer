@@ -7,6 +7,10 @@
     <name>JouwReiswijzer</name>
     <key>jouwreiswijzer</key>
 
+    <security>
+        <system>Sulu</system>
+    </security>
+
     <localizations>
         <localization language="nl" default="true"/>
     </localizations>

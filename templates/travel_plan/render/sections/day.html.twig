@@ -5,6 +5,15 @@
         {% if section.intro|default %}<p>{{ section.intro }}</p>{% endif %}
     </header>
     {% for renderedBlock in renderedBlocks %}
-        {{ renderedBlock|raw }}
+        {{ renderedBlock.html|raw }}
+        {% if accountView %}
+            {{ include('account/_travel_plan_feedback_form.html.twig', {
+                travelPlan: travelPlan,
+                blockPath: renderedBlock.blockPath,
+                feedback: renderedBlock.feedback,
+                feedbackLabel: 'Feedback op dit dagonderdeel',
+                feedbackContext: 'block'
+            }) }}
+        {% endif %}
     {% endfor %}
 </section>

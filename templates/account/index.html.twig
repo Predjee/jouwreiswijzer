@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <section class="account-dashboard">
+        <div class="account-dashboard-shell">
+            <header class="account-dashboard-hero">
+                <div class="account-dashboard-copy">
+                    <p class="type-kicker">Mijn Omgeving</p>
+                    <h1 class="account-dashboard-title">
+                        Welkom terug, {{ contact.firstName ?: contact.fullName }}
+                    </h1>
+                    <p class="type-body">
+                        Hier vind je jouw persoonlijke reisplannen en documenten overzichtelijk bij elkaar.
+                    </p>
+                </div>
+
+                <div class="account-dashboard-profile">
+                    <span class="account-status">
+                        <span class="account-status-dot" aria-hidden="true"></span>
+                        Ingelogd
+                    </span>
+                    <p class="account-dashboard-name">{{ contact.fullName }}</p>
+                    <p class="account-dashboard-email">{{ email ?: 'Geen e-mailadres ingesteld' }}</p>
+                    <a href="{{ path('account_profile') }}" class="account-dashboard-profile-link">
+                        Profiel beheren
+                        <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </header>
+
+            <div class="account-dashboard-heading">
+                <div>
+                    <p class="section-label">Jouw reizen</p>
+                    <h2 class="type-section-title">Mijn reisplannen</h2>
+                </div>
+                {% if travel_plans is not empty %}
+                    <p class="account-dashboard-count">
+                        {{ travel_plans|length }} {{ travel_plans|length == 1 ? 'reisplan' : 'reisplannen' }}
+                    </p>
+                {% endif %}
+            </div>
+
+            {% if travel_plans is empty %}
+                <div class="account-empty-state">
+                    <div class="account-empty-icon" aria-hidden="true">
+                        <svg viewBox="0 0 32 32" fill="none">
+                            <path d="M6 25.5 12.5 7l6 13 3.5-7 4 12.5H6Z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/>
+                            <path d="M10 21h13" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <p class="type-kicker">Nog even geduld</p>
+                    <h3 class="type-card-title">Je reisplan is nog in voorbereiding</h3>
+                    <p class="type-body">
+                        Zodra een reisplan voor je is gepubliceerd, verschijnt het automatisch op deze pagina.
+                    </p>
+                </div>
+            {% else %}
+                <ul class="account-travel-grid" role="list">
+                    {% for travel_plan in travel_plans %}
+                        <li class="account-travel-card">
+                            <div class="account-travel-card-top">
+                                <span class="account-travel-status">
+                                    <span aria-hidden="true"></span>
+                                    Gepubliceerd
+                                </span>
+                                <span class="account-travel-number">
+                                    {{ '%02d'|format(loop.index) }}
+                                </span>
+                            </div>
+
+                            <div class="account-travel-card-copy">
+                                <h3 class="account-travel-title">{{ travel_plan.title }}</h3>
+                                {% if travel_plan.publishedAt %}
+                                    <p class="account-travel-date">
+                                        Beschikbaar sinds {{ travel_plan.publishedAt|date('d-m-Y') }}
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                            <div class="account-travel-actions">
+                                <a
+                                    href="{{ path('account_travel_plan', {id: travel_plan.id}) }}"
+                                    class="btn-primary account-travel-view"
+                                >
+                                    Bekijk reisplan
+                                </a>
+                                {% if travel_plan.pdfMediaId %}
+                                    <a
+                                        href="{{ path('account_travel_plan_pdf', {id: travel_plan.id}) }}"
+                                        class="btn-ghost account-travel-download"
+                                        download
+                                    >
+                                        Download PDF
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

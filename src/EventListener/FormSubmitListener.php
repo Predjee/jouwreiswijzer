@@ -47,18 +47,22 @@ final readonly class FormSubmitListener
         }
 
         $contact = $this->contactRepository->findByCriteriaEmailAndPhone([], $email);
+        $contactDataConflict = false;
 
-        if (!$contact instanceof Contact) {
+        if ($contact instanceof Contact) {
+            $contactDataConflict = $this->hasContactDataConflict($contact, $form, $data);
+        } else {
             $contact = $this->createContact($form, $data, $email);
+            $this->entityManager->persist($contact);
         }
 
         $travelRequest = (new TravelRequest())
             ->setContact($contact)
             ->setStatus(TravelRequest::STATUS_NEW)
             ->setFormData($data)
+            ->setContactDataConflict($contactDataConflict)
             ->setSummary($this->buildSummary($form, $data));
 
-        $this->entityManager->persist($contact);
         $this->entityManager->persist($travelRequest);
         $this->entityManager->flush();
     }
@@ -118,6 +122,40 @@ final readonly class FormSubmitListener
         }
 
         return $contact;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function hasContactDataConflict(Contact $contact, Form $form, array $data): bool
+    {
+        $submittedFirstName = $this->findStringValue($form, $data, 'firstName');
+        $submittedLastName = $this->findStringValue($form, $data, 'lastName');
+        $submittedPhone = $this->findStringValue($form, $data, 'phone');
+
+        return $this->textDiffers($submittedFirstName, $contact->getFirstName())
+            || $this->textDiffers($submittedLastName, $contact->getLastName())
+            || $this->phoneDiffers($submittedPhone, $contact->getMainPhone());
+    }
+
+    private function textDiffers(?string $submitted, ?string $existing): bool
+    {
+        if (null === $submitted) {
+            return false;
+        }
+
+        return \mb_strtolower(\trim($submitted)) !== \mb_strtolower(\trim($existing ?? ''));
+    }
+
+    private function phoneDiffers(?string $submitted, ?string $existing): bool
+    {
+        if (null === $submitted) {
+            return false;
+        }
+
+        $normalize = static fn (string $phone): string => (string) \preg_replace('/\D+/', '', $phone);
+
+        return $normalize($submitted) !== $normalize($existing ?? '');
     }
 
     /**

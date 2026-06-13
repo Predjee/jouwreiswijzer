@@ -79,7 +79,7 @@ final class TravelRequestAdmin extends Admin
         $viewCollection->add($formView);
 
         $travelPlanView = $this->viewBuilderFactory
-            ->createFormViewBuilder(self::EDIT_VIEW.'.travel_plan', '/travel-plan')
+            ->createFormViewBuilder(self::EDIT_VIEW . '.travel_plan', '/travel-plan')
             ->setResourceKey('travel_request_plans')
             ->setFormKey('travel_plan_details')
             ->setTabTitle('Reisplan')
@@ -90,13 +90,22 @@ final class TravelRequestAdmin extends Admin
                 new ToolbarAction('sulu_admin.save'),
                 new ToolbarAction('sulu_admin.reload_form_store', [
                     'label' => 'PDF bijwerken',
-                    'icon' => 'su-download',
+                    'icon' => 'su-sync',
                     'route' => 'travel_request_plan.generate_pdf',
                     'dialogKey' => 'generate-travel-plan-pdf',
                     'dialogTitle' => 'PDF bijwerken',
                     'dialogDescription' => 'De huidige reisplangegevens worden als nieuwe PDF-versie opgeslagen.',
                     'dialogCancelText' => 'Annuleren',
                     'dialogOkText' => 'PDF bijwerken',
+                ]),
+                new ToolbarAction('app.download', [
+                    'url' => '/admin/api/travel-plans/{id}/pdf/download',
+                    'label' => 'PDF downloaden',
+                    'icon' => 'su-download',
+                    'loadingText' => 'PDF wordt voorbereid...',
+                    'successText' => 'PDF succesvol gedownload.',
+                    'errorText' => 'PDF downloaden mislukt.',
+                    'filename' => 'reisplan.pdf',
                 ]),
             ]);
         }

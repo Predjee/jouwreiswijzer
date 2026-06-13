@@ -127,6 +127,13 @@ class TravelPlan
         return $this;
     }
 
+    public function isVisibleForCustomer(): bool
+    {
+        return self::STATUS_PUBLISHED === $this->status
+            && null !== $this->publishedAt
+            && null !== $this->pdfMediaId;
+    }
+
     public function getPdfMediaId(): ?int
     {
         return $this->pdfMediaId;

@@ -9,6 +9,7 @@ use App\Entity\TravelPlan;
 use App\Entity\TravelRequest;
 use App\Repository\TravelRequestRepository;
 use App\Service\TravelPlanContentFactory;
+use App\TravelPlan\Pdf\TravelPlanPdfStorage;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;
 use Sulu\Component\Rest\AbstractRestController;
@@ -32,6 +33,7 @@ final class TravelRequestController extends AbstractRestController implements Se
         private readonly TravelRequestRepository $repository,
         private readonly EntityManagerInterface $entityManager,
         private readonly TravelPlanContentFactory $contentFactory,
+        private readonly TravelPlanPdfStorage $pdfStorage,
     ) {
         parent::__construct($viewHandler);
     }
@@ -121,7 +123,11 @@ final class TravelRequestController extends AbstractRestController implements Se
             $travelPlan->setPublishedAt(null);
         }
 
-        $this->entityManager->flush();
+        if (TravelPlan::STATUS_PUBLISHED === $status) {
+            $this->pdfStorage->generateAndStore($travelPlan);
+        } else {
+            $this->entityManager->flush();
+        }
 
         return $this->handleView($this->view($this->serializeTravelPlan($travelPlan)));
     }
@@ -192,6 +198,7 @@ final class TravelRequestController extends AbstractRestController implements Se
             'status' => $travelPlan->getStatus(),
             'pdfMediaId' => $travelPlan->getPdfMediaId(),
             'pdfGeneratedAt' => $travelPlan->getPdfGeneratedAt()?->format('d-m-Y H:i'),
+            'customerVisible' => $travelPlan->isVisibleForCustomer(),
         ], $this->contentFactory->toFormData($travelPlan->getContent()));
     }
 

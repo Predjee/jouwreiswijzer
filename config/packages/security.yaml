@@ -20,6 +20,7 @@ security:
         admin:
             pattern: ^/admin(\/|$)
             lazy: true
+            context: sulu
             provider: sulu
             entry_point: sulu_security.authentication_entry_point
             json_login:
@@ -36,45 +37,36 @@ security:
                 success_handler: sulu_security.two_factor_authentication_success_handler
                 failure_handler: sulu_security.two_factor_authentication_failure_handler
 
-       #website:
-       #    pattern: ^/
-       #    lazy: true
-       #    provider: sulu
-       #    # The login and logout routes need to be created.
-       #    # For an advanced user management with registration and opt-in emails have a look at the:
-       #    # https://github.com/sulu/SuluCommunityBundle
-       #    # Also have a look at the user context based caching when you output user role specific data
-       #    # https://docs.sulu.io/en/2.6/cookbook/user-context-caching.html
-       #    form_login:
-       #        login_path: login
-       #        check_path: login
-       #    logout:
-       #        path: logout
-       #        target: /
-       #    remember_me:
-       #        secret:   "%kernel.secret%"
-       #        lifetime: 604800 # 1 week in seconds
-       #        path:     /
-       #
-       #    # Activate different ways to authenticate:
-       #    # https://symfony.com/doc/current/security.html#the-firewall
-       #
-       #    # https://symfony.com/doc/current/security/impersonating_user.html
-       #    # switch_user: true
+        website:
+            pattern: ^/
+            lazy: true
+            context: sulu
+            provider: sulu
+            form_login:
+                login_path: account_login
+                check_path: account_login
+                default_target_path: account
+                enable_csrf: true
+            logout:
+                path: account_logout
+                target: account_login
+                enable_csrf: true
 
     # Note: Only the *first* matching rule is applied
     access_control:
-        - { path: ^/admin/reset, roles: PUBLIC_ACCESS }
-        - { path: ^/admin/security/reset, roles: PUBLIC_ACCESS }
-        - { path: ^/admin/login$, roles: PUBLIC_ACCESS }
-        - { path: ^/admin/2fa, roles: PUBLIC_ACCESS }
-        - { path: ^/admin/_wdt, roles: PUBLIC_ACCESS }
-        - { path: ^/admin/_profiler, roles: PUBLIC_ACCESS }
-        - { path: ^/admin/translations, roles: PUBLIC_ACCESS }
-        - { path: ^/admin$, roles: PUBLIC_ACCESS }
-        - { path: ^/admin/$, roles: PUBLIC_ACCESS }
-        - { path: ^/admin/p/, roles: PUBLIC_ACCESS }
-        - { path: ^/admin, roles: ROLE_USER }
+        - { path: ^/admin/reset, allow_if: "not is_granted('ROLE_SULU_CUSTOMER')" }
+        - { path: ^/admin/security/reset, allow_if: "not is_granted('ROLE_SULU_CUSTOMER')" }
+        - { path: ^/admin/login$, allow_if: "not is_granted('ROLE_SULU_CUSTOMER')" }
+        - { path: ^/admin/2fa, allow_if: "not is_granted('ROLE_SULU_CUSTOMER')" }
+        - { path: ^/admin/_wdt, allow_if: "not is_granted('ROLE_SULU_CUSTOMER')" }
+        - { path: ^/admin/_profiler, allow_if: "not is_granted('ROLE_SULU_CUSTOMER')" }
+        - { path: ^/admin/translations, allow_if: "not is_granted('ROLE_SULU_CUSTOMER')" }
+        - { path: ^/admin$, allow_if: "not is_granted('ROLE_SULU_CUSTOMER')" }
+        - { path: ^/admin/$, allow_if: "not is_granted('ROLE_SULU_CUSTOMER')" }
+        - { path: ^/admin/p/, allow_if: "not is_granted('ROLE_SULU_CUSTOMER')" }
+        - { path: ^/admin, allow_if: "is_granted('ROLE_USER') and not is_granted('ROLE_SULU_CUSTOMER')" }
+        - { path: ^/account/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/account, roles: ROLE_SULU_CUSTOMER }
 
 when@test:
     security:

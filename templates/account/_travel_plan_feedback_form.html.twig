@@ -1,0 +1,77 @@
+{% set isPlanFeedback = feedbackContext|default('section') == 'plan' %}
+{% set hasActiveFeedback = feedback and feedback.status in ['open', 'in_progress'] %}
+{% set hasResolvedFeedback = feedback and feedback.status == 'resolved' %}
+{% set statusLabel = feedback and feedback.status == 'in_progress' ? 'In behandeling' : (hasResolvedFeedback ? 'Verwerkt' : 'Ontvangen') %}
+
+{% if isPlanFeedback %}
+    <section class="account-feedback-card">
+        <div class="account-feedback-card__intro">
+            <p class="type-kicker">Jouw ervaring</p>
+            <h2>Feedback op dit reisplan</h2>
+            <p>Laat weten wat je wilt aanpassen of waar je nog een vraag over hebt.</p>
+        </div>
+{% else %}
+    <div class="account-feedback-compact account-feedback-compact--{{ feedbackContext|default('section') }}">
+{% endif %}
+
+{% if feedback %}
+    <div class="account-feedback-existing">
+        <div class="account-feedback-existing__header">
+            <strong>Feedback ontvangen</strong>
+            <span class="account-feedback-status account-feedback-status--{{ feedback.status }}">
+                {{ statusLabel }}
+            </span>
+        </div>
+        <p>{{ feedback.message }}</p>
+    </div>
+{% endif %}
+
+{% if not hasActiveFeedback %}
+    {% if hasResolvedFeedback %}
+        <details class="account-feedback-new">
+            <summary>Nieuwe feedback geven</summary>
+    {% elseif not isPlanFeedback %}
+        <details class="account-feedback-new">
+            <summary>{{ feedbackLabel|default('Feedback op dit onderdeel') }}</summary>
+    {% endif %}
+
+    <form
+        method="post"
+        action="{{ path('account_travel_plan_feedback', {id: travelPlan.id}) }}"
+        class="account-feedback-form"
+    >
+        <input
+            type="hidden"
+            name="_csrf_token"
+            value="{{ csrf_token('travel_plan_feedback_' ~ travelPlan.id) }}"
+        >
+        {% if blockPath is not null %}
+            <input type="hidden" name="blockPath" value="{{ blockPath }}">
+        {% endif %}
+
+        <label class="account-feedback-label" for="feedback-{{ blockPath|default('plan')|replace({'[': '-', ']': '', '.': '-'}) }}">
+            {{ isPlanFeedback ? 'Je feedback' : 'Wat wil je over dit onderdeel meegeven?' }}
+        </label>
+        <textarea
+            id="feedback-{{ blockPath|default('plan')|replace({'[': '-', ']': '', '.': '-'}) }}"
+            name="message"
+            rows="{{ isPlanFeedback ? 5 : 3 }}"
+            maxlength="5000"
+            required
+            placeholder="{{ isPlanFeedback ? 'Schrijf hier je opmerkingen of vragen…' : 'Schrijf hier je feedback…' }}"
+        ></textarea>
+        <button type="submit" class="{{ isPlanFeedback ? 'btn-primary' : 'account-feedback-submit' }}">
+            Feedback versturen
+        </button>
+    </form>
+
+    {% if hasResolvedFeedback or not isPlanFeedback %}
+        </details>
+    {% endif %}
+{% endif %}
+
+{% if isPlanFeedback %}
+    </section>
+{% else %}
+    </div>
+{% endif %}

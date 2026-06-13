@@ -52,13 +52,53 @@
         {% endfor %}
     </ul>
 
-    {# CTA knop #}
+    {# Acties #}
     <div class="flex items-center gap-4">
         <a href="/aanvragen"
            class="nav-request-link hidden sm:inline-flex items-center gap-2.5
                   type-tag px-5 py-2.5">
             Reis aanvragen
         </a>
+
+        {% if is_granted('ROLE_SULU_CUSTOMER') %}
+            <details class="nav-account-menu hidden md:block">
+                <summary class="nav-account-summary">
+                    <svg class="nav-account-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M4.5 20c.8-4 3.3-6 7.5-6s6.7 2 7.5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <span class="nav-account-status-dot" aria-hidden="true"></span>
+                    {{ app.user.fullName|default('Mijn Omgeving') }}
+                    <svg class="nav-account-chevron" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+                        <path d="m1 1 5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </summary>
+                <div class="nav-account-dropdown">
+                    <div class="nav-account-dropdown-header">
+                        <span>Ingelogd als</span>
+                        <strong>{{ app.user.fullName|default(app.user.userIdentifier) }}</strong>
+                    </div>
+                    <a href="{{ path('account') }}">Mijn reisplannen</a>
+                    <a href="{{ path('account_profile') }}">Profiel</a>
+                    <a href="{{ path('account_password') }}">Wachtwoord wijzigen</a>
+                    <form method="post" action="{{ path('account_logout') }}">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                        <button type="submit">Uitloggen</button>
+                    </form>
+                </div>
+            </details>
+        {% else %}
+            <a
+                href="{{ path('account_login') }}"
+                class="nav-account-link hidden md:inline-flex {{ app.request.attributes.get('_route') == 'account_login' ? 'is-active' : '' }}"
+            >
+                <svg class="nav-account-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M4.5 20c.8-4 3.3-6 7.5-6s6.7 2 7.5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Mijn Omgeving
+            </a>
+        {% endif %}
 
         {# Hamburger mobiel #}
         <button type="button"
@@ -102,6 +142,27 @@
                    class="btn-ghost">
                     Reis aanvragen →
                 </a>
+            </li>
+            <li class="mobile-account-links pt-2 border-t">
+                {% if is_granted('ROLE_SULU_CUSTOMER') %}
+                    <a href="{{ path('account') }}" class="nav-link block">
+                        Mijn reisplannen
+                    </a>
+                    <a href="{{ path('account_profile') }}" class="nav-link mt-4 block">
+                        Mijn profiel
+                    </a>
+                    <a href="{{ path('account_password') }}" class="nav-link mt-4 block">
+                        Wachtwoord wijzigen
+                    </a>
+                    <form method="post" action="{{ path('account_logout') }}" class="mt-4">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                        <button type="submit" class="nav-link">Uitloggen</button>
+                    </form>
+                {% else %}
+                    <a href="{{ path('account_login') }}" class="nav-link block">
+                        Mijn Omgeving
+                    </a>
+                {% endif %}
             </li>
         </ul>
     </div>

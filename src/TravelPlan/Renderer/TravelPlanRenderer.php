@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\TravelPlan\Renderer;
 
 use App\Entity\TravelPlan;
+use App\Entity\TravelPlanFeedback;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Twig\Environment;
 
@@ -60,10 +61,30 @@ final readonly class TravelPlanRenderer
 
     public function render(TravelPlan $travelPlan): string
     {
+        return $this->renderView($travelPlan, false);
+    }
+
+    /**
+     * @param array<string, TravelPlanFeedback> $feedbackByPath
+     */
+    public function renderForAccount(TravelPlan $travelPlan, array $feedbackByPath = []): string
+    {
+        return $this->renderView($travelPlan, true, $feedbackByPath);
+    }
+
+    /**
+     * @param array<string, TravelPlanFeedback> $feedbackByPath
+     */
+    private function renderView(
+        TravelPlan $travelPlan,
+        bool $accountView,
+        array $feedbackByPath = [],
+    ): string
+    {
         $content = $travelPlan->getContent();
         $renderedSections = [];
 
-        foreach ($content['sections'] ?? [] as $section) {
+        foreach ($content['sections'] ?? [] as $sectionIndex => $section) {
             if (!\is_array($section)) {
                 continue;
             }
@@ -86,17 +107,32 @@ final readonly class TravelPlanRenderer
                 }, $section['routeStops']);
             }
 
-            $context = ['section' => $section];
+            $context = [
+                'section' => $section,
+                'accountView' => $accountView,
+                'travelPlan' => $travelPlan,
+            ];
 
             if ('day' === $type) {
-                $context['renderedBlocks'] = $this->renderDayBlocks($section['blocks'] ?? []);
+                $context['renderedBlocks'] = $this->renderDayBlocks(
+                    $section['blocks'] ?? [],
+                    $travelPlan,
+                    (int) $sectionIndex,
+                    $accountView,
+                    $feedbackByPath,
+                );
             }
 
             $renderedSection = $this->twig->render(self::SECTION_TEMPLATES[$type], $context);
-            $renderedSections[] = $this->prependIcon(
-                $renderedSection,
-                $section['icon'] ?? self::DEFAULT_SECTION_ICONS[$type] ?? null,
-            );
+            $renderedSections[] = [
+                'html' => $this->prependIcon(
+                    $renderedSection,
+                    $section['icon'] ?? self::DEFAULT_SECTION_ICONS[$type] ?? null,
+                ),
+                'blockPath' => \sprintf('sections[%d]', $sectionIndex),
+                'blockType' => $type,
+                'feedback' => $feedbackByPath[\sprintf('sections[%d]', $sectionIndex)] ?? null,
+            ];
         }
 
         return $this->twig->render('travel_plan/render/base.html.twig', [
@@ -105,13 +141,20 @@ final readonly class TravelPlanRenderer
             'tripProfile' => \is_array($content['tripProfile'] ?? null) ? $content['tripProfile'] : [],
             'renderedSections' => $renderedSections,
             'logoSrc' => $this->assetDataUri('assets/images/pdf/logo-pdf.png', 'image/png'),
+            'accountView' => $accountView,
         ]);
     }
 
     /**
-     * @return string[]
+     * @return list<array{html: string, blockPath: string, blockType: string}>
      */
-    private function renderDayBlocks(mixed $blocks): array
+    private function renderDayBlocks(
+        mixed $blocks,
+        TravelPlan $travelPlan,
+        int $sectionIndex,
+        bool $accountView,
+        array $feedbackByPath,
+    ): array
     {
         if (!\is_array($blocks)) {
             return [];
@@ -119,7 +162,7 @@ final readonly class TravelPlanRenderer
 
         $renderedBlocks = [];
 
-        foreach ($blocks as $block) {
+        foreach ($blocks as $blockIndex => $block) {
             if (!\is_array($block)) {
                 continue;
             }
@@ -132,12 +175,23 @@ final readonly class TravelPlanRenderer
 
             $renderedBlock = $this->twig->render(
                 self::DAY_BLOCK_TEMPLATES[$type],
-                ['block' => $block],
+                [
+                    'block' => $block,
+                    'accountView' => $accountView,
+                    'travelPlan' => $travelPlan,
+                ],
             );
-            $renderedBlocks[] = $this->prependIcon(
-                $renderedBlock,
-                $block['icon'] ?? self::DEFAULT_DAY_BLOCK_ICONS[$type],
-            );
+            $renderedBlocks[] = [
+                'html' => $this->prependIcon(
+                    $renderedBlock,
+                    $block['icon'] ?? self::DEFAULT_DAY_BLOCK_ICONS[$type],
+                ),
+                'blockPath' => \sprintf('sections[%d].blocks[%d]', $sectionIndex, $blockIndex),
+                'blockType' => $type,
+                'feedback' => $feedbackByPath[
+                    \sprintf('sections[%d].blocks[%d]', $sectionIndex, $blockIndex)
+                ] ?? null,
+            ];
         }
 
         return $renderedBlocks;

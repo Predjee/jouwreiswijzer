@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <section class="account-login-section">
+        <div class="account-login-shell">
+            <div class="account-login-intro">
+                <p class="type-kicker">Mijn Omgeving</p>
+                <h1 class="type-section-title">Welkom terug</h1>
+                <p class="type-body">
+                    Log in om jouw gepubliceerde reisplannen te bekijken.
+                </p>
+            </div>
+
+            <div class="account-login-card">
+                {% if error %}
+                    <p class="account-login-error" role="alert">
+                        Inloggen is niet gelukt. Controleer je gebruikersnaam en wachtwoord.
+                    </p>
+                {% endif %}
+
+                <form method="post" action="{{ path('account_login') }}" class="account-login-form">
+                    <div class="account-field">
+                        <label for="username" class="account-label">Gebruikersnaam</label>
+                        <input
+                            id="username"
+                            name="_username"
+                            type="text"
+                            value="{{ last_username }}"
+                            autocomplete="username"
+                            required
+                            autofocus
+                            class="account-input"
+                        >
+                    </div>
+
+                    <div class="account-field">
+                        <label for="password" class="account-label">Wachtwoord</label>
+                        <input
+                            id="password"
+                            name="_password"
+                            type="password"
+                            autocomplete="current-password"
+                            required
+                            class="account-input"
+                        >
+                    </div>
+
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                    <button type="submit" class="btn-primary account-submit">Inloggen</button>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}

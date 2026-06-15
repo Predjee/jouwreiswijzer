@@ -28,6 +28,16 @@
             <meta><title>Media ID</title></meta>
         </property>
 
+        <property name="feedbackSummary"
+                  type="app_travel_plan_feedback_summary"
+                  visibleCondition="feedbackSummary != null and feedbackSummary != ''">
+            <meta><title>Open klantfeedback</title></meta>
+        </property>
+
+        <property name="planFeedback" type="app_travel_plan_feedback">
+            <meta><title>Feedback op het hele reisplan</title></meta>
+        </property>
+
         <section name="intro">
             <meta><title>Introductie</title></meta>
             <properties>
@@ -53,6 +63,7 @@
                 <type name="destination">
                     <meta><title>Bestemming</title></meta>
                     <properties>
+                        <property name="_feedback" visibleCondition="__parent._feedback != null and __parent._feedback != ''" type="app_travel_plan_feedback"><meta><title>Klantfeedback</title></meta></property>
                         <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
                         <property name="country" type="text_line" colspan="4"><meta><title>Land</title></meta></property>
                         <property name="region" type="text_line" colspan="4"><meta><title>Regio</title></meta></property>
@@ -68,6 +79,7 @@
                 <type name="route_overview">
                     <meta><title>Routeoverzicht</title></meta>
                     <properties>
+                        <property name="_feedback" visibleCondition="__parent._feedback != null and __parent._feedback != ''" type="app_travel_plan_feedback"><meta><title>Klantfeedback</title></meta></property>
                         <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
                         <property name="text" type="text_editor"><meta><title>Tekst</title></meta></property>
                         <block name="routeStops" default-type="route_stop">
@@ -93,6 +105,7 @@
                 <type name="day">
                     <meta><title>Dag</title></meta>
                     <properties>
+                        <property name="_feedback" visibleCondition="__parent._feedback != null and __parent._feedback != ''" type="app_travel_plan_feedback"><meta><title>Klantfeedback</title></meta></property>
                         <property name="dayNumber" type="number" colspan="3"><meta><title>Dagnummer</title></meta></property>
                         <property name="dateLabel" type="text_line" colspan="9"><meta><title>Datumlabel</title></meta></property>
                         <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
@@ -103,6 +116,7 @@
                                 <type name="activity">
                                     <meta><title>Activiteit</title></meta>
                                     <properties>
+                                        <property name="_feedback" visibleCondition="__parent._feedback != null and __parent._feedback != ''" type="app_travel_plan_feedback"><meta><title>Klantfeedback</title></meta></property>
                                         <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
                                         <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
                                         <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
@@ -114,6 +128,7 @@
                                 <type name="accommodation">
                                     <meta><title>Accommodatie</title></meta>
                                     <properties>
+                                        <property name="_feedback" visibleCondition="__parent._feedback != null and __parent._feedback != ''" type="app_travel_plan_feedback"><meta><title>Klantfeedback</title></meta></property>
                                         <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
                                         <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
                                         <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
@@ -125,6 +140,7 @@
                                 <type name="transport">
                                     <meta><title>Vervoer</title></meta>
                                     <properties>
+                                        <property name="_feedback" visibleCondition="__parent._feedback != null and __parent._feedback != ''" type="app_travel_plan_feedback"><meta><title>Klantfeedback</title></meta></property>
                                         <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
                                         <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
                                         <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
@@ -136,6 +152,7 @@
                                 <type name="meal">
                                     <meta><title>Maaltijd</title></meta>
                                     <properties>
+                                        <property name="_feedback" visibleCondition="__parent._feedback != null and __parent._feedback != ''" type="app_travel_plan_feedback"><meta><title>Klantfeedback</title></meta></property>
                                         <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
                                         <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
                                         <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
@@ -147,6 +164,7 @@
                                 <type name="tip">
                                     <meta><title>Tip</title></meta>
                                     <properties>
+                                        <property name="_feedback" visibleCondition="__parent._feedback != null and __parent._feedback != ''" type="app_travel_plan_feedback"><meta><title>Klantfeedback</title></meta></property>
                                         <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
                                         <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
                                         <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
@@ -157,6 +175,7 @@
                                 <type name="note">
                                     <meta><title>Notitie</title></meta>
                                     <properties>
+                                        <property name="_feedback" visibleCondition="__parent._feedback != null and __parent._feedback != ''" type="app_travel_plan_feedback"><meta><title>Klantfeedback</title></meta></property>
                                         <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
                                         <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
                                         <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
@@ -167,6 +186,7 @@
                                 <type name="free_text">
                                     <meta><title>Vrije tekst</title></meta>
                                     <properties>
+                                        <property name="_feedback" visibleCondition="__parent._feedback != null and __parent._feedback != ''" type="app_travel_plan_feedback"><meta><title>Klantfeedback</title></meta></property>
                                         <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
                                         <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
                                         <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
@@ -182,6 +202,7 @@
                 <type name="practical_info">
                     <meta><title>Praktische informatie</title></meta>
                     <properties>
+                        <property name="_feedback" visibleCondition="__parent._feedback != null and __parent._feedback != ''" type="app_travel_plan_feedback"><meta><title>Klantfeedback</title></meta></property>
                         <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
                         <property name="text" type="text_editor"><meta><title>Tekst</title></meta></property>
                         <property name="icon" type="single_icon_selection"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
@@ -190,6 +211,7 @@
                 <type name="checklist">
                     <meta><title>Checklist</title></meta>
                     <properties>
+                        <property name="_feedback" visibleCondition="__parent._feedback != null and __parent._feedback != ''" type="app_travel_plan_feedback"><meta><title>Klantfeedback</title></meta></property>
                         <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
                         <property name="text" type="text_area"><meta><title>Checklistregels</title></meta></property>
                     </properties>
@@ -197,6 +219,7 @@
                 <type name="budget_note">
                     <meta><title>Budgetnotitie</title></meta>
                     <properties>
+                        <property name="_feedback" visibleCondition="__parent._feedback != null and __parent._feedback != ''" type="app_travel_plan_feedback"><meta><title>Klantfeedback</title></meta></property>
                         <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
                         <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
                         <property name="icon" type="single_icon_selection"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
@@ -205,6 +228,7 @@
                 <type name="personal_note">
                     <meta><title>Persoonlijke notitie</title></meta>
                     <properties>
+                        <property name="_feedback" visibleCondition="__parent._feedback != null and __parent._feedback != ''" type="app_travel_plan_feedback"><meta><title>Klantfeedback</title></meta></property>
                         <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
                         <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
                         <property name="icon" type="single_icon_selection"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
@@ -213,6 +237,7 @@
                 <type name="free_text">
                     <meta><title>Vrije tekst</title></meta>
                     <properties>
+                        <property name="_feedback" visibleCondition="__parent._feedback != null and __parent._feedback != ''" type="app_travel_plan_feedback"><meta><title>Klantfeedback</title></meta></property>
                         <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
                         <property name="text" type="text_editor"><meta><title>Tekst</title></meta></property>
                         <property name="icon" type="single_icon_selection"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>

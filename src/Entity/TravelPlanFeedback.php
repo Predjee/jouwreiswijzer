@@ -46,6 +46,18 @@ class TravelPlanFeedback
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $resolvedAt = null;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $adminResolutionNote = null;
+
+    /**
+     * @var array<string, mixed>|null
+     */
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $resolvedContentSnapshot = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $acceptedAt = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -141,6 +153,48 @@ class TravelPlanFeedback
     public function setResolvedAt(?\DateTimeImmutable $resolvedAt): self
     {
         $this->resolvedAt = $resolvedAt;
+
+        return $this;
+    }
+
+    public function getAdminResolutionNote(): ?string
+    {
+        return $this->adminResolutionNote;
+    }
+
+    public function setAdminResolutionNote(?string $adminResolutionNote): self
+    {
+        $this->adminResolutionNote = $adminResolutionNote;
+
+        return $this;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function getResolvedContentSnapshot(): ?array
+    {
+        return $this->resolvedContentSnapshot;
+    }
+
+    /**
+     * @param array<string, mixed>|null $resolvedContentSnapshot
+     */
+    public function setResolvedContentSnapshot(?array $resolvedContentSnapshot): self
+    {
+        $this->resolvedContentSnapshot = $resolvedContentSnapshot;
+
+        return $this;
+    }
+
+    public function getAcceptedAt(): ?\DateTimeImmutable
+    {
+        return $this->acceptedAt;
+    }
+
+    public function setAcceptedAt(?\DateTimeImmutable $acceptedAt): self
+    {
+        $this->acceptedAt = $acceptedAt;
 
         return $this;
     }

@@ -1,0 +1,168 @@
+.app-travel-plan-feedback {
+    padding: 18px;
+    border: 1px solid #d4b66f;
+    border-radius: 6px;
+    background: #fffaf0;
+    color: #17233b;
+}
+
+.app-travel-plan-block--feedback {
+    position: relative;
+    border-color: #d4a447 !important;
+    box-shadow: 0 0 0 2px rgba(212, 164, 71, 0.24);
+}
+
+.app-travel-plan-block--feedback::after {
+    position: absolute;
+    z-index: 2;
+    top: 10px;
+    right: 110px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #d4a447;
+    color: #17233b;
+    content: 'Feedback';
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 1.4;
+    pointer-events: none;
+    text-transform: uppercase;
+}
+
+.app-travel-plan-feedback-summary {
+    padding: 14px 16px;
+    border-left: 4px solid #d4a447;
+    border-radius: 4px;
+    background: #fffaf0;
+    color: #17233b;
+}
+
+.app-travel-plan-feedback-summary > strong {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+.app-travel-plan-feedback-summary__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.app-travel-plan-feedback-summary__links button {
+    padding: 7px 10px;
+    border: 1px solid #d4b66f;
+    border-radius: 999px;
+    background: #fff;
+    color: #17233b;
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+}
+
+.app-travel-plan-feedback-summary__links span {
+    margin-right: 6px;
+    color: #9a6f1f;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.app-travel-plan-feedback-summary__message {
+    margin: 8px 0 0;
+    color: #7b6028;
+    font-size: 12px;
+}
+
+.app-travel-plan-feedback-summary__message:empty {
+    display: none;
+}
+
+.app-travel-plan-feedback__header,
+.app-travel-plan-feedback__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.app-travel-plan-feedback__header strong {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+}
+
+.app-travel-plan-feedback__header span {
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #12213d;
+    color: #fff;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.app-travel-plan-feedback__meta {
+    margin: 6px 0 14px;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.app-travel-plan-feedback__message {
+    margin: 0 0 16px;
+    line-height: 1.55;
+    white-space: pre-line;
+}
+
+.app-travel-plan-feedback__label {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 14px;
+    color: #7b6028;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.app-travel-plan-feedback__label textarea {
+    width: 100%;
+    padding: 10px;
+    resize: vertical;
+    border: 1px solid #c9cdd4;
+    border-radius: 4px;
+    background: #fff;
+    color: #17233b;
+    font: inherit;
+    line-height: 1.45;
+    text-transform: none;
+}
+
+.app-travel-plan-feedback__actions {
+    justify-content: flex-end;
+}
+
+.app-travel-plan-feedback__actions button {
+    padding: 8px 12px;
+    border: 1px solid #12213d;
+    border-radius: 3px;
+    background: #fff;
+    color: #12213d;
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+}
+
+.app-travel-plan-feedback__actions button:disabled {
+    cursor: wait;
+    opacity: 0.55;
+}
+
+.app-travel-plan-feedback__actions .app-travel-plan-feedback__resolve {
+    border-color: #b99550;
+    background: #b99550;
+    color: #12213d;
+}

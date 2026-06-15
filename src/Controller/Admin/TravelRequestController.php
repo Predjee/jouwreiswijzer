@@ -6,7 +6,9 @@ namespace App\Controller\Admin;
 
 use App\Admin\TravelRequestAdmin;
 use App\Entity\TravelPlan;
+use App\Entity\TravelPlanFeedback;
 use App\Entity\TravelRequest;
+use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelRequestRepository;
 use App\Service\TravelPlanContentFactory;
 use App\TravelPlan\Pdf\TravelPlanPdfStorage;
@@ -34,6 +36,7 @@ final class TravelRequestController extends AbstractRestController implements Se
         private readonly EntityManagerInterface $entityManager,
         private readonly TravelPlanContentFactory $contentFactory,
         private readonly TravelPlanPdfStorage $pdfStorage,
+        private readonly TravelPlanFeedbackRepository $feedbackRepository,
     ) {
         parent::__construct($viewHandler);
     }
@@ -191,7 +194,7 @@ final class TravelRequestController extends AbstractRestController implements Se
      */
     private function serializeTravelPlan(TravelPlan $travelPlan): array
     {
-        return \array_merge([
+        $data = \array_merge([
             'id' => $travelPlan->getTravelRequest()->getId(),
             'travelPlanId' => $travelPlan->getId(),
             'title' => $travelPlan->getTitle(),
@@ -200,6 +203,121 @@ final class TravelRequestController extends AbstractRestController implements Se
             'pdfGeneratedAt' => $travelPlan->getPdfGeneratedAt()?->format('d-m-Y H:i'),
             'customerVisible' => $travelPlan->isVisibleForCustomer(),
         ], $this->contentFactory->toFormData($travelPlan->getContent()));
+
+        $activeFeedback = $this->feedbackRepository->findActiveForTravelPlan($travelPlan);
+        $data['feedbackSummary'] = \array_map(
+            fn (TravelPlanFeedback $feedback): array => [
+                'id' => $feedback->getId(),
+                'label' => $this->feedbackTargetLabel($data, $feedback),
+                'status' => $feedback->getStatus(),
+                'anchorId' => 'travel-plan-feedback-' . $feedback->getId(),
+                'blockPath' => $feedback->getBlockPath(),
+                'blockType' => $feedback->getBlockType(),
+            ],
+            $activeFeedback,
+        );
+
+        foreach ($activeFeedback as $feedback) {
+            $this->attachFeedback($data, $feedback);
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function attachFeedback(array &$data, TravelPlanFeedback $feedback): void
+    {
+        $blockPath = $feedback->getBlockPath();
+        $serialized = [
+            'id' => $feedback->getId(),
+            'status' => $feedback->getStatus(),
+            'message' => $feedback->getMessage(),
+            'blockPath' => $blockPath,
+            'blockType' => $feedback->getBlockType(),
+            'contactName' => $feedback->getContact()->getFullName(),
+            'createdAt' => $feedback->getCreatedAt()->format('d-m-Y H:i'),
+        ];
+
+        if (null === $blockPath) {
+            $data['planFeedback'] ??= $serialized;
+
+            return;
+        }
+
+        if (1 === \preg_match('/^sections\[(\d+)]$/D', $blockPath, $matches)) {
+            $sectionIndex = (int) $matches[1];
+
+            if (isset($data['sections'][$sectionIndex]) && \is_array($data['sections'][$sectionIndex])) {
+                $data['sections'][$sectionIndex]['_feedback'] ??= $serialized;
+            }
+
+            return;
+        }
+
+        if (1 !== \preg_match(
+            '/^sections\[(\d+)]\.blocks\[(\d+)]$/D',
+            $blockPath,
+            $matches,
+        )) {
+            return;
+        }
+
+        $sectionIndex = (int) $matches[1];
+        $blockIndex = (int) $matches[2];
+
+        if (
+            isset($data['sections'][$sectionIndex]['blocks'][$blockIndex])
+            && \is_array($data['sections'][$sectionIndex]['blocks'][$blockIndex])
+        ) {
+            $data['sections'][$sectionIndex]['blocks'][$blockIndex]['_feedback'] ??= $serialized;
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function feedbackTargetLabel(array $data, TravelPlanFeedback $feedback): string
+    {
+        $blockPath = $feedback->getBlockPath();
+
+        if (null === $blockPath) {
+            return 'Hele reisplan';
+        }
+
+        if (1 === \preg_match('/^sections\[(\d+)]$/D', $blockPath, $matches)) {
+            $sectionIndex = (int) $matches[1];
+            $section = $data['sections'][$sectionIndex] ?? [];
+            $title = \trim((string) ($section['title'] ?? ''));
+
+            return \sprintf(
+                'Sectie %d: %s',
+                $sectionIndex + 1,
+                '' !== $title ? $title : ($feedback->getBlockType() ?? 'Onderdeel'),
+            );
+        }
+
+        if (1 === \preg_match(
+            '/^sections\[(\d+)]\.blocks\[(\d+)]$/D',
+            $blockPath,
+            $matches,
+        )) {
+            $sectionIndex = (int) $matches[1];
+            $blockIndex = (int) $matches[2];
+            $section = $data['sections'][$sectionIndex] ?? [];
+            $block = $section['blocks'][$blockIndex] ?? [];
+            $dayNumber = \max(1, (int) ($section['dayNumber'] ?? $sectionIndex + 1));
+            $title = \trim((string) ($block['title'] ?? ''));
+
+            return \sprintf(
+                'Dag %d: %s',
+                $dayNumber,
+                '' !== $title ? $title : ($feedback->getBlockType() ?? 'Dagonderdeel'),
+            );
+        }
+
+        return $feedback->getBlockType() ?? 'Reisplanonderdeel';
     }
 
     /**

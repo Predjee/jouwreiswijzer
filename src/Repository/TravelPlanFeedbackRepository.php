@@ -64,4 +64,23 @@ final class TravelPlanFeedbackRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return list<TravelPlanFeedback>
+     */
+    public function findActiveForTravelPlan(TravelPlan $travelPlan): array
+    {
+        return $this->createQueryBuilder('feedback')
+            ->andWhere('feedback.travelPlan = :travelPlan')
+            ->andWhere('feedback.status IN (:statuses)')
+            ->setParameter('travelPlan', $travelPlan)
+            ->setParameter('statuses', [
+                TravelPlanFeedback::STATUS_OPEN,
+                TravelPlanFeedback::STATUS_IN_PROGRESS,
+            ])
+            ->orderBy('feedback.createdAt', 'DESC')
+            ->addOrderBy('feedback.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

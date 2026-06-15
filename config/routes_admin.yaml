@@ -57,3 +57,10 @@ travel_plan.pdf_download:
     methods: [GET]
     defaults:
         _format: binary
+
+travel_plan_feedback.put_status:
+    path: /admin/api/travel-plan-feedback/{id}/status
+    controller: App\Controller\Admin\TravelPlanFeedbackController::putStatusAction
+    methods: [PUT]
+    defaults:
+        _format: json

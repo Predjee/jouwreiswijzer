@@ -57,5 +57,6 @@ phpstan.neon
 
 ###> symfony/asset-mapper ###
 /public/assets/
+/public/build/
 /assets/vendor/
 ###< symfony/asset-mapper ###

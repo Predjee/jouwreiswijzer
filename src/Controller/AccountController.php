@@ -19,6 +19,7 @@ use Sulu\Bundle\SecurityBundle\Entity\User;
 use Sulu\Component\Security\Authentication\UserInterface as SuluUserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\HeaderUtils;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -244,31 +245,207 @@ final class AccountController extends AbstractController
         $message = \trim($request->request->getString('message'));
         $blockPath = \trim($request->request->getString('blockPath')) ?: null;
         $blockType = $this->resolveFeedbackBlockType($travelPlan, $blockPath);
+        $feedbackContext = $this->feedbackContext($blockPath);
+        $feedbackLabel = $this->feedbackLabel($feedbackContext);
 
-        if ($feedbackRepository->findActiveForTarget($travelPlan, $contact, $blockPath)) {
-            $this->addFlash(
-                'account_feedback_error',
+        if ($activeFeedback = $feedbackRepository->findActiveForTarget(
+            $travelPlan,
+            $contact,
+            $blockPath,
+        )) {
+            return $this->feedbackErrorResponse(
+                $request,
+                $travelPlan,
                 'Voor dit onderdeel is al feedback ontvangen en nog in behandeling.',
+                Response::HTTP_CONFLICT,
+                $activeFeedback,
+                $blockPath,
+                $feedbackContext,
+                $feedbackLabel,
             );
-        } elseif ('' === $message) {
-            $this->addFlash('account_feedback_error', 'Vul een bericht in voordat je de feedback verstuurt.');
-        } elseif (\mb_strlen($message) > 5000) {
-            $this->addFlash('account_feedback_error', 'Gebruik maximaal 5000 tekens voor je feedback.');
-        } else {
-            $feedback = (new TravelPlanFeedback())
-                ->setTravelPlan($travelPlan)
-                ->setContact($contact)
-                ->setBlockPath($blockPath)
-                ->setBlockType($blockType)
-                ->setMessage($message);
-
-            $entityManager->persist($feedback);
-            $entityManager->flush();
-
-            $this->addFlash('account_feedback_success', 'Bedankt, je feedback is ontvangen.');
         }
 
+        if ('' === $message) {
+            return $this->feedbackErrorResponse(
+                $request,
+                $travelPlan,
+                'Vul een bericht in voordat je de feedback verstuurt.',
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+            );
+        }
+
+        if (\mb_strlen($message) > 5000) {
+            return $this->feedbackErrorResponse(
+                $request,
+                $travelPlan,
+                'Gebruik maximaal 5000 tekens voor je feedback.',
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+            );
+        }
+
+        $feedback = (new TravelPlanFeedback())
+            ->setTravelPlan($travelPlan)
+            ->setContact($contact)
+            ->setBlockPath($blockPath)
+            ->setBlockType($blockType)
+            ->setMessage($message);
+
+        $entityManager->persist($feedback);
+        $entityManager->flush();
+
+        $successMessage = 'Bedankt, je feedback is ontvangen.';
+
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse([
+                'message' => $successMessage,
+                'html' => $this->renderFeedbackFragment(
+                    $travelPlan,
+                    $feedback,
+                    $blockPath,
+                    $feedbackContext,
+                    $feedbackLabel,
+                ),
+            ]);
+        }
+
+        $this->addFlash('account_feedback_success', $successMessage);
+
         return $this->redirectToRoute('account_travel_plan', ['id' => $travelPlan->getId()]);
+    }
+
+    #[Route(
+        '/account/travel-plans/{id}/feedback/{feedbackId}/accept',
+        name: 'account_travel_plan_feedback_accept',
+        methods: ['POST'],
+    )]
+    public function acceptFeedback(
+        int $id,
+        int $feedbackId,
+        Request $request,
+        TravelPlanRepository $travelPlanRepository,
+        TravelPlanFeedbackRepository $feedbackRepository,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        [, $contact] = $this->getCustomer();
+        $travelPlan = $travelPlanRepository->findPublishedForContact($id, $contact);
+        $feedback = $feedbackRepository->find($feedbackId);
+
+        if (
+            !$travelPlan instanceof TravelPlan
+            || !$feedback instanceof TravelPlanFeedback
+            || $feedback->getTravelPlan()->getId() !== $travelPlan->getId()
+            || $feedback->getContact()->getId() !== $contact->getId()
+        ) {
+            throw $this->createNotFoundException();
+        }
+
+        if (!$this->isCsrfTokenValid(
+            'travel_plan_feedback_accept_'.$feedback->getId(),
+            $request->request->getString('_csrf_token'),
+        )) {
+            throw $this->createAccessDeniedException('Ongeldige formulierbeveiliging.');
+        }
+
+        if (
+            TravelPlanFeedback::STATUS_RESOLVED !== $feedback->getStatus()
+            || null !== $feedback->getAcceptedAt()
+        ) {
+            return $this->feedbackErrorResponse(
+                $request,
+                $travelPlan,
+                'Deze feedback kan niet meer worden bevestigd.',
+                Response::HTTP_CONFLICT,
+            );
+        }
+
+        $feedback->setAcceptedAt(new \DateTimeImmutable());
+        $entityManager->flush();
+
+        $successMessage = 'Bedankt, je akkoord is opgeslagen.';
+
+        if ($request->isXmlHttpRequest()) {
+            $feedbackContext = $this->feedbackContext($feedback->getBlockPath());
+
+            return new JsonResponse([
+                'message' => $successMessage,
+                'html' => $this->renderFeedbackFragment(
+                    $travelPlan,
+                    $feedback,
+                    $feedback->getBlockPath(),
+                    $feedbackContext,
+                    $this->feedbackLabel($feedbackContext),
+                ),
+            ]);
+        }
+
+        $this->addFlash('account_feedback_success', $successMessage);
+
+        return $this->redirectToRoute('account_travel_plan', ['id' => $travelPlan->getId()]);
+    }
+
+    private function feedbackErrorResponse(
+        Request $request,
+        TravelPlan $travelPlan,
+        string $message,
+        int $status,
+        ?TravelPlanFeedback $feedback = null,
+        ?string $blockPath = null,
+        ?string $feedbackContext = null,
+        ?string $feedbackLabel = null,
+    ): Response {
+        if ($request->isXmlHttpRequest()) {
+            $response = ['message' => $message];
+
+            if ($feedback instanceof TravelPlanFeedback && null !== $feedbackContext) {
+                $response['html'] = $this->renderFeedbackFragment(
+                    $travelPlan,
+                    $feedback,
+                    $blockPath,
+                    $feedbackContext,
+                    $feedbackLabel ?? $this->feedbackLabel($feedbackContext),
+                );
+            }
+
+            return new JsonResponse($response, $status);
+        }
+
+        $this->addFlash('account_feedback_error', $message);
+
+        return $this->redirectToRoute('account_travel_plan', ['id' => $travelPlan->getId()]);
+    }
+
+    private function renderFeedbackFragment(
+        TravelPlan $travelPlan,
+        ?TravelPlanFeedback $feedback,
+        ?string $blockPath,
+        string $feedbackContext,
+        string $feedbackLabel,
+    ): string {
+        return $this->renderView('account/_travel_plan_feedback_form.html.twig', [
+            'travelPlan' => $travelPlan,
+            'feedback' => $feedback,
+            'blockPath' => $blockPath,
+            'feedbackContext' => $feedbackContext,
+            'feedbackLabel' => $feedbackLabel,
+        ]);
+    }
+
+    private function feedbackContext(?string $blockPath): string
+    {
+        if (null === $blockPath) {
+            return 'plan';
+        }
+
+        return \str_contains($blockPath, '.blocks[') ? 'block' : 'section';
+    }
+
+    private function feedbackLabel(string $feedbackContext): string
+    {
+        return match ($feedbackContext) {
+            'plan' => 'Feedback op dit reisplan',
+            'block' => 'Feedback op dit dagonderdeel',
+            default => 'Feedback op dit onderdeel',
+        };
     }
 
     /**

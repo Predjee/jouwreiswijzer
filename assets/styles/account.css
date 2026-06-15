@@ -526,6 +526,40 @@
     box-shadow: 0 1rem 3rem rgb(18 33 61 / 8%);
 }
 
+.account-feedback-card.is-loading,
+.account-feedback-compact.is-loading {
+    cursor: wait;
+    opacity: 0.72;
+}
+
+.account-feedback-async-status {
+    display: none;
+    margin: 0;
+    padding: 0.65rem 0.85rem;
+    border-radius: 0.35rem;
+    font-size: 0.82rem;
+}
+
+.account-feedback-async-status:not(:empty) {
+    display: block;
+    grid-column: 1 / -1;
+}
+
+.account-feedback-async-status[data-state='loading'] {
+    background: rgb(185 149 80 / 12%);
+    color: #7b6028;
+}
+
+.account-feedback-async-status[data-state='success'] {
+    background: rgb(56 112 85 / 10%);
+    color: #387055;
+}
+
+.account-feedback-async-status[data-state='error'] {
+    background: rgb(184 92 92 / 10%);
+    color: #7a2f2f;
+}
+
 .account-feedback-card__intro h2 {
     margin-top: 0.5rem;
     color: #12213d;
@@ -658,6 +692,37 @@
     color: #4f596b;
     line-height: 1.6;
     white-space: pre-line;
+}
+
+.account-feedback-resolution {
+    padding-top: 0.75rem;
+    border-top: 1px solid rgb(185 149 80 / 25%);
+}
+
+.account-feedback-resolution span {
+    color: #8d6d31;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.account-feedback-resolution p {
+    margin-top: 0.35rem;
+}
+
+.account-feedback-accept {
+    padding: 0.65rem 1rem;
+    border: 0;
+    border-radius: 0.25rem;
+    background: #12213d;
+    color: #fff;
+    font: inherit;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    text-transform: uppercase;
 }
 
 .account-feedback-status {

@@ -44,6 +44,9 @@ class TravelPlan
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $pdfGeneratedAt = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $pdfReleasedAt = null;
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -99,6 +102,7 @@ class TravelPlan
     public function setContent(array $content): self
     {
         $this->content = $content;
+        $this->pdfReleasedAt = null;
 
         return $this;
     }
@@ -111,6 +115,10 @@ class TravelPlan
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
+        if (self::STATUS_PUBLISHED !== $status) {
+            $this->pdfReleasedAt = null;
+        }
 
         return $this;
     }
@@ -156,6 +164,25 @@ class TravelPlan
         $this->pdfGeneratedAt = $pdfGeneratedAt;
 
         return $this;
+    }
+
+    public function getPdfReleasedAt(): ?\DateTimeImmutable
+    {
+        return $this->pdfReleasedAt;
+    }
+
+    public function setPdfReleasedAt(?\DateTimeImmutable $pdfReleasedAt): self
+    {
+        $this->pdfReleasedAt = $pdfReleasedAt;
+
+        return $this;
+    }
+
+    public function isPdfReleased(): bool
+    {
+        return self::STATUS_PUBLISHED === $this->status
+            && null !== $this->pdfReleasedAt
+            && null !== $this->pdfMediaId;
     }
 
     public function getCreatedAt(): \DateTimeImmutable

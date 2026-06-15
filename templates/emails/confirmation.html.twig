@@ -1,41 +1,33 @@
-<!doctype html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <title>Bedankt voor je aanvraag</title>
-</head>
-<body style="margin:0;background:#0f293a;color:#f0ece4;font-family:Arial,sans-serif;">
-    <div style="max-width:680px;margin:0 auto;padding:40px 24px;">
-        <h1 style="margin:0 0 20px;color:#d4af37;font-family:'Cormorant Garamond',Georgia,serif;font-size:34px;font-weight:400;">
-            Bedankt voor je aanvraag
-        </h1>
-        <p style="margin:0 0 16px;line-height:1.7;">
-            We hebben je reiswensen goed ontvangen. Binnen twee werkdagen nemen we persoonlijk contact met je op.
+{% extends 'emails/base.html.twig' %}
+
+{% block subject %}Bedankt voor je inzending{% endblock %}
+
+{% block content %}
+    <p style="margin:0 0 10px;color:#9b7a19;font-size:12px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;">
+        {{ formEntity.title|default('Formulier')|striptags }}
+    </p>
+
+    <h1 style="margin:0 0 20px;color:#0f293a;font-family:Georgia,'Times New Roman',serif;font-size:34px;font-weight:normal;line-height:1.2;">
+        Bedankt voor je inzending
+    </h1>
+
+    {% if formEntity.mailText|default('') %}
+        <p style="margin:0 0 28px;color:#4d5d68;font-size:16px;line-height:1.7;">
+            {{ form_mail_placeholders(
+                formEntity.mailText,
+                formEntity.fields|default([])
+            )|striptags }}
         </p>
-        <p style="margin:0 0 20px;line-height:1.7;">
-            Hieronder vind je de kerngegevens van je aanvraag.
-        </p>
-        <table role="presentation" style="width:100%;border-collapse:collapse;background:#243a4e;">
-            {% for field in formEntity.fields|default([]) %}
-                {% if field.value is not empty %}
-                    <tr>
-                        <th style="padding:12px 16px;border-bottom:1px solid rgba(212,175,55,.2);color:#d4af37;text-align:left;vertical-align:top;font-size:12px;text-transform:uppercase;">
-                            {{ field.shortTitle|default(field.title)|striptags }}
-                        </th>
-                        <td style="padding:12px 16px;border-bottom:1px solid rgba(212,175,55,.2);color:#f0ece4;">
-                            {% if field.value is iterable %}
-                                {{ field.value|join(', ') }}
-                            {% else %}
-                                {{ field.value|nl2br }}
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endif %}
-            {% endfor %}
-        </table>
-        <p style="margin:24px 0 0;color:#d8dde3;line-height:1.7;">
-            Hartelijke groet,<br>JouwReisWijzer
-        </p>
-    </div>
-</body>
-</html>
+    {% endif %}
+
+    {{ include('emails/_form_fields.html.twig') }}
+
+    <p style="margin:28px 0 0;color:#4d5d68;font-size:15px;line-height:1.7;">
+        Hartelijke groet,<br>
+        <strong style="color:#0f293a;">JouwReisWijzer</strong>
+    </p>
+{% endblock %}
+
+{% block footer_text %}
+    Dit is een automatische bevestiging van je formulierinzending.
+{% endblock %}

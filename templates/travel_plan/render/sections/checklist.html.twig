@@ -5,7 +5,7 @@
             {% for item in section.text|split("\n")|filter(item => item|trim) %}
                 <tr>
                     <td class="travel-plan-checklist__box-cell">
-                        <span class="travel-plan-checklist__box">&nbsp;</span>
+                        <span class="travel-plan-checklist__box">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                     </td>
                     <td class="travel-plan-checklist__text">{{ item|trim }}</td>
                 </tr>

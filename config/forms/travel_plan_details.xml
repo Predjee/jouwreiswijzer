@@ -28,6 +28,14 @@
             <meta><title>Media ID</title></meta>
         </property>
 
+        <property name="pdfReleasedAt" type="text_line" colspan="6" disabledCondition="true">
+            <meta><title>PDF vrijgegeven op</title></meta>
+        </property>
+
+        <property name="pdfReleaseStatus" type="text_line" colspan="12" disabledCondition="true">
+            <meta><title>Vrijgavestatus</title></meta>
+        </property>
+
         <property name="feedbackSummary"
                   type="app_travel_plan_feedback_summary"
                   visibleCondition="feedbackSummary != null and feedbackSummary != ''">

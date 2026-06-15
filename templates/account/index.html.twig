@@ -84,7 +84,7 @@
                                 >
                                     Bekijk reisplan
                                 </a>
-                                {% if travel_plan.pdfMediaId %}
+                                {% if travel_plan.pdfReleasedAt %}
                                     <a
                                         href="{{ path('account_travel_plan_pdf', {id: travel_plan.id}) }}"
                                         class="btn-ghost account-travel-download"
@@ -92,6 +92,10 @@
                                     >
                                         Download PDF
                                     </a>
+                                {% else %}
+                                    <p class="account-travel-review">
+                                        Je reisplan is nog in review. De definitieve PDF verschijnt hier zodra alles is afgerond.
+                                    </p>
                                 {% endif %}
                             </div>
                         </li>

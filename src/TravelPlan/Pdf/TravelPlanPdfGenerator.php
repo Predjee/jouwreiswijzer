@@ -22,8 +22,8 @@ final readonly class TravelPlanPdfGenerator
         private string $tempDir,
         #[Autowire('%kernel.project_dir%/assets/pdf/fonts')]
         private string $fontDir,
-        #[Autowire('%kernel.project_dir%/assets/styles/travel-plan-theme.css')]
-        private string $themeStylesheet,
+        #[Autowire('%kernel.project_dir%/assets/styles/travel-plan-pdf.css')]
+        private string $pdfStylesheet,
     ) {
     }
 
@@ -75,18 +75,16 @@ final readonly class TravelPlanPdfGenerator
             'margin_left' => 0,
         ]);
 
-        $stylesheet = \file_get_contents($this->themeStylesheet);
+        $stylesheet = \file_get_contents($this->pdfStylesheet);
 
         if (false === $stylesheet) {
             throw new \RuntimeException(\sprintf(
                 'Unable to read the TravelPlan stylesheet "%s".',
-                $this->themeStylesheet,
+                $this->pdfStylesheet,
             ));
         }
 
-        $pdfStylesheet = \preg_replace('/@font-face\s*\{.*?\}/s', '', $stylesheet) ?? $stylesheet;
-
-        $mpdf->WriteHTML($pdfStylesheet, HTMLParserMode::HEADER_CSS);
+        $mpdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
         $mpdf->WriteHTML($this->renderer->render($travelPlan), HTMLParserMode::HTML_BODY);
 
         return $mpdf->Output('', Destination::STRING_RETURN);

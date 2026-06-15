@@ -1,0 +1,37 @@
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border-collapse:separate;border-spacing:0;background-color:#ffffff;border:1px solid #e5dfd3;border-radius:8px;">
+    <tr>
+        <td style="padding:24px;">
+            {% for field in formEntity.fields|default([]) -%}
+                {%- set value = field.value -%}
+
+                {%- if value is iterable -%}
+                    {%- if field.type == 'attachment' -%}
+                        {%- set mediaUrls = [] -%}
+                        {%- for mediaId in field.value -%}
+                            {%- set media = sulu_resolve_media(mediaId, app.request.locale) -%}
+                            {%- set mediaUrls = mediaUrls|merge(['<a href="' ~ absolute_url(media.url) ~ '" style="color:#9b7a19;text-decoration:underline;">' ~ media.title ~ '</a>']) -%}
+                        {%- endfor -%}
+                        {%- set value -%}
+                            {{- mediaUrls|join(', ')|raw -}}
+                        {%- endset -%}
+                    {%- else -%}
+                        {%- set value = value|json_encode -%}
+                    {%- endif -%}
+                {%- elseif value.timestamp is defined -%}
+                    {% set value = value|date('d.m.Y') -%}
+                {%- else -%}
+                    {%- set value -%}
+                        {{- value|nl2br -}}
+                    {%- endset -%}
+                {%- endif -%}
+
+                {%- if value is not empty and field.value is not empty -%}
+                    <div style="padding:0 0 16px;margin:0 0 16px;border-bottom:1px solid #eee9df;color:#384b58;font-size:15px;line-height:1.6;">
+                        <strong style="display:block;margin-bottom:4px;color:#0f293a;font-size:12px;letter-spacing:.5px;text-transform:uppercase;">{{ field.shortTitle|default(field.title)|raw }}</strong>
+                        {{ value }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </td>
+    </tr>
+</table>

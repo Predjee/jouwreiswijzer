@@ -7,6 +7,7 @@ namespace App\Sulu;
 use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\FieldMetadata;
 use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\FormMetadata;
 use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\FormMetadataLoaderInterface;
+use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\SectionMetadata;
 use Sulu\Bundle\AdminBundle\Metadata\MetadataInterface;
 use Sulu\Bundle\FormBundle\Metadata\DynamicFormMetadataLoader;
 
@@ -40,13 +41,46 @@ final class RequestFormMetadataLoader implements FormMetadataLoaderInterface
         ]);
 
         $items = $metadata->getItems();
+
         $items =
             \array_slice($items, 0, 1, true)
             + ['isRequestForm' => $field]
             + \array_slice($items, 1, null, true);
 
+        $this->setMailTextEditorType($items);
         $metadata->setItems($items);
 
         return $metadata;
+    }
+
+    /**
+     * @param array<string, FieldMetadata|SectionMetadata> $items
+     */
+    private function setMailTextEditorType(array $items): bool
+    {
+        foreach ($items as $item) {
+            if ($item instanceof FieldMetadata && 'mailText' === $item->getName()) {
+                $item->setType('form_mail_text_editor');
+
+                return true;
+            }
+
+            if (
+                $item instanceof SectionMetadata
+                && $this->setMailTextEditorType($item->getItems())
+            ) {
+                return true;
+            }
+
+            if ($item instanceof FieldMetadata) {
+                foreach ($item->getTypes() as $type) {
+                    if ($this->setMailTextEditorType($type->getItems())) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }

@@ -201,10 +201,16 @@ final class TravelRequestController extends AbstractRestController implements Se
             'status' => $travelPlan->getStatus(),
             'pdfMediaId' => $travelPlan->getPdfMediaId(),
             'pdfGeneratedAt' => $travelPlan->getPdfGeneratedAt()?->format('d-m-Y H:i'),
+            'pdfReleasedAt' => $travelPlan->getPdfReleasedAt()?->format('d-m-Y H:i'),
             'customerVisible' => $travelPlan->isVisibleForCustomer(),
         ], $this->contentFactory->toFormData($travelPlan->getContent()));
 
         $activeFeedback = $this->feedbackRepository->findActiveForTravelPlan($travelPlan);
+        $blockingFeedback = $this->feedbackRepository->findBlockingForPdfRelease($travelPlan);
+        $data['pdfReleaseReady'] = TravelPlan::STATUS_PUBLISHED === $travelPlan->getStatus()
+            && null === $travelPlan->getPdfReleasedAt()
+            && [] === $blockingFeedback;
+        $data['pdfReleaseStatus'] = $this->pdfReleaseStatus($travelPlan, $blockingFeedback);
         $data['feedbackSummary'] = \array_map(
             fn (TravelPlanFeedback $feedback): array => [
                 'id' => $feedback->getId(),
@@ -222,6 +228,41 @@ final class TravelRequestController extends AbstractRestController implements Se
         }
 
         return $data;
+    }
+
+    /**
+     * @param list<TravelPlanFeedback> $blockingFeedback
+     */
+    private function pdfReleaseStatus(TravelPlan $travelPlan, array $blockingFeedback): string
+    {
+        if (null !== $travelPlan->getPdfReleasedAt()) {
+            return 'PDF vrijgegeven op '.$travelPlan->getPdfReleasedAt()->format('d-m-Y H:i');
+        }
+
+        if (TravelPlan::STATUS_PUBLISHED !== $travelPlan->getStatus()) {
+            return 'Publiceer het reisplan voordat de PDF kan worden vrijgegeven.';
+        }
+
+        if ([] === $blockingFeedback) {
+            return 'Alle feedback is afgerond en geaccepteerd. De PDF kan worden vrijgegeven.';
+        }
+
+        $activeCount = 0;
+        $awaitingAcceptanceCount = 0;
+
+        foreach ($blockingFeedback as $feedback) {
+            if (TravelPlanFeedback::STATUS_RESOLVED === $feedback->getStatus()) {
+                ++$awaitingAcceptanceCount;
+            } else {
+                ++$activeCount;
+            }
+        }
+
+        return \sprintf(
+            'Nog niet vrij te geven: %d open/in behandeling, %d wacht op klantacceptatie.',
+            $activeCount,
+            $awaitingAcceptanceCount,
+        );
     }
 
     /**

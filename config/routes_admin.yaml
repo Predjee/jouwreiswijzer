@@ -42,6 +42,15 @@ travel_request_plan.generate_pdf:
     options:
         expose: true
 
+travel_request_plan.release_pdf:
+    path: /admin/api/travel-request-plans/{id}/release-pdf
+    controller: App\Controller\Admin\TravelPlanPdfController::releaseForRequest
+    methods: [POST]
+    defaults:
+        _format: json
+    options:
+        expose: true
+
 travel_plan.generate_pdf:
     path: /admin/api/travel-plans/{id}/generate-pdf
     controller: App\Controller\Admin\TravelPlanPdfController::generate

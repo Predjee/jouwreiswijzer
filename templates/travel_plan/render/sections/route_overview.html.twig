@@ -5,8 +5,8 @@
         <ol class="travel-plan-route">
             {% for stop in section.routeStops %}
                 <li>
-                    {% if stop._iconSvg|default %}
-                        {{ stop._iconSvg|raw }}
+                    {% if stop._iconMarkup|default %}
+                        {{ stop._iconMarkup|raw }}
                     {% endif %}
                     {% if stop.title|default %}<h3>{{ stop.title }}</h3>{% endif %}
                     {% if stop.location|default %}<p>{{ stop.location }}</p>{% endif %}

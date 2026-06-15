@@ -23,9 +23,13 @@
             {% endif %}
             <p class="travel-plan-cover__eyebrow">Persoonlijke reisgids</p>
             <h1>{{ travelPlan.title }}</h1>
+            {% if intro.title|default and intro.title != travelPlan.title %}
+                <p class="travel-plan-cover__subtitle">{{ intro.title }}</p>
+            {% endif %}
             {% if customerName %}
                 <p class="travel-plan-cover__customer">Samengesteld voor {{ customerName }}</p>
             {% endif %}
+            <div class="travel-plan-cover__rule">&nbsp;</div>
             {% set coverProfile = [tripProfile.period|default, tripProfile.duration|default]|filter(value => value) %}
             {% if coverProfile %}
                 <p class="travel-plan-cover__profile">{{ coverProfile|join(' · ') }}</p>

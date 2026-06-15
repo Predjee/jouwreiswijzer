@@ -392,6 +392,14 @@
     padding-block: 0.75rem;
 }
 
+.account-travel-review {
+    flex-basis: 100%;
+    margin: 0;
+    color: var(--color-content-dim);
+    font-size: 0.8rem;
+    line-height: 1.55;
+}
+
 .account-empty-state {
     display: grid;
     max-width: 48rem;
@@ -772,6 +780,12 @@
 .account-feedback-notice--error {
     border: 1px solid #b85c5c;
     color: #7a2f2f;
+}
+
+.account-feedback-notice--review {
+    border: 1px solid rgb(185 149 80 / 45%);
+    background: #fbf8f1;
+    color: #6f582b;
 }
 
 .nav-account-link,

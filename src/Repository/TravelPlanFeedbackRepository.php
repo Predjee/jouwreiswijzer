@@ -83,4 +83,27 @@ final class TravelPlanFeedbackRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return list<TravelPlanFeedback>
+     */
+    public function findBlockingForPdfRelease(TravelPlan $travelPlan): array
+    {
+        return $this->createQueryBuilder('feedback')
+            ->andWhere('feedback.travelPlan = :travelPlan')
+            ->andWhere(
+                '(feedback.status IN (:activeStatuses)'
+                .' OR (feedback.status = :resolvedStatus AND feedback.acceptedAt IS NULL))',
+            )
+            ->setParameter('travelPlan', $travelPlan)
+            ->setParameter('activeStatuses', [
+                TravelPlanFeedback::STATUS_OPEN,
+                TravelPlanFeedback::STATUS_IN_PROGRESS,
+            ])
+            ->setParameter('resolvedStatus', TravelPlanFeedback::STATUS_RESOLVED)
+            ->orderBy('feedback.createdAt', 'DESC')
+            ->addOrderBy('feedback.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

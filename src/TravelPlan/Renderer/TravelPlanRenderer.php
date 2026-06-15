@@ -96,12 +96,15 @@ final readonly class TravelPlanRenderer
             }
 
             if ('route_overview' === $type && \is_array($section['routeStops'] ?? null)) {
-                $section['routeStops'] = array_map(function (mixed $stop): mixed {
+                $section['routeStops'] = array_map(function (mixed $stop) use ($accountView): mixed {
                     if (!\is_array($stop)) {
                         return $stop;
                     }
 
-                    $stop['_iconSvg'] = $this->iconSvg($stop['icon'] ?? 'map');
+                    $stop['_iconMarkup'] = $this->iconMarkup(
+                        $stop['icon'] ?? 'map',
+                        $accountView,
+                    );
 
                     return $stop;
                 }, $section['routeStops']);
@@ -128,6 +131,7 @@ final readonly class TravelPlanRenderer
                 'html' => $this->prependIcon(
                     $renderedSection,
                     $section['icon'] ?? self::DEFAULT_SECTION_ICONS[$type] ?? null,
+                    $accountView,
                 ),
                 'blockPath' => \sprintf('sections[%d]', $sectionIndex),
                 'blockType' => $type,
@@ -185,6 +189,7 @@ final readonly class TravelPlanRenderer
                 'html' => $this->prependIcon(
                     $renderedBlock,
                     $block['icon'] ?? self::DEFAULT_DAY_BLOCK_ICONS[$type],
+                    $accountView,
                 ),
                 'blockPath' => \sprintf('sections[%d].blocks[%d]', $sectionIndex, $blockIndex),
                 'blockType' => $type,
@@ -197,20 +202,38 @@ final readonly class TravelPlanRenderer
         return $renderedBlocks;
     }
 
-    private function prependIcon(string $html, mixed $icon): string
+    private function prependIcon(string $html, mixed $icon, bool $accountView): string
     {
-        $iconSvg = $this->iconSvg($icon);
+        $iconMarkup = $this->iconMarkup($icon, $accountView);
 
-        if (null === $iconSvg) {
+        if (null === $iconMarkup) {
             return $html;
         }
 
         return preg_replace(
             '/(<(?:section|article|aside)\b[^>]*>)/',
-            '$1'.$iconSvg,
+            '$1'.$iconMarkup,
             $html,
             1,
         ) ?? $html;
+    }
+
+    private function iconMarkup(mixed $icon, bool $accountView): ?string
+    {
+        if ($accountView) {
+            return $this->iconSvg($icon);
+        }
+
+        $iconSrc = $this->iconPngDataUri($icon);
+
+        if (null === $iconSrc) {
+            return null;
+        }
+
+        return \sprintf(
+            '<img class="travel-plan-icon" src="%s" alt="">',
+            $iconSrc,
+        );
     }
 
     private function iconSvg(mixed $icon): ?string
@@ -238,6 +261,18 @@ final readonly class TravelPlanRenderer
         ) ?? $contents;
 
         return $contents;
+    }
+
+    private function iconPngDataUri(mixed $icon): ?string
+    {
+        if (!\is_string($icon) || 1 !== preg_match('/^[a-z0-9][a-z0-9-]*$/', $icon)) {
+            return null;
+        }
+
+        return $this->assetDataUri(
+            'assets/images/pdf/icons/'.$icon.'.png',
+            'image/png',
+        );
     }
 
     private function assetDataUri(string $relativePath, string $mimeType): ?string

@@ -8,7 +8,7 @@
                 Mijn reisplannen
             </a>
 
-            {% if travel_plan.pdfMediaId %}
+            {% if travel_plan.pdfReleasedAt %}
                 <a
                     href="{{ path('account_travel_plan_pdf', {id: travel_plan.id}) }}"
                     class="btn-primary"
@@ -18,6 +18,12 @@
                 </a>
             {% endif %}
         </div>
+
+        {% if not travel_plan.pdfReleasedAt %}
+            <div class="account-feedback-notice account-feedback-notice--review" role="status">
+                Je reisplan is nog in review. De definitieve PDF verschijnt hier zodra alles is afgerond.
+            </div>
+        {% endif %}
 
         {% for message in app.flashes('account_feedback_success') %}
             <div class="account-feedback-notice account-feedback-notice--success" role="status">

@@ -62,7 +62,8 @@ final readonly class TravelPlanPdfStorage
 
             $travelPlan
                 ->setPdfMediaId($media->getId())
-                ->setPdfGeneratedAt(new \DateTimeImmutable());
+                ->setPdfGeneratedAt(new \DateTimeImmutable())
+                ->setPdfReleasedAt(null);
 
             $this->entityManager->flush();
         } finally {

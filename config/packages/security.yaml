@@ -66,6 +66,7 @@ security:
         - { path: ^/admin/p/, allow_if: "not is_granted('ROLE_SULU_CUSTOMER')" }
         - { path: ^/admin, allow_if: "is_granted('ROLE_USER') and not is_granted('ROLE_SULU_CUSTOMER')" }
         - { path: ^/account/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/account/reset/, roles: PUBLIC_ACCESS }
         - { path: ^/account, roles: ROLE_SULU_CUSTOMER }
 
 when@test:

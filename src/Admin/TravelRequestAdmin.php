@@ -98,6 +98,14 @@ final class TravelRequestAdmin extends Admin
                     'dialogCancelText' => 'Annuleren',
                     'dialogOkText' => 'PDF bijwerken',
                 ]),
+                new ToolbarAction('app.release_pdf', [
+                    'url' => '/admin/api/travel-request-plans/{id}/release-pdf',
+                    'label' => 'PDF vrijgeven',
+                    'icon' => 'su-check-circle',
+                    'loadingText' => 'PDF wordt vrijgegeven...',
+                    'successText' => 'PDF is vrijgegeven voor de klant.',
+                    'errorText' => 'PDF vrijgeven mislukt.',
+                ]),
                 new ToolbarAction('app.download', [
                     'url' => '/admin/api/travel-plans/{id}/pdf/download',
                     'label' => 'PDF downloaden',

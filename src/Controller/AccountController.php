@@ -18,6 +18,8 @@ use Sulu\Bundle\ContactBundle\Entity\PhoneType;
 use Sulu\Bundle\SecurityBundle\Entity\User;
 use Sulu\Component\Security\Authentication\UserInterface as SuluUserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,6 +32,12 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 final class AccountController extends AbstractController
 {
+    public function __construct(
+        #[Autowire('%kernel.secret%')]
+        private readonly string $secret,
+    ) {
+    }
+
     #[Route('/account/login', name: 'account_login', methods: ['GET', 'POST'])]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
@@ -40,6 +48,72 @@ final class AccountController extends AbstractController
         return $this->render('account/login.html.twig', [
             'last_username' => $authenticationUtils->getLastUsername(),
             'error' => $authenticationUtils->getLastAuthenticationError(),
+        ]);
+    }
+
+    #[Route('/account/reset/{token}', name: 'account_password_reset', methods: ['GET', 'POST'])]
+    public function resetPassword(
+        string $token,
+        Request $request,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $entityManager,
+        Security $security,
+    ): Response {
+        $user = $entityManager->getRepository(User::class)->findOneBy([
+            'passwordResetToken' => $this->hashResetToken($token),
+        ]);
+
+        if (
+            !$user instanceof User
+            || null === $user->getPasswordResetTokenExpiresAt()
+            || new \DateTime() > $user->getPasswordResetTokenExpiresAt()
+        ) {
+            return $this->render('account/password_reset.html.twig', [
+                'invalid_token' => true,
+                'errors' => [],
+            ], new Response(status: Response::HTTP_GONE));
+        }
+
+        $errors = [];
+
+        if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid(
+                'account_password_reset_'.$token,
+                $request->request->getString('_csrf_token'),
+            )) {
+                throw $this->createAccessDeniedException('Ongeldige formulierbeveiliging.');
+            }
+
+            $newPassword = $request->request->getString('newPassword');
+            $confirmPassword = $request->request->getString('confirmPassword');
+
+            if (\strlen($newPassword) < 8) {
+                $errors['newPassword'] = 'Gebruik minimaal 8 tekens.';
+            }
+
+            if ($newPassword !== $confirmPassword) {
+                $errors['confirmPassword'] = 'De wachtwoorden komen niet overeen.';
+            }
+
+            if ([] === $errors) {
+                $user
+                    ->setPassword($passwordHasher->hashPassword($user, $newPassword))
+                    ->setPasswordResetToken(null)
+                    ->setPasswordResetTokenExpiresAt(null)
+                    ->setPasswordResetTokenEmailsSent(null);
+                $entityManager->flush();
+
+                $security->login($user, 'form_login', 'website');
+
+                return $this->redirectToRoute('account');
+            }
+        }
+
+        return $this->render('account/password_reset.html.twig', [
+            'invalid_token' => false,
+            'password_reset' => false,
+            'errors' => $errors,
+            'token' => $token,
         ]);
     }
 
@@ -172,13 +246,18 @@ final class AccountController extends AbstractController
     public function downloadPdf(
         int $id,
         TravelPlanRepository $travelPlanRepository,
+        TravelPlanFeedbackRepository $feedbackRepository,
         TravelPlanPdfGenerator $pdfGenerator,
         TravelPlanPdfStorage $pdfStorage,
     ): Response {
         [, $contact] = $this->getCustomer();
         $travelPlan = $travelPlanRepository->findPublishedForContact($id, $contact);
 
-        if (!$travelPlan instanceof TravelPlan || null === $travelPlan->getPdfMediaId()) {
+        if (
+            !$travelPlan instanceof TravelPlan
+            || !$travelPlan->isPdfReleased()
+            || [] !== $feedbackRepository->findBlockingForPdfRelease($travelPlan)
+        ) {
             throw $this->createNotFoundException();
         }
 
@@ -290,6 +369,7 @@ final class AccountController extends AbstractController
             ->setBlockType($blockType)
             ->setMessage($message);
 
+        $travelPlan->setPdfReleasedAt(null);
         $entityManager->persist($feedback);
         $entityManager->flush();
 
@@ -496,6 +576,11 @@ final class AccountController extends AbstractController
         }
 
         return [$user, $contact];
+    }
+
+    private function hashResetToken(string $token): string
+    {
+        return \hash('sha256', $this->secret.'%'.$token);
     }
 
     private function resolveFeedbackBlockType(TravelPlan $travelPlan, ?string $blockPath): ?string

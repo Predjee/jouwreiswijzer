@@ -102,10 +102,42 @@
                             </meta>
                         </property>
 
-                        <property name="button_url" type="text_line">
+                        <property name="button_type" type="single_select">
+                            <meta>
+                                <title lang="nl">Knopactie</title>
+                            </meta>
+                            <params>
+                                <param name="default_value" value="link"/>
+                                <param name="values" type="collection">
+                                    <param name="link">
+                                        <meta>
+                                            <title lang="nl">Normale link</title>
+                                        </meta>
+                                    </param>
+                                    <param name="request_form_modal">
+                                        <meta>
+                                            <title lang="nl">Aanvraagformulier popup</title>
+                                        </meta>
+                                    </param>
+                                </param>
+                            </params>
+                        </property>
+
+                        <property name="button_url" type="text_line"
+                                  visibleCondition="__parent.button_type == 'link' || __parent.button_type == null">
                             <meta>
                                 <title lang="nl">Knop URL</title>
                             </meta>
+                        </property>
+
+                        <property name="request_form" type="single_form_selection"
+                                  visibleCondition="__parent.button_type == 'request_form_modal'">
+                            <meta>
+                                <title lang="nl">Aanvraagformulier</title>
+                            </meta>
+                            <params>
+                                <param name="resourceKey" value="page"/>
+                            </params>
                         </property>
 
                     </properties>

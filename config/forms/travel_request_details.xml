@@ -10,23 +10,6 @@
                 <title>Aanvraag</title>
             </meta>
             <properties>
-                <property name="status" type="single_select" mandatory="true" colspan="6">
-                    <meta>
-                        <title>Status</title>
-                    </meta>
-                    <params>
-                        <param name="values" type="collection">
-                            <param name="new" value="new"/>
-                            <param name="in_progress" value="in_progress"/>
-                            <param name="needs_info" value="needs_info"/>
-                            <param name="plan_in_progress" value="plan_in_progress"/>
-                            <param name="proposal_ready" value="proposal_ready"/>
-                            <param name="completed" value="completed"/>
-                            <param name="cancelled" value="cancelled"/>
-                        </param>
-                    </params>
-                </property>
-
                 <property name="createdAt" type="text_line" colspan="6" disabledCondition="true">
                     <meta>
                         <title>Datum</title>

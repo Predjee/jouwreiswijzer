@@ -4,7 +4,7 @@ import TextEditor from 'sulu-admin-bundle/containers/Form/fields/TextEditor';
 import SuluCKEditor5 from 'sulu-admin-bundle/containers/CKEditor5/CKEditor5';
 import configRegistry from 'sulu-admin-bundle/containers/CKEditor5/registries/configRegistry';
 import userStore from 'sulu-admin-bundle/stores/userStore';
-import FormMailPlaceholderPlugin from '../textEditor/FormMailPlaceholderPlugin';
+import FormMailPlaceholderPlugin from '../textEditor/FormMailPlaceholderPlugin.js';
 
 const appendToolbarItem = (toolbar, item) => {
     if (Array.isArray(toolbar)) {

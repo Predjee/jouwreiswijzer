@@ -6,8 +6,11 @@ namespace App\Controller;
 
 use App\Entity\TravelPlan;
 use App\Entity\TravelPlanFeedback;
+use App\Repository\NotificationRepository;
 use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelPlanRepository;
+use App\Security\AccountTokenHasher;
+use App\Service\NotificationService;
 use App\TravelPlan\Pdf\TravelPlanPdfGenerator;
 use App\TravelPlan\Pdf\TravelPlanPdfStorage;
 use App\TravelPlan\Renderer\TravelPlanRenderer;
@@ -19,7 +22,6 @@ use Sulu\Bundle\SecurityBundle\Entity\User;
 use Sulu\Component\Security\Authentication\UserInterface as SuluUserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,12 +34,6 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 final class AccountController extends AbstractController
 {
-    public function __construct(
-        #[Autowire('%kernel.secret%')]
-        private readonly string $secret,
-    ) {
-    }
-
     #[Route('/account/login', name: 'account_login', methods: ['GET', 'POST'])]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
@@ -58,9 +54,10 @@ final class AccountController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager,
         Security $security,
+        AccountTokenHasher $accountTokenHasher,
     ): Response {
         $user = $entityManager->getRepository(User::class)->findOneBy([
-            'passwordResetToken' => $this->hashResetToken($token),
+            'passwordResetToken' => $accountTokenHasher->hash($token),
         ]);
 
         if (
@@ -78,7 +75,7 @@ final class AccountController extends AbstractController
 
         if ($request->isMethod('POST')) {
             if (!$this->isCsrfTokenValid(
-                'account_password_reset_'.$token,
+                'account_password_reset_' . $token,
                 $request->request->getString('_csrf_token'),
             )) {
                 throw $this->createAccessDeniedException('Ongeldige formulierbeveiliging.');
@@ -124,15 +121,80 @@ final class AccountController extends AbstractController
     }
 
     #[Route('/account', name: 'account', methods: ['GET'])]
-    public function index(TravelPlanRepository $travelPlanRepository): Response
-    {
+    public function index(
+        TravelPlanRepository $travelPlanRepository,
+        TravelPlanFeedbackRepository $feedbackRepository,
+        NotificationRepository $notificationRepository,
+    ): Response {
         [$user, $contact] = $this->getCustomer();
+        $travelPlans = $travelPlanRepository->findPublishedByContact($contact);
 
         return $this->render('account/index.html.twig', [
             'contact' => $contact,
             'email' => $user->getEmail(),
-            'travel_plans' => $travelPlanRepository->findPublishedByContact($contact),
+            'travel_plans' => $this->buildTravelPlanDashboardCards($travelPlans, $feedbackRepository, $contact),
+            'unread_notification_count' => $notificationRepository->countUnreadForContact($contact),
         ]);
+    }
+
+    #[Route('/account/notifications', name: 'account_notifications', methods: ['GET'])]
+    public function notifications(NotificationRepository $notificationRepository): Response
+    {
+        [, $contact] = $this->getCustomer();
+
+        return $this->render('account/notifications.html.twig', [
+            'contact' => $contact,
+            'notifications' => $notificationRepository->findForContact($contact),
+            'unread_notification_count' => $notificationRepository->countUnreadForContact($contact),
+        ]);
+    }
+
+    #[Route('/account/notifications/{id}/read', name: 'account_notification_read', methods: ['POST'])]
+    public function markNotificationAsRead(
+        int $id,
+        Request $request,
+        NotificationRepository $notificationRepository,
+        NotificationService $notificationService,
+    ): Response {
+        [, $contact] = $this->getCustomer();
+        $notification = $notificationRepository->find($id);
+
+        if (
+            null === $notification
+            || $notification->getRecipientContact()?->getId() !== $contact->getId()
+        ) {
+            throw $this->createNotFoundException();
+        }
+
+        if (!$this->isCsrfTokenValid(
+            'account_notification_read_' . $notification->getId(),
+            $request->request->getString('_csrf_token'),
+        )) {
+            throw $this->createAccessDeniedException('Ongeldige formulierbeveiliging.');
+        }
+
+        $notificationService->markAsRead($notification);
+
+        return $this->redirect($notification->getUrl() ?: $this->generateUrl('account'));
+    }
+
+    #[Route('/account/notifications/read-all', name: 'account_notifications_read_all', methods: ['POST'])]
+    public function markAllNotificationsAsRead(
+        Request $request,
+        NotificationService $notificationService,
+    ): Response {
+        [, $contact] = $this->getCustomer();
+
+        if (!$this->isCsrfTokenValid(
+            'account_notifications_read_all_' . $contact->getId(),
+            $request->request->getString('_csrf_token'),
+        )) {
+            throw $this->createAccessDeniedException('Ongeldige formulierbeveiliging.');
+        }
+
+        $notificationService->markAllAsRead($contact);
+
+        return $this->redirectToRoute('account_notifications');
     }
 
     #[Route('/account/profile', name: 'account_profile', methods: ['GET', 'POST'])]
@@ -288,14 +350,15 @@ final class AccountController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $feedbackByPath = $this->indexFeedbackByPath(
-            $feedbackRepository->findForPlanAndContact($travelPlan, $contact),
-        );
+        $feedbackItems = $feedbackRepository->findForPlanAndContact($travelPlan, $contact);
+        $feedbackByPath = $this->indexFeedbackByPath($feedbackItems);
 
         return $this->render('account/travel_plan.html.twig', [
             'travel_plan' => $travelPlan,
             'travel_plan_feedback' => $feedbackByPath[''] ?? null,
-            'travel_plan_html' => $renderer->renderForAccount($travelPlan, $feedbackByPath),
+            'feedback_round_count' => $this->countActiveFeedback($feedbackItems),
+            'travel_plan_view_html' => $renderer->renderForAccount($travelPlan, [], false),
+            'travel_plan_feedback_html' => $renderer->renderForAccount($travelPlan, $feedbackByPath),
         ]);
     }
 
@@ -315,7 +378,7 @@ final class AccountController extends AbstractController
         }
 
         if (!$this->isCsrfTokenValid(
-            'travel_plan_feedback_'.$travelPlan->getId(),
+            'travel_plan_feedback_' . $travelPlan->getId(),
             $request->request->getString('_csrf_token'),
         )) {
             throw $this->createAccessDeniedException('Ongeldige formulierbeveiliging.');
@@ -378,6 +441,7 @@ final class AccountController extends AbstractController
         if ($request->isXmlHttpRequest()) {
             return new JsonResponse([
                 'message' => $successMessage,
+                'activeFeedbackCount' => \count($feedbackRepository->findActiveForTravelPlan($travelPlan)),
                 'html' => $this->renderFeedbackFragment(
                     $travelPlan,
                     $feedback,
@@ -391,6 +455,48 @@ final class AccountController extends AbstractController
         $this->addFlash('account_feedback_success', $successMessage);
 
         return $this->redirectToRoute('account_travel_plan', ['id' => $travelPlan->getId()]);
+    }
+
+    #[Route('/account/travel-plans/{id}/feedback-round', name: 'account_travel_plan_feedback_round', methods: ['POST'])]
+    public function submitFeedbackRound(
+        int $id,
+        Request $request,
+        TravelPlanRepository $travelPlanRepository,
+        NotificationService $notificationService,
+    ): Response {
+        [, $contact] = $this->getCustomer();
+        $travelPlan = $travelPlanRepository->findPublishedForContact($id, $contact);
+
+        if (!$travelPlan instanceof TravelPlan) {
+            throw $this->createNotFoundException();
+        }
+
+        if (!$this->isCsrfTokenValid(
+            'travel_plan_feedback_round_'.$travelPlan->getId(),
+            $request->request->getString('_csrf_token'),
+        )) {
+            throw $this->createAccessDeniedException('Ongeldige formulierbeveiliging.');
+        }
+
+        $feedbackCount = $notificationService->notifyFeedbackRoundSubmitted($travelPlan);
+
+        if (0 === $feedbackCount) {
+            $this->addFlash('account_feedback_error', 'Er staan nog geen feedbackpunten klaar om te versturen.');
+        } else {
+            $this->addFlash(
+                'account_feedback_success',
+                \sprintf(
+                    'Je feedbackronde met %d %s is verstuurd.',
+                    $feedbackCount,
+                    1 === $feedbackCount ? 'feedbackpunt' : 'feedbackpunten',
+                ),
+            );
+        }
+
+        return $this->redirectToRoute('account_travel_plan', [
+            'id' => $travelPlan->getId(),
+            'mode' => 'feedback',
+        ]);
     }
 
     #[Route(
@@ -420,7 +526,7 @@ final class AccountController extends AbstractController
         }
 
         if (!$this->isCsrfTokenValid(
-            'travel_plan_feedback_accept_'.$feedback->getId(),
+            'travel_plan_feedback_accept_' . $feedback->getId(),
             $request->request->getString('_csrf_token'),
         )) {
             throw $this->createAccessDeniedException('Ongeldige formulierbeveiliging.');
@@ -510,6 +616,61 @@ final class AccountController extends AbstractController
         ]);
     }
 
+    /**
+     * @param list<TravelPlan> $travelPlans
+     *
+     * @return list<array{
+     *     travelPlan: TravelPlan,
+     *     statusLabel: string,
+     *     openFeedbackCount: int,
+     *     processedFeedbackCount: int,
+     *     pdfAvailable: bool
+     * }>
+     */
+    private function buildTravelPlanDashboardCards(
+        array $travelPlans,
+        TravelPlanFeedbackRepository $feedbackRepository,
+        Contact $contact,
+    ): array {
+        $cards = [];
+
+        foreach ($travelPlans as $travelPlan) {
+            $openFeedbackCount = 0;
+            $processedFeedbackCount = 0;
+
+            foreach ($feedbackRepository->findForPlanAndContact($travelPlan, $contact) as $feedback) {
+                if (\in_array($feedback->getStatus(), [
+                    TravelPlanFeedback::STATUS_OPEN,
+                    TravelPlanFeedback::STATUS_IN_PROGRESS,
+                ], true)) {
+                    ++$openFeedbackCount;
+                    continue;
+                }
+
+                if (TravelPlanFeedback::STATUS_RESOLVED === $feedback->getStatus()) {
+                    ++$processedFeedbackCount;
+                }
+            }
+
+            $pdfAvailable = $travelPlan->isPdfReleased();
+            $statusLabel = match (true) {
+                $openFeedbackCount > 0 => 'Feedback open',
+                $pdfAvailable => 'Reisgids beschikbaar',
+                default => 'In review',
+            };
+
+            $cards[] = [
+                'travelPlan' => $travelPlan,
+                'statusLabel' => $statusLabel,
+                'openFeedbackCount' => $openFeedbackCount,
+                'processedFeedbackCount' => $processedFeedbackCount,
+                'pdfAvailable' => $pdfAvailable,
+            ];
+        }
+
+        return $cards;
+    }
+
     private function feedbackContext(?string $blockPath): string
     {
         if (null === $blockPath) {
@@ -564,6 +725,22 @@ final class AccountController extends AbstractController
     }
 
     /**
+     * @param list<TravelPlanFeedback> $feedbackItems
+     */
+    private function countActiveFeedback(array $feedbackItems): int
+    {
+        $count = 0;
+
+        foreach ($feedbackItems as $feedback) {
+            if ($this->isActiveFeedback($feedback)) {
+                ++$count;
+            }
+        }
+
+        return $count;
+    }
+
+    /**
      * @return array{SuluUserInterface, Contact}
      */
     private function getCustomer(): array
@@ -576,11 +753,6 @@ final class AccountController extends AbstractController
         }
 
         return [$user, $contact];
-    }
-
-    private function hashResetToken(string $token): string
-    {
-        return \hash('sha256', $this->secret.'%'.$token);
     }
 
     private function resolveFeedbackBlockType(TravelPlan $travelPlan, ?string $blockPath): ?string

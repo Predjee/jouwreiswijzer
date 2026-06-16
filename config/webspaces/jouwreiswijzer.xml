@@ -36,7 +36,22 @@
         <contexts>
             <context key="main">
                 <meta>
-                    <title lang="nl">Main Navigation</title>
+                    <title lang="nl">Hoofdnavigatie</title>
+                </meta>
+            </context>
+            <context key="footer_column_1">
+                <meta>
+                    <title lang="nl">Footer kolom 1</title>
+                </meta>
+            </context>
+            <context key="footer_column_2">
+                <meta>
+                    <title lang="nl">Footer kolom 2</title>
+                </meta>
+            </context>
+            <context key="footer_legal">
+                <meta>
+                    <title lang="nl">Footer legal</title>
                 </meta>
             </context>
         </contexts>

@@ -1,4 +1,8 @@
 {% set root_path = sulu_content_root_path() %}
+{% set main_navigation = sulu_page_navigation_root_tree('main', 1, {
+    title: 'title',
+    url: 'url',
+})|default([]) %}
 
 <nav class="site-nav relative z-10 flex justify-between items-center
             px-5 py-4
@@ -39,10 +43,7 @@
                 Home
             </a>
         </li>
-        {% for item in sulu_page_navigation_root_tree('main', 1, {
-            title: 'title',
-            url: 'url',
-        }) %}
+        {% for item in main_navigation %}
             <li>
                 <a href="{{ sulu_content_path(item.url) }}"
                    class="nav-link {{ item.url == app.request.pathInfo ? 'is-active' : '' }}">
@@ -61,6 +62,7 @@
         </a>
 
         {% if is_granted('ROLE_SULU_CUSTOMER') %}
+            {% set unread_notifications = account_unread_notification_count() %}
             <details class="nav-account-menu hidden md:block">
                 <summary class="nav-account-summary">
                     <svg class="nav-account-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -79,6 +81,12 @@
                         <strong>{{ app.user.fullName|default(app.user.userIdentifier) }}</strong>
                     </div>
                     <a href="{{ path('account') }}">Mijn reisplannen</a>
+                    <a href="{{ path('account_notifications') }}" class="nav-account-dropdown-row">
+                        <span>Notificaties</span>
+                        {% if unread_notifications > 0 %}
+                            <span class="nav-account-badge">{{ unread_notifications }}</span>
+                        {% endif %}
+                    </a>
                     <a href="{{ path('account_profile') }}">Profiel</a>
                     <a href="{{ path('account_password') }}">Wachtwoord wijzigen</a>
                     <form method="post" action="{{ path('account_logout') }}">
@@ -126,10 +134,7 @@
                     Home
                 </a>
             </li>
-            {% for item in sulu_page_navigation_root_tree('main', 1, {
-                title: 'title',
-                url: 'url',
-            }) %}
+            {% for item in main_navigation %}
                 <li>
                     <a href="{{ sulu_content_path(item.url) }}"
                        class="nav-link">
@@ -147,6 +152,12 @@
                 {% if is_granted('ROLE_SULU_CUSTOMER') %}
                     <a href="{{ path('account') }}" class="nav-link block">
                         Mijn reisplannen
+                    </a>
+                    <a href="{{ path('account_notifications') }}" class="nav-link mt-4 flex items-center gap-2">
+                        Notificaties
+                        {% if unread_notifications > 0 %}
+                            <span class="nav-account-badge">{{ unread_notifications }}</span>
+                        {% endif %}
                     </a>
                     <a href="{{ path('account_profile') }}" class="nav-link mt-4 block">
                         Mijn profiel

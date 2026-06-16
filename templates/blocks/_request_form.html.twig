@@ -1,0 +1,75 @@
+{% set block_index = loop.index0|default(0) %}
+{% set instance_id = 'request-form-' ~ resource.id ~ '-' ~ block_index %}
+{% set form_name = 'request_form_' ~ block_index %}
+{% set display_mode = block.display_mode|default('inline') %}
+{% set form_view = block.form ? sulu_form_build(block.form, 'page', resource.id, null, form_name) : null %}
+
+{% if form_view %}
+    {% form_theme form_view 'form/theme.html.twig' %}
+
+    <section class="section block-request-form relative overflow-hidden"
+             data-controller="request-form"
+             data-request-form-instance="{{ instance_id }}">
+
+        {% include 'components/_decor.html.twig' with {block: block} %}
+
+        <div class="request-form-shell relative z-10">
+            {% if block.title|default or block.intro|default %}
+                <div class="request-form-copy">
+                    {% if block.title|default %}
+                        <h2 class="type-section-title">{{ block.title|raw }}</h2>
+                    {% endif %}
+
+                    {% if block.intro|default %}
+                        <div class="type-body">{{ block.intro|raw }}</div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if display_mode == 'modal' %}
+                <button type="button"
+                        class="btn-primary request-form-open"
+                        data-action="request-form#open">
+                    {{ block.modal_button_label|default('Start je aanvraag') }}
+                </button>
+
+                <dialog class="request-form-modal"
+                        aria-label="Aanvraagformulier"
+                        data-request-form-target="modal"
+                        data-action="click->request-form#closeOnBackdrop">
+                    <div class="request-form-modal-content">
+                        <button type="button"
+                                class="request-form-modal-close"
+                                aria-label="Sluit aanvraagformulier"
+                                data-action="request-form#close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+
+                        <div class="request-form-modal-heading">
+                            <p class="type-kicker">Aanvraag</p>
+                            <p class="type-section-title">Vertel ons over je reis</p>
+                        </div>
+
+                        <div class="request-form-panel"
+                             data-request-form-target="formContainer">
+                            {{ form(form_view, {
+                                attr: {
+                                    'data-action': 'submit->request-form#submit',
+                                },
+                            }) }}
+                        </div>
+                    </div>
+                </dialog>
+            {% else %}
+                <div class="request-form-panel"
+                     data-request-form-target="formContainer">
+                    {{ form(form_view, {
+                        attr: {
+                            'data-action': 'submit->request-form#submit',
+                        },
+                    }) }}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endif %}

@@ -1,3 +1,5 @@
+{% set package_block_index = loop.index0|default(0) %}
+
 <section class="section block-packages relative overflow-hidden">
 
     {% include 'components/_decor.html.twig' with { block: block } %}
@@ -24,8 +26,25 @@
         {% if block.cards|default %}
             <ul class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
                 {% for card in block.cards %}
+                    {% set card_index = loop.index0 %}
+                    {% set button_type = card.button_type|default('link') %}
+                    {% set form_instance = 'request-form-' ~ resource.id ~ '-packages-' ~ package_block_index ~ '-' ~ card_index %}
+                    {% set form_name = 'package_request_form_' ~ package_block_index ~ '_' ~ card_index %}
+                    {% set form_view = null %}
+
+                    {% if button_type == 'request_form_modal' and card.request_form|default %}
+                        {% set form_view = sulu_form_build(card.request_form, 'page', resource.id, null, form_name) %}
+                        {% if form_view %}
+                            {% form_theme form_view 'form/theme.html.twig' %}
+                        {% endif %}
+                    {% endif %}
+
                     <li class="package-card
-                               {{ card.highlight|default ? 'package-card--highlight' : '' }}">
+                               {{ card.highlight|default ? 'package-card--highlight' : '' }}"
+                        {% if form_view %}
+                            data-controller="request-form"
+                            data-request-form-instance="{{ form_instance }}"
+                        {% endif %}>
 
                         {% if card.tag|default %}
                             <span class="package-card__tag type-tag">
@@ -66,7 +85,41 @@
                                 {% endif %}
                             </div>
 
-                            {% if card.button_label|default and card.button_url|default %}
+                            {% if button_type == 'request_form_modal' and card.button_label|default and form_view %}
+                                <button type="button"
+                                        class="package-card__button btn-primary"
+                                        data-action="request-form#open">
+                                    {{ card.button_label }}
+                                </button>
+
+                                <dialog class="request-form-modal"
+                                        aria-label="Aanvraagformulier voor {{ card.title }}"
+                                        data-request-form-target="modal"
+                                        data-action="click->request-form#closeOnBackdrop">
+                                    <div class="request-form-modal-content">
+                                        <button type="button"
+                                                class="request-form-modal-close"
+                                                aria-label="Sluit aanvraagformulier"
+                                                data-action="request-form#close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+
+                                        <div class="request-form-modal-heading">
+                                            <p class="type-kicker">Aanvraag</p>
+                                            <p class="type-section-title">{{ card.title }}</p>
+                                        </div>
+
+                                        <div class="request-form-panel"
+                                             data-request-form-target="formContainer">
+                                            {{ form(form_view, {
+                                                attr: {
+                                                    'data-action': 'submit->request-form#submit',
+                                                },
+                                            }) }}
+                                        </div>
+                                    </div>
+                                </dialog>
+                            {% elseif button_type == 'link' and card.button_label|default and card.button_url|default %}
                                 <a href="{{ card.button_url }}"
                                    class="package-card__button btn-primary">
                                     {{ card.button_label }}

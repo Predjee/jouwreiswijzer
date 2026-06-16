@@ -73,3 +73,12 @@ travel_plan_feedback.put_status:
     methods: [PUT]
     defaults:
         _format: json
+
+travel_request_plan.notify_feedback_processed:
+    path: /admin/api/travel-request-plans/{id}/notify-feedback-processed
+    controller: App\Controller\Admin\TravelPlanFeedbackController::notifyProcessedForRequest
+    methods: [POST]
+    defaults:
+        _format: json
+    options:
+        expose: true

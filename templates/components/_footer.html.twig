@@ -21,7 +21,15 @@
 {% set footer_view = footer.view|default({}) %}
 {% set legal_links_view = footer_view.legal_links|default([]) %}
 {% set cta_link_view = footer_view.cta_link|default({}) %}
-{% set footer_navigation = sulu_page_navigation_root_tree('main', 1, {
+{% set footer_column_1 = sulu_page_navigation_root_tree('footer_column_1', 1, {
+    title: 'title',
+    url: 'url',
+})|default([]) %}
+{% set footer_column_2 = sulu_page_navigation_root_tree('footer_column_2', 1, {
+    title: 'title',
+    url: 'url',
+})|default([]) %}
+{% set footer_legal = sulu_page_navigation_root_tree('footer_legal', 1, {
     title: 'title',
     url: 'url',
 })|default([]) %}
@@ -51,7 +59,7 @@
                 {% endif %}
             </div>
 
-            {% if footer.navigation_title or footer_navigation %}
+            {% if footer.navigation_title or footer_column_1 %}
                 <div class="flex flex-col gap-4">
                     {% if footer.navigation_title %}
                         <h2 class="type-kicker">
@@ -59,7 +67,7 @@
                         </h2>
                     {% endif %}
                     <ul class="flex flex-col gap-3" role="list">
-                        {% for item in footer_navigation %}
+                        {% for item in footer_column_1 %}
                             <li>
                                 <a href="{{ sulu_content_path(item.url) }}"
                                    class="footer-link">
@@ -71,14 +79,25 @@
                 </div>
             {% endif %}
 
-            {% if footer.legal_title|default or footer.legal_links|default %}
+            {% if footer.legal_title|default or footer_column_2 or footer.legal_links|default %}
                 <div class="flex flex-col gap-4">
                     {% if footer.legal_title|default %}
                         <h2 class="type-kicker">
                             {{ footer.legal_title }}
                         </h2>
                     {% endif %}
-                    {% if footer.legal_links|default %}
+                    {% if footer_column_2 %}
+                        <ul class="flex flex-col gap-3" role="list">
+                            {% for item in footer_column_2 %}
+                                <li>
+                                    <a href="{{ sulu_content_path(item.url) }}"
+                                       class="footer-link">
+                                        {{ item.title }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% elseif footer.legal_links|default %}
                         <ul class="flex flex-col gap-3" role="list">
                             {% for item in footer.legal_links %}
                                 {% if item.label|default and item.link|default %}
@@ -126,12 +145,28 @@
 
         </div>
 
-        {% if footer.copyright_text|default %}
+        {% if footer.copyright_text|default or footer_legal %}
             <div class="site-footer-bottom flex flex-col gap-2 pt-6
                         sm:flex-row sm:justify-between border-t">
-                <p class="type-meta">
-                    © {{ 'now'|date('Y') }} {{ footer.copyright_text }}
-                </p>
+                {% if footer.copyright_text|default %}
+                    <p class="type-meta">
+                        © {{ 'now'|date('Y') }} {{ footer.copyright_text }}
+                    </p>
+                {% endif %}
+
+                {% if footer_legal %}
+                    <ul class="flex flex-wrap gap-x-5 gap-y-2" role="list">
+                        {% for item in footer_legal %}
+                            <li>
+                                <a href="{{ sulu_content_path(item.url) }}"
+                                   class="footer-link">
+                                    {{ item.title }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
                 <span class="footer-mark type-meta" aria-hidden="true">
                     ✦
                 </span>

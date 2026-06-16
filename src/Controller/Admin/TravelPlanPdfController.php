@@ -9,6 +9,7 @@ use App\Entity\TravelPlan;
 use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelPlanRepository;
 use App\Repository\TravelRequestRepository;
+use App\Service\NotificationService;
 use App\TravelPlan\Pdf\TravelPlanPdfGenerator;
 use App\TravelPlan\Pdf\TravelPlanPdfStorage;
 use Doctrine\ORM\EntityManagerInterface;
@@ -32,6 +33,7 @@ final readonly class TravelPlanPdfController
         private TravelPlanPdfGenerator $pdfGenerator,
         private TravelPlanPdfStorage $pdfStorage,
         private TravelPlanFeedbackRepository $feedbackRepository,
+        private NotificationService $notificationService,
         private EntityManagerInterface $entityManager,
         private SecurityCheckerInterface $securityChecker,
         private UrlGeneratorInterface $urlGenerator,
@@ -161,6 +163,7 @@ final readonly class TravelPlanPdfController
         $mediaId = $this->pdfStorage->generateAndStore($travelPlan);
         $travelPlan->setPdfReleasedAt(new \DateTimeImmutable());
         $this->entityManager->flush();
+        $this->notificationService->notifyTravelPlanPdfReleased($travelPlan);
 
         return new JsonResponse([
             'id' => $id,

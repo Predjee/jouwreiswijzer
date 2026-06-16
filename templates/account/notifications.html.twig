@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <section class="account-inbox-page">
+        <div class="account-inbox-shell">
+            <header class="account-inbox-header">
+                <div>
+                    <p class="type-kicker">Mijn Omgeving</p>
+                    <h1 class="type-section-title">Notificaties</h1>
+                </div>
+
+                {% if unread_notification_count > 0 %}
+                    <form method="post" action="{{ path('account_notifications_read_all') }}">
+                        <input
+                            type="hidden"
+                            name="_csrf_token"
+                            value="{{ csrf_token('account_notifications_read_all_' ~ contact.id) }}"
+                        >
+                        <button type="submit" class="account-notifications-read-all">
+                            Alles als gelezen
+                        </button>
+                    </form>
+                {% endif %}
+            </header>
+
+            {% if notifications is empty %}
+                <div class="account-notifications-empty">
+                    Zodra er iets belangrijks verandert in je reisplan, verschijnt het hier.
+                </div>
+            {% else %}
+                <ol class="account-notifications-list account-notifications-list--timeline">
+                    {% for notification in notifications %}
+                        <li class="account-notification {{ notification.readAt ? 'is-read' : 'is-unread' }}">
+                            <div class="account-notification-copy">
+                                <div class="account-notification-meta">
+                                    <span class="account-notification-status">
+                                        {{ notification.readAt ? 'Gelezen' : 'Ongelezen' }}
+                                    </span>
+                                    <time datetime="{{ notification.createdAt|date('c') }}">
+                                        {{ notification.createdAt|date('d-m-Y H:i') }}
+                                    </time>
+                                </div>
+                                <h2>{{ notification.title }}</h2>
+                                <p>{{ notification.message }}</p>
+                            </div>
+
+                            {% if notification.readAt %}
+                                <a
+                                    href="{{ notification.url ?: path('account') }}"
+                                    class="account-notification-link"
+                                >
+                                    Openen
+                                </a>
+                            {% else %}
+                                <form method="post" action="{{ path('account_notification_read', {id: notification.id}) }}">
+                                    <input
+                                        type="hidden"
+                                        name="_csrf_token"
+                                        value="{{ csrf_token('account_notification_read_' ~ notification.id) }}"
+                                    >
+                                    <button type="submit" class="account-notification-link">
+                                        Openen
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ol>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

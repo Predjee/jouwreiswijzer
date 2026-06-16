@@ -98,6 +98,16 @@ final class TravelRequestAdmin extends Admin
                     'dialogCancelText' => 'Annuleren',
                     'dialogOkText' => 'PDF bijwerken',
                 ]),
+                new ToolbarAction('sulu_admin.reload_form_store', [
+                    'label' => 'Feedback verwerkt melden',
+                    'icon' => 'su-envelope',
+                    'route' => 'travel_request_plan.notify_feedback_processed',
+                    'dialogKey' => 'notify-feedback-processed',
+                    'dialogTitle' => 'Feedback verwerkt melden',
+                    'dialogDescription' => 'De klant ontvangt één melding en e-mail dat de feedback is verwerkt.',
+                    'dialogCancelText' => 'Annuleren',
+                    'dialogOkText' => 'Melden',
+                ]),
                 new ToolbarAction('app.release_pdf', [
                     'url' => '/admin/api/travel-request-plans/{id}/release-pdf',
                     'label' => 'PDF vrijgeven',

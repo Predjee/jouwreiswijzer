@@ -292,6 +292,141 @@
     text-transform: uppercase;
 }
 
+.account-dashboard-notice {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 1.25rem;
+    color: var(--color-gold);
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.account-inbox-page {
+    min-height: 70vh;
+    padding: clamp(3.5rem, 8vw, 7rem) var(--content-gutter);
+}
+
+.account-inbox-shell {
+    width: min(100%, 54rem);
+    margin-inline: auto;
+}
+
+.account-inbox-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-gold-15);
+}
+
+.account-notifications-read-all,
+.account-notification-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-gold-30);
+    border-radius: 0.2rem;
+    background: transparent;
+    color: var(--color-gold);
+    font: inherit;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    line-height: 1.2;
+    text-decoration: none;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.account-notifications-empty {
+    padding: 1.25rem;
+    border: 1px solid var(--color-gold-15);
+    background: color-mix(in srgb, var(--color-navy-light) 72%, transparent);
+    color: var(--color-content-dim);
+    line-height: 1.55;
+}
+
+.account-notifications-list {
+    display: grid;
+    gap: 0.85rem;
+    padding: 0;
+    list-style: none;
+}
+
+.account-notifications-list--timeline {
+    counter-reset: notifications;
+}
+
+.account-notification {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--color-gold-15);
+    background:
+        linear-gradient(145deg, var(--color-navy-light), var(--color-navy-mid));
+}
+
+.account-notification.is-unread {
+    border-color: var(--color-gold-30);
+}
+
+.account-notification-copy {
+    display: grid;
+    min-width: 0;
+    gap: 0.35rem;
+}
+
+.account-notification-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--color-content-dim);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.account-notification-dot {
+    width: 0.42rem;
+    height: 0.42rem;
+    flex: none;
+    border-radius: 50%;
+    background: var(--color-gold);
+}
+
+.account-notification h2,
+.account-notification h3 {
+    overflow-wrap: anywhere;
+    color: var(--color-content-primary);
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.account-notification-status {
+    color: var(--color-gold);
+}
+
+.account-notification p {
+    overflow-wrap: anywhere;
+    color: var(--color-content-dim);
+    line-height: 1.5;
+}
+
+.account-notification form {
+    margin: 0;
+}
+
 .account-travel-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -302,10 +437,11 @@
 
 .account-travel-card {
     position: relative;
-    display: flex;
-    min-height: 19rem;
-    flex-direction: column;
-    padding: clamp(1.5rem, 4vw, 2.25rem);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 16.5rem;
+    gap: 1.25rem;
+    padding: clamp(1.25rem, 3vw, 1.75rem);
     overflow: hidden;
     border: 1px solid var(--color-gold-15);
     background:
@@ -357,31 +493,40 @@
 }
 
 .account-travel-card-copy {
-    margin-block: auto;
-    padding-block: 2rem;
+    display: grid;
+    align-content: start;
+    gap: 0.85rem;
 }
 
 .account-travel-title {
-    max-width: 20ch;
+    max-width: 24ch;
     font-family: var(--font-display);
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-size: clamp(1.55rem, 3vw, 2.15rem);
     font-weight: 300;
-    line-height: 1.08;
+    line-height: 1.12;
     color: var(--color-content-primary);
 }
 
-.account-travel-date,
-.account-travel-unavailable {
-    margin-top: 0.75rem;
+.account-travel-subtitle {
+    max-width: 24ch;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: var(--color-gold);
+}
+
+.account-travel-status-note {
+    max-width: 32ch;
     color: var(--color-content-dim);
-    font-size: 0.875rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
 }
 
 .account-travel-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem 1.5rem;
+    gap: 0.75rem 1rem;
     align-items: center;
+    margin-top: auto;
 }
 
 .account-travel-view {
@@ -392,12 +537,8 @@
     padding-block: 0.75rem;
 }
 
-.account-travel-review {
-    flex-basis: 100%;
-    margin: 0;
-    color: var(--color-content-dim);
-    font-size: 0.8rem;
-    line-height: 1.55;
+.account-travel-feedback {
+    padding-block: 0.75rem;
 }
 
 .account-empty-state {
@@ -462,6 +603,44 @@
     text-transform: uppercase;
 }
 
+.account-travel-plan-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.account-travel-plan-mode {
+    display: inline-flex;
+    padding: 0.2rem;
+    border: 1px solid rgb(18 33 61 / 16%);
+    border-radius: 0.4rem;
+    background: rgb(255 255 255 / 70%);
+}
+
+.account-travel-plan-mode__button {
+    padding: 0.65rem 0.85rem;
+    border: 0;
+    border-radius: 0.25rem;
+    background: transparent;
+    color: #596273;
+    font: inherit;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.account-travel-plan-mode__button.is-active {
+    background: #12213d;
+    color: #fff;
+}
+
+.account-travel-plan-panel[hidden] {
+    display: none;
+}
+
 .account-travel-plan-content {
     width: min(100%, 60rem);
     margin-inline: auto;
@@ -520,6 +699,61 @@
 .account-feedback-notice {
     width: min(100%, 60rem);
     margin-inline: auto;
+}
+
+.account-feedback-round-bar {
+    position: sticky;
+    z-index: 10;
+    top: 1rem;
+    display: flex;
+    width: min(100%, 60rem);
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0 auto 1.25rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid rgb(185 149 80 / 35%);
+    border-radius: 0.5rem;
+    background: rgb(255 255 255 / 96%);
+    box-shadow: 0 0.75rem 2rem rgb(18 33 61 / 10%);
+}
+
+.account-feedback-round-bar__label {
+    display: block;
+    color: #8d6d31;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.account-feedback-round-bar p {
+    margin-top: 0.2rem;
+    color: #17233b;
+    line-height: 1.35;
+}
+
+.account-feedback-round-bar form {
+    margin: 0;
+}
+
+.account-feedback-round-bar__button {
+    padding: 0.7rem 1rem;
+    border: 0;
+    border-radius: 0.25rem;
+    background: #12213d;
+    color: #fff;
+    font: inherit;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.account-feedback-round-bar__button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
 }
 
 .account-feedback-card {
@@ -868,6 +1102,29 @@
     cursor: pointer;
 }
 
+.nav-account-dropdown a.nav-account-dropdown-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.nav-account-badge {
+    display: inline-flex;
+    min-width: 1.35rem;
+    height: 1.35rem;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 0.35rem;
+    border-radius: 999px;
+    background: var(--color-gold);
+    color: var(--color-navy-deepest);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1;
+}
+
 .nav-account-dropdown-header {
     display: grid;
     gap: 0.15rem;
@@ -962,12 +1219,25 @@
         margin-top: 1rem;
     }
 
+    .account-inbox-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .account-notification {
+        grid-template-columns: 1fr;
+    }
+
+    .account-notification-link {
+        width: 100%;
+    }
+
     .account-travel-grid {
         grid-template-columns: 1fr;
     }
 
     .account-travel-card {
-        min-height: 17rem;
+        min-height: 0;
     }
 
     .account-travel-actions {
@@ -975,7 +1245,8 @@
         flex-direction: column;
     }
 
-    .account-travel-download {
+    .account-travel-actions .btn-primary,
+    .account-travel-actions .btn-ghost {
         justify-content: center;
     }
 
@@ -984,8 +1255,17 @@
         flex-direction: column;
     }
 
+    .account-travel-plan-actions,
     .account-travel-plan-toolbar .btn-primary {
         justify-content: center;
+    }
+
+    .account-travel-plan-mode {
+        width: 100%;
+    }
+
+    .account-travel-plan-mode__button {
+        flex: 1;
     }
 
     .account-travel-plan-content {
@@ -994,6 +1274,15 @@
 
     .account-feedback-card {
         grid-template-columns: 1fr;
+    }
+
+    .account-feedback-round-bar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .account-feedback-round-bar__button {
+        width: 100%;
     }
 
     .account-feedback-card > .account-feedback-new {

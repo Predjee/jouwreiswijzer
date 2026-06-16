@@ -67,9 +67,13 @@ final readonly class TravelPlanRenderer
     /**
      * @param array<string, TravelPlanFeedback> $feedbackByPath
      */
-    public function renderForAccount(TravelPlan $travelPlan, array $feedbackByPath = []): string
+    public function renderForAccount(
+        TravelPlan $travelPlan,
+        array $feedbackByPath = [],
+        bool $feedbackEnabled = true,
+    ): string
     {
-        return $this->renderView($travelPlan, true, $feedbackByPath);
+        return $this->renderView($travelPlan, true, $feedbackByPath, $feedbackEnabled);
     }
 
     /**
@@ -79,6 +83,7 @@ final readonly class TravelPlanRenderer
         TravelPlan $travelPlan,
         bool $accountView,
         array $feedbackByPath = [],
+        bool $feedbackEnabled = false,
     ): string
     {
         $content = $travelPlan->getContent();
@@ -114,6 +119,7 @@ final readonly class TravelPlanRenderer
                 'section' => $section,
                 'accountView' => $accountView,
                 'travelPlan' => $travelPlan,
+                'feedbackEnabled' => $feedbackEnabled,
             ];
 
             if ('day' === $type) {
@@ -123,6 +129,7 @@ final readonly class TravelPlanRenderer
                     (int) $sectionIndex,
                     $accountView,
                     $feedbackByPath,
+                    $feedbackEnabled,
                 );
             }
 
@@ -135,7 +142,9 @@ final readonly class TravelPlanRenderer
                 ),
                 'blockPath' => \sprintf('sections[%d]', $sectionIndex),
                 'blockType' => $type,
-                'feedback' => $feedbackByPath[\sprintf('sections[%d]', $sectionIndex)] ?? null,
+                'feedback' => $feedbackEnabled
+                    ? ($feedbackByPath[\sprintf('sections[%d]', $sectionIndex)] ?? null)
+                    : null,
             ];
         }
 
@@ -146,6 +155,7 @@ final readonly class TravelPlanRenderer
             'renderedSections' => $renderedSections,
             'logoSrc' => $this->assetDataUri('assets/images/pdf/logo-pdf.png', 'image/png'),
             'accountView' => $accountView,
+            'feedbackEnabled' => $feedbackEnabled,
         ]);
     }
 
@@ -158,6 +168,7 @@ final readonly class TravelPlanRenderer
         int $sectionIndex,
         bool $accountView,
         array $feedbackByPath,
+        bool $feedbackEnabled,
     ): array
     {
         if (!\is_array($blocks)) {
@@ -193,9 +204,11 @@ final readonly class TravelPlanRenderer
                 ),
                 'blockPath' => \sprintf('sections[%d].blocks[%d]', $sectionIndex, $blockIndex),
                 'blockType' => $type,
-                'feedback' => $feedbackByPath[
-                    \sprintf('sections[%d].blocks[%d]', $sectionIndex, $blockIndex)
-                ] ?? null,
+                'feedback' => $feedbackEnabled
+                    ? ($feedbackByPath[
+                        \sprintf('sections[%d].blocks[%d]', $sectionIndex, $blockIndex)
+                    ] ?? null)
+                    : null,
             ];
         }
 

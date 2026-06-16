@@ -26,4 +26,15 @@
             </div>
         </div>
     </section>
+
+    <div class="page-blocks">
+        {% for block in content.blocks|default([]) %}
+            {{ include(
+                'blocks/_' ~ block.type ~ '.html.twig',
+                {block: block},
+                with_context: true,
+                ignore_missing: true,
+            ) }}
+        {% endfor %}
+    </div>
 {% endblock %}

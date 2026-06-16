@@ -83,6 +83,11 @@
     margin-block-start: auto;
 }
 
+button.package-card__button {
+    border: 0;
+    cursor: pointer;
+}
+
 @media (min-width: 768px) {
     .package-card__body {
         padding: 2rem 1.5rem;

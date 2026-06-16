@@ -6,7 +6,7 @@
     </header>
     {% for renderedBlock in renderedBlocks %}
         {{ renderedBlock.html|raw }}
-        {% if accountView %}
+        {% if accountView and feedbackEnabled|default(false) %}
             {{ include('account/_travel_plan_feedback_form.html.twig', {
                 travelPlan: travelPlan,
                 blockPath: renderedBlock.blockPath,

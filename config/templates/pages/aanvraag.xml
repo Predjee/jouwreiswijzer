@@ -35,5 +35,24 @@
                 <param name="resourceKey" value="page"/>
             </params>
         </property>
+
+        <section name="content">
+            <meta>
+                <title lang="nl">Content blokken</title>
+            </meta>
+            <properties>
+                <property name="blocks" type="block" mandatory="false">
+                    <meta>
+                        <title lang="nl">Paginablokken</title>
+                    </meta>
+                    <params>
+                        <param name="settings_form_key" value="content_block_settings"/>
+                    </params>
+                    <types>
+                        <type ref="request_form"/>
+                    </types>
+                </property>
+            </properties>
+        </section>
     </properties>
 </template>

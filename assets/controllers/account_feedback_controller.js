@@ -40,6 +40,7 @@ export default class extends Controller {
                 throw new Error(data.message || 'De actie kon niet worden uitgevoerd.');
             }
 
+            this.updateFeedbackRound(data.activeFeedbackCount);
             this.replaceFeedback(data.html, data.message, 'success', scrollPosition);
         } catch (error) {
             this.setLoading(buttons, false);
@@ -84,5 +85,23 @@ export default class extends Controller {
 
         this.statusTarget.textContent = message;
         this.statusTarget.dataset.state = state;
+    }
+
+    updateFeedbackRound(count) {
+        if (!Number.isInteger(count)) {
+            return;
+        }
+
+        document.querySelectorAll('[data-feedback-round-count]').forEach((element) => {
+            element.textContent = String(count);
+        });
+
+        document.querySelectorAll('[data-feedback-round-label]').forEach((element) => {
+            element.textContent = count === 1 ? 'open feedbackpunt' : 'open feedbackpunten';
+        });
+
+        document.querySelectorAll('[data-feedback-round-submit]').forEach((button) => {
+            button.disabled = count === 0;
+        });
     }
 }

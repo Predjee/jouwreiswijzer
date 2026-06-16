@@ -1,50 +1,116 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
-    <section class="account-travel-plan-page">
+    <section
+        class="account-travel-plan-page account-travel-plan-page--view"
+        data-controller="account-travel-plan-mode"
+    >
         <div class="account-travel-plan-toolbar">
             <a href="{{ path('account') }}" class="account-travel-plan-back">
                 <span aria-hidden="true">←</span>
                 Mijn reisplannen
             </a>
 
-            {% if travel_plan.pdfReleasedAt %}
-                <a
-                    href="{{ path('account_travel_plan_pdf', {id: travel_plan.id}) }}"
-                    class="btn-primary"
-                    download
-                >
-                    PDF downloaden
-                </a>
-            {% endif %}
+            <div class="account-travel-plan-actions">
+                <div class="account-travel-plan-mode" aria-label="Reisplanmodus">
+                    <button
+                        type="button"
+                        class="account-travel-plan-mode__button is-active"
+                        data-account-travel-plan-mode-target="viewButton"
+                        data-action="account-travel-plan-mode#showView"
+                        aria-pressed="true"
+                    >
+                        Reisplan bekijken
+                    </button>
+                    <button
+                        type="button"
+                        class="account-travel-plan-mode__button"
+                        data-account-travel-plan-mode-target="feedbackButton"
+                        data-action="account-travel-plan-mode#showFeedback"
+                        aria-pressed="false"
+                    >
+                        Feedback geven
+                    </button>
+                </div>
+
+                {% if travel_plan.pdfReleasedAt %}
+                    <a
+                        href="{{ path('account_travel_plan_pdf', {id: travel_plan.id}) }}"
+                        class="btn-primary"
+                        download
+                    >
+                        PDF downloaden
+                    </a>
+                {% endif %}
+            </div>
         </div>
 
-        {% if not travel_plan.pdfReleasedAt %}
-            <div class="account-feedback-notice account-feedback-notice--review" role="status">
-                Je reisplan is nog in review. De definitieve PDF verschijnt hier zodra alles is afgerond.
-            </div>
-        {% endif %}
+        <div
+            class="account-travel-plan-panel account-travel-plan-content"
+            data-account-travel-plan-mode-target="viewPanel"
+        >
+            {{ travel_plan_view_html|raw }}
+        </div>
 
-        {% for message in app.flashes('account_feedback_success') %}
-            <div class="account-feedback-notice account-feedback-notice--success" role="status">
-                {{ message }}
-            </div>
-        {% endfor %}
-        {% for message in app.flashes('account_feedback_error') %}
-            <div class="account-feedback-notice account-feedback-notice--error" role="alert">
-                {{ message }}
-            </div>
-        {% endfor %}
+        <div
+            class="account-travel-plan-panel account-travel-plan-panel--feedback"
+            data-account-travel-plan-mode-target="feedbackPanel"
+            hidden
+        >
+            {% if not travel_plan.pdfReleasedAt %}
+                <div class="account-feedback-notice account-feedback-notice--review" role="status">
+                    Je reisplan is nog in review. De definitieve PDF verschijnt hier zodra alles is afgerond.
+                </div>
+            {% endif %}
 
-        {{ include('account/_travel_plan_feedback_form.html.twig', {
-            travelPlan: travel_plan,
-            blockPath: null,
-            feedback: travel_plan_feedback,
-            feedbackContext: 'plan'
-        }) }}
+            {% for message in app.flashes('account_feedback_success') %}
+                <div class="account-feedback-notice account-feedback-notice--success" role="status">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('account_feedback_error') %}
+                <div class="account-feedback-notice account-feedback-notice--error" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
 
-        <div class="account-travel-plan-content">
-            {{ travel_plan_html|raw }}
+            <div class="account-feedback-round-bar">
+                <div>
+                    <span class="account-feedback-round-bar__label">Feedbackronde</span>
+                    <p>
+                        <strong data-feedback-round-count>{{ feedback_round_count }}</strong>
+                        <span data-feedback-round-label>
+                            {{ feedback_round_count == 1 ? 'open feedbackpunt' : 'open feedbackpunten' }}
+                        </span>
+                    </p>
+                </div>
+                <form method="post" action="{{ path('account_travel_plan_feedback_round', {id: travel_plan.id}) }}">
+                    <input
+                        type="hidden"
+                        name="_csrf_token"
+                        value="{{ csrf_token('travel_plan_feedback_round_' ~ travel_plan.id) }}"
+                    >
+                    <button
+                        type="submit"
+                        class="account-feedback-round-bar__button"
+                        data-feedback-round-submit
+                        {{ feedback_round_count == 0 ? 'disabled' : '' }}
+                    >
+                        Feedbackronde versturen
+                    </button>
+                </form>
+            </div>
+
+            {{ include('account/_travel_plan_feedback_form.html.twig', {
+                travelPlan: travel_plan,
+                blockPath: null,
+                feedback: travel_plan_feedback,
+                feedbackContext: 'plan'
+            }) }}
+
+            <div class="account-travel-plan-content">
+                {{ travel_plan_feedback_html|raw }}
+            </div>
         </div>
     </section>
 {% endblock %}

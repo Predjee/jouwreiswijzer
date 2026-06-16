@@ -12,6 +12,7 @@
     <meta>
         <title lang="en">Default</title>
         <title lang="de">Standard</title>
+        <title lang="nl">Standaardpagina</title>
     </meta>
 
     <properties>
@@ -40,7 +41,36 @@
             <meta>
                 <title lang="en">Article</title>
                 <title lang="de">Artikel</title>
+                <title lang="nl">Artikel</title>
             </meta>
         </property>
+
+        <section name="content">
+            <meta>
+                <title lang="nl">Content blokken</title>
+            </meta>
+            <properties>
+                <property name="blocks" type="block" mandatory="false">
+                    <meta>
+                        <title lang="nl">Paginablokken</title>
+                    </meta>
+                    <params>
+                        <param name="settings_form_key" value="content_block_settings"/>
+                    </params>
+                    <types>
+                        <type ref="hero"/>
+                        <type ref="steps_strip"/>
+                        <type ref="intro_two_col"/>
+                        <type ref="steps_grid"/>
+                        <type ref="travel_types_grid"/>
+                        <type ref="text_media"/>
+                        <type ref="packages"/>
+                        <type ref="cta_banner"/>
+                        <type ref="quote_single"/>
+                        <type ref="request_form"/>
+                    </types>
+                </property>
+            </properties>
+        </section>
     </properties>
 </template>

@@ -10,7 +10,7 @@
                         Welkom terug, {{ contact.firstName ?: contact.fullName }}
                     </h1>
                     <p class="type-body">
-                        Hier vind je jouw persoonlijke reisplannen en documenten overzichtelijk bij elkaar.
+                        Volg hier de status van je actieve reizen, bekijk je reisplan en rond feedback af wanneer er nog iets openstaat.
                     </p>
                 </div>
 
@@ -28,6 +28,13 @@
                 </div>
             </header>
 
+            {% if unread_notification_count > 0 %}
+                <a href="{{ path('account_notifications') }}" class="account-dashboard-notice">
+                    Je hebt {{ unread_notification_count }} nieuwe {{ unread_notification_count == 1 ? 'melding' : 'meldingen' }}
+                    <span aria-hidden="true">→</span>
+                </a>
+            {% endif %}
+
             <div class="account-dashboard-heading">
                 <div>
                     <p class="section-label">Jouw reizen</p>
@@ -35,7 +42,7 @@
                 </div>
                 {% if travel_plans is not empty %}
                     <p class="account-dashboard-count">
-                        {{ travel_plans|length }} {{ travel_plans|length == 1 ? 'reisplan' : 'reisplannen' }}
+                        {{ travel_plans|length }} actieve {{ travel_plans|length == 1 ? 'reis' : 'reizen' }}
                     </p>
                 {% endif %}
             </div>
@@ -56,12 +63,13 @@
                 </div>
             {% else %}
                 <ul class="account-travel-grid" role="list">
-                    {% for travel_plan in travel_plans %}
+                    {% for card in travel_plans %}
+                        {% set travel_plan = card.travelPlan %}
                         <li class="account-travel-card">
                             <div class="account-travel-card-top">
                                 <span class="account-travel-status">
                                     <span aria-hidden="true"></span>
-                                    Gepubliceerd
+                                    {{ card.statusLabel }}
                                 </span>
                                 <span class="account-travel-number">
                                     {{ '%02d'|format(loop.index) }}
@@ -70,11 +78,20 @@
 
                             <div class="account-travel-card-copy">
                                 <h3 class="account-travel-title">{{ travel_plan.title }}</h3>
-                                {% if travel_plan.publishedAt %}
-                                    <p class="account-travel-date">
-                                        Beschikbaar sinds {{ travel_plan.publishedAt|date('d-m-Y') }}
+                                {% if travel_plan.content.intro.title|default and travel_plan.content.intro.title != travel_plan.title %}
+                                    <p class="account-travel-subtitle">
+                                        {{ travel_plan.content.intro.title }}
                                     </p>
                                 {% endif %}
+                                <p class="account-travel-status-note">
+                                    {% if card.openFeedbackCount > 0 %}
+                                        Er staat nog feedback open.
+                                    {% elseif card.pdfAvailable %}
+                                        Je definitieve reisgids staat klaar.
+                                    {% else %}
+                                        Je reisplan is nog in review.
+                                    {% endif %}
+                                </p>
                             </div>
 
                             <div class="account-travel-actions">
@@ -84,18 +101,22 @@
                                 >
                                     Bekijk reisplan
                                 </a>
-                                {% if travel_plan.pdfReleasedAt %}
+
+                                {% if card.pdfAvailable %}
                                     <a
                                         href="{{ path('account_travel_plan_pdf', {id: travel_plan.id}) }}"
                                         class="btn-ghost account-travel-download"
                                         download
                                     >
-                                        Download PDF
+                                        Download reisgids
                                     </a>
-                                {% else %}
-                                    <p class="account-travel-review">
-                                        Je reisplan is nog in review. De definitieve PDF verschijnt hier zodra alles is afgerond.
-                                    </p>
+                                {% elseif card.openFeedbackCount > 0 %}
+                                    <a
+                                        href="{{ path('account_travel_plan', {id: travel_plan.id, mode: 'feedback'}) }}"
+                                        class="btn-ghost account-travel-feedback"
+                                    >
+                                        Feedback geven
+                                    </a>
                                 {% endif %}
                             </div>
                         </li>

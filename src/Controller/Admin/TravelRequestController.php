@@ -373,7 +373,6 @@ final class TravelRequestController extends AbstractRestController implements Se
 
         return [
             'id' => $travelRequest->getId(),
-            'status' => $travelRequest->getStatus(),
             'internalNotes' => $travelRequest->getInternalNotes(),
             'summary' => $travelRequest->getSummary(),
             'createdAt' => $travelRequest->getCreatedAt()->format(\DateTimeInterface::ATOM),

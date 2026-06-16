@@ -5,12 +5,17 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Admin\TravelRequestAdmin;
+use App\Entity\TravelPlan;
 use App\Entity\TravelPlanFeedback;
+use App\Repository\TravelPlanRepository;
 use App\Repository\TravelPlanFeedbackRepository;
+use App\Repository\TravelRequestRepository;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;
 use Sulu\Component\Rest\AbstractRestController;
 use Sulu\Component\Security\SecuredControllerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -21,6 +26,9 @@ final class TravelPlanFeedbackController extends AbstractRestController implemen
     public function __construct(
         ViewHandlerInterface $viewHandler,
         private readonly TravelPlanFeedbackRepository $repository,
+        private readonly TravelPlanRepository $travelPlanRepository,
+        private readonly TravelRequestRepository $travelRequestRepository,
+        private readonly NotificationService $notificationService,
         private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($viewHandler);
@@ -81,6 +89,32 @@ final class TravelPlanFeedbackController extends AbstractRestController implemen
         $this->entityManager->flush();
 
         return $this->handleView($this->view($this->serialize($feedback)));
+    }
+
+    public function notifyProcessedForRequest(int $id): JsonResponse
+    {
+        $travelRequest = $this->travelRequestRepository->find($id);
+
+        if (null === $travelRequest) {
+            throw new NotFoundHttpException(\sprintf('TravelRequest "%d" was not found.', $id));
+        }
+
+        $travelPlan = $this->travelPlanRepository->findOneBy(['travelRequest' => $travelRequest]);
+
+        if (!$travelPlan instanceof TravelPlan) {
+            throw new NotFoundHttpException(\sprintf(
+                'No TravelPlan was found for TravelRequest "%d".',
+                $id,
+            ));
+        }
+
+        $this->notificationService->notifyFeedbackProcessed($travelPlan);
+
+        return new JsonResponse([
+            'id' => $id,
+            'travelPlanId' => $travelPlan->getId(),
+            'message' => 'De klant is geïnformeerd dat feedback is verwerkt.',
+        ]);
     }
 
     public function getSecurityContext(): string

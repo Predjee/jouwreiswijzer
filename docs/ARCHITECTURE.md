@@ -1,29 +1,37 @@
 # JouwReiswijzer — Architecture Reference
 
-Compacte technische referentie voor AI-agents en ontwikkelaars.
+Compacte technische referentie voor ontwikkelaars en AI-agents.
 
-Gebruik dit document voor architectuurkeuzes, projectconventies en implementatierichting.  
-Gebruik dit document niet als volledige productspecificatie.
-
----
-
-## 1. Project
-
-JouwReiswijzer is een Symfony/Sulu applicatie voor persoonlijk reisadvies.
-
-De applicatie bestaat uit:
-
-1. Publieke marketingwebsite
-2. Aanvraagflow
-3. Sulu CMS beheeromgeving
-4. Maatwerkmodule voor aanvragen en reisplannen
-5. PDF-export van reisvoorstellen
-
-Doel: een onderhoudbaar, snel en shared-hosting-geschikt platform.
+Dit document beschrijft de architectuurstandaard van het project.  
+Wanneer code en document conflicteren, moet eerst worden onderzocht of het document nog actueel is.
 
 ---
 
-## 2. Stack
+# 1. Project
+
+JouwReisWijzer is een Symfony/Sulu platform voor persoonlijk reisadvies.
+
+Het platform bestaat uit:
+
+- publieke website
+- aanvraagformulieren
+- Sulu beheeromgeving
+- reisplanbeheer
+- klantportaal (Mijn Omgeving)
+- feedbacksysteem
+- notificaties
+- PDF-reisgidsen
+
+Doel:
+
+- onderhoudbaar
+- uitbreidbaar
+- shared-hosting compatibel
+- Symfony/Sulu-first
+
+---
+
+# 2. Stack
 
 - Symfony 7.4
 - Sulu CMS 3.x
@@ -31,336 +39,293 @@ Doel: een onderhoudbaar, snel en shared-hosting-geschikt platform.
 - MySQL
 - Twig
 - Tailwind CSS 4
-- Hotwire Turbo
 - Stimulus
+- Turbo
+- AssetMapper
 - mPDF
-- Server-side rendering first
+
+Server-side rendering heeft de voorkeur.
 
 ---
 
-## 3. Hosting Constraints
+# 3. Hosting Constraints
 
-De applicatie moet geschikt blijven voor shared hosting.
+De applicatie moet geschikt blijven voor standaard PHP hosting.
 
-Niet gebruiken:
+Niet introduceren zonder expliciete beslissing:
 
-- Docker
+- Docker afhankelijkheden
+- browser-based PDF rendering
 - Puppeteer
 - Playwright
 - wkhtmltopdf
-- long-running workers
-- zware queue-infrastructuur
-- permanente Node-processen
-- server dependencies buiten normale PHP/Symfony hosting
+- permanente workers
+- zware queue infrastructuur
+- Node runtime vereisten in productie
 
-PDF-generatie gebeurt met mPDF.
-
----
-
-## 4. Architectural Principles
-
-- Gebruik Symfony-conventies.
-- Gebruik Sulu-functionaliteit voordat maatwerk wordt toegevoegd.
-- Houd code eenvoudig en expliciet.
-- Geen overengineering.
-- Server-side rendering eerst.
-- JavaScript alleen waar nodig.
-- Businesslogica niet in Twig.
-- Businesslogica niet in Doctrine repositories.
-- Shared hosting beperkingen altijd respecteren.
-- Onderhoudbaarheid is belangrijker dan slimme abstracties.
+PDF-generatie gebeurt via mPDF.
 
 ---
 
-## 5. Frontend Architecture
+# 4. Architectural Principles
 
-Frontend wordt opgebouwd met:
+Gebruik standaard Symfony- en Sulu-conventies.
 
-- Twig templates
-- Tailwind CSS 4
-- Stimulus voor kleine interacties
-- Turbo waar nuttig
+Voorkeuren:
 
-Tailwind CSS 4 wordt gebruikt zonder `tailwind.config.js`.
+- eenvoud boven abstractie
+- leesbaarheid boven slimheid
+- Symfony boven maatwerk
+- Sulu boven maatwerk
+- server-side rendering eerst
 
-Globale styling staat in `assets/styles/`.
+Niet toegestaan:
 
-Blockspecifieke styling staat in `assets/styles/blocks/`.
-
-Twig blijft verantwoordelijk voor markup en layout.  
-CSS blijft verantwoordelijk voor visuele stijl, componentvarianten en animaties.
-
-JavaScript mag alleen worden toegevoegd wanneer het duidelijke UX-waarde heeft.
+- businesslogica in Twig
+- businesslogica in Doctrine repositories
+- mailverzending vanuit Twig
+- notificaties vanuit Twig
 
 ---
 
-## 6. Sulu Page Architecture
+# 5. Application Structure
 
-Sulu beheert publieke content.
+Gebruik waar mogelijk standaard Symfony patronen.
 
-Belangrijke page types:
+Voorkeursstructuur:
 
-- `homepage`
-- `default`
-- `aanvraag`
+```text
+Controller
+    ↓
+DTO / Symfony Form
+    ↓
+Service
+    ↓
+Entity / Repository
+```
 
-Homepage en default pages gebruiken een block-systeem.
+Optioneel:
 
-Blocks staan in:
+```text
+Controller
+    ↓
+DTO
+    ↓
+Service
+    ↓
+Event
+    ↓
+Listener(s)
+```
+
+Events worden alleen gebruikt wanneer er duidelijke side-effects bestaan.
+
+Voorbeelden:
+
+- notificaties
+- mails
+- logging
+- toekomstige pushberichten
+
+Gebruik geen DDD, CQRS, Hexagonal Architecture of Vertical Slice Architecture als standaard voor het project.
+
+Deze technieken mogen alleen worden toegepast wanneer een concreet probleem dat rechtvaardigt.
+
+---
+
+# 6. Controllers
+
+Controllers blijven dun.
+
+Controllers mogen:
+
+- requests ontvangen
+- security controleren
+- DTO's vullen
+- services aanroepen
+- responses teruggeven
+
+Controllers mogen niet:
+
+- mails versturen
+- notificaties maken
+- complexe workflowlogica bevatten
+- grote domeinbeslissingen nemen
+
+---
+
+# 7. DTO's
+
+Voor nieuwe AJAX-, JSON- en API-gerelateerde endpoints heeft een DTO de voorkeur.
+
+Gebruik:
+
+- typed properties
+- Symfony Validator constraints
+- MapRequestPayload waar passend
+
+Voordelen:
+
+- centrale validatie
+- toekomstige API ondersteuning
+- consistente inputmodellen
+
+Symfony Forms blijven toegestaan waar dat logischer is.
+
+---
+
+# 8. Services
+
+Services bevatten businesslogica.
+
+Voorbeelden:
+
+```text
+ContactOnboardingService
+NotificationService
+TravelPlanPublisher
+FeedbackPathResolver
+AccountTokenHasher
+```
+
+Services moeten één duidelijke verantwoordelijkheid hebben.
+
+Voorkom grote "god services".
+
+---
+
+# 9. Events & Listeners
+
+Gebruik events wanneer meerdere side-effects ontstaan uit één actie.
+
+Voorbeelden:
+
+```text
+FeedbackSubmittedEvent
+FeedbackProcessedEvent
+TravelPlanPublishedEvent
+TravelPlanPdfReleasedEvent
+```
+
+Listeners mogen:
+
+- notificaties maken
+- mails versturen
+- logging uitvoeren
+
+De hoofdworkflow mag niet afhankelijk zijn van een succesvolle mailverzending.
+
+---
+
+# 10. Doctrine
+
+Doctrine gebruikt PHP attributes.
+
+Repositories bevatten uitsluitend querylogica.
+
+Niet toegestaan:
+
+- businesslogica
+- notificaties
+- mailverzending
+- workflowafhandeling
+
+---
+
+# 11. Sulu
+
+Gebruik Sulu als platform.
+
+Voorkeur:
+
+- bestaande admin componenten
+- bestaande metadata systemen
+- bestaande toolbar actions
+- bestaande form integraties
+- bestaande media library
+- bestaande contact- en usermodellen
+
+Voeg alleen maatwerk toe wanneer Sulu geen passende oplossing biedt.
+
+---
+
+# 12. Frontend
+
+Frontend bestaat uit:
+
+- Twig
+- Tailwind CSS
+- Stimulus
+- Turbo
+
+JavaScript wordt alleen toegevoegd wanneer er duidelijke UX-winst is.
+
+Stylingstructuur:
+
+```text
+assets/styles/
+assets/styles/blocks/
+```
+
+Block templates:
 
 ```text
 config/templates/blocks/
 templates/blocks/
-assets/styles/blocks/
 ```
 
 Elke block heeft:
 
-- een XML definitie
-- een Twig template
-- optioneel eigen CSS
-- een root class met `block-*`
-
-Voorbeeld:
-
-```text
-block-hero
-block-steps-grid
-block-cta-banner
-```
-
-SEO gebruikt de ingebouwde Sulu SEO-extensie.  
-Geen custom SEO-sectie in page type XML's.
+- XML definitie
+- Twig template
+- optionele CSS
 
 ---
 
-## 7. Template Structure
+# 13. Domain Model
 
-Aanbevolen structuur:
+Belangrijkste domeinobjecten:
 
 ```text
-templates/
-  base.html.twig
-  pages/
-  blocks/
-  components/
-  form/
-  pdf/
+TravelRequest
+TravelPlan
+TravelPlanFeedback
+Notification
 ```
 
-`base.html.twig` bevat:
+TravelPlan is de centrale bron van waarheid.
 
-- globale layout
-- navigatie
-- footer
-- importmap
-- main wrapper
+PDF's, notificaties en klantweergaven zijn afgeleiden van TravelPlan data.
 
-Blocks worden dynamisch gerenderd vanuit Sulu content.
-
-Businesslogica hoort niet in Twig.  
-Complexe presentatievoorbereiding hoort in PHP services, controllers of view models.
+Voorkom duplicatie van status- en workflowinformatie tussen entiteiten.
 
 ---
 
-## 8. Navigation
+# 14. Notifications
 
-Navigatie gebruikt Sulu navigatiecontexten.
+Database-notificaties zijn leidend.
 
-Hoofdnavigatie gebruikt context:
+E-mail is een aanvullend kanaal.
 
-```text
-main
-```
+Niet iedere actie hoeft een mail te sturen.
 
-Mobiele navigatie mag met Stimulus worden afgehandeld.
+Voorkom mailspam.
 
----
-
-## 9. Forms and Request Flow
-
-## Aanvraagflow en klantidentiteit
-
-De aanvraagflow gebruikt `sulu/form-bundle`.
-
-Een Sulu-formulier wordt alleen als aanvraag verwerkt wanneer het formulier expliciet is gemarkeerd als aanvraagformulier.
-
-De applicatie vertrouwt niet op de formuliernaam en niet op vaste frontend veldnamen, behalve voor het herkennen van standaard contactvelden zoals e-mail, voornaam, achternaam en telefoon.
-
-Bij een succesvolle inzending:
-
-1. De listener controleert of het formulier als aanvraagformulier is gemarkeerd.
-2. De listener zoekt het e-mailveld in de formulierdefinitie of submission data.
-3. Het e-mailadres wordt gebruikt om een bestaand Sulu Contact te vinden of een nieuw Contact aan te maken.
-4. Bestaande Contact-gegevens worden nooit automatisch overschreven door publieke formulierdata.
-5. Voornaam, achternaam en telefoonnummer uit de inzending worden opgeslagen op de TravelRequest als ingediende contactgegevens.
-6. Wanneer deze gegevens afwijken van een bestaand Contact, wordt de aanvraag gemarkeerd als contact-conflict of review nodig.
-7. De volledige formulierinzending wordt generiek opgeslagen op de TravelRequest.
-8. TravelRequest krijgt standaard status `new`.
-
-Een klantaccount voor een toekomstige Mijn Omgeving wordt niet direct bij iedere aanvraag aangemaakt.  
-Een account wordt pas aangemaakt of uitgenodigd wanneer een beheerder een reisplan wil delen of publiceren.
-
-Toekomstige klantaccounts gebruiken minimaal de rol:
-
-`ROLE_CUSTOMER`
-
-Een klantaccount mag pas toegang krijgen na e-mailverificatie of expliciete uitnodiging.
-
-## Customer Identity Model
-
-JouwReiswijzer gebruikt bestaande Sulu-entiteiten waar mogelijk.
-
-### Contact
-
-Sulu Contact is de primaire plek voor klant/contactpersoongegevens.
-
-Publieke formulierdata mag bestaande Contact-gegevens niet automatisch overschrijven.
-
-### TravelRequest
-
-TravelRequest bewaart de aanvraag zoals ingezonden:
-
-- submittedEmail
-- submittedFirstName
-- submittedLastName
-- submittedPhone
-- submittedData
-- contactDataConflict
-
-### Sulu User
-
-Voor een toekomstige Mijn Omgeving wordt gebruikgemaakt van Sulu's bestaande user-systeem (`se_users`).
-
-Er wordt geen eigen klant-user entity gebouwd tenzij Sulu hiervoor onvoldoende blijkt.
-
-Een klantlogin wordt pas aangemaakt of geactiveerd na expliciete uitnodiging of publicatie van een reisplan.
-
-Toekomstige klantgebruikers krijgen een aparte rol, bijvoorbeeld:
-
-ROLE_CUSTOMER
-
-Publieke aanvraagformulieren maken niet automatisch een loginaccount aan.
+Toekomstige pushnotificaties moeten kunnen aansluiten op hetzelfde notificatiemodel.
 
 ---
 
-## 10. Domain Model
-
-### TravelRequest
-
-Een aanvraag van een bezoeker.
-
-Relaties:
-
-- hoort bij één Sulu Contact
-- kan gekoppeld zijn aan één TravelPlan
-
-Statussen:
-
-```text
-new
-in_progress
-needs_info
-plan_in_progress
-proposal_ready
-completed
-cancelled
-```
-
-### TravelPlan
-
-Een reisvoorstel op basis van een aanvraag.
-
-Relaties:
-
-- hoort bij één TravelRequest
-- bevat meerdere TravelDays
-
-Statussen:
-
-```text
-draft
-published
-```
-
-### TravelDay
-
-Een dag binnen een reisplan.
-
-Relaties:
-
-- hoort bij één TravelPlan
-- bevat meerdere TravelDayParts
-
-### TravelDayPart
-
-Een onderdeel van een reisdag.
-
-Types:
-
-```text
-activity
-accommodation
-transport
-meal
-free_text
-```
-
----
-
-## 11. Doctrine Rules
-
-Applicatie-entiteiten gebruiken Doctrine attributes.
-
-Geen Doctrine annotations.
-
-Applicatie-migraties staan los van Sulu migraties.
-
-Gebruik:
-
-```text
-App\Migrations
-```
-
-Repositories bevatten alleen querylogica.  
-Geen business rules in repositories.
-
----
-
-## 12. Sulu Admin Module
-
-De maatwerkmodule in Sulu CMS beheert:
-
-- aanvragen
-- aanvraagstatussen
-- klantgegevens
-- reisvoorkeuren
-- reisplannen
-- reisdagen
-- dagonderdelen
-- PDF-export
-
-Gebruik Sulu admin conventies en bestaande Sulu patronen.
-
-Geen custom admin-framework bouwen wanneer Sulu dit al ondersteunt.
-
-De beheerervaring moet eenvoudig blijven.
-
----
-
-## 13. PDF Export
+# 15. PDF
 
 PDF-export gebruikt uitsluitend mPDF.
 
-Geen browsergebaseerde PDF-generatie.
-
-PDF templates staan in:
+Templates:
 
 ```text
 templates/pdf/
 ```
 
-PDF-gerelateerde services staan bij voorkeur in:
+Services:
 
 ```text
 src/Pdf/
@@ -369,91 +334,34 @@ src/Pdf/
 Prioriteiten:
 
 1. betrouwbaarheid
-2. leesbaarheid
-3. onderhoudbaarheid
-4. shared-hosting-compatibiliteit
-
-Pixel-perfect browserweergave is geen doel.
+2. onderhoudbaarheid
+3. leesbaarheid
+4. pixel-perfect rendering is geen doel
 
 ---
 
-## 14. Assets
-
-Gebruik AssetMapper/importmap waar mogelijk.
-
-Geen zware frontend build pipeline tenzij noodzakelijk.
-
-Afbeeldingen moeten geoptimaliseerd worden via Sulu image formats waar passend.
-
----
-
-## 15. Testing Policy
-
-In vroege projectfase worden tests niet automatisch uitgevoerd door AI-agents.
-
-Tests, PHPStan, Rector en asset builds worden alleen uitgevoerd op expliciete opdracht.
-
-AI-agents mogen wel handmatige verificatiestappen voorstellen.
-
----
-
-## 16. AI Agent Policy
-
-### Claude
-
-Claude is architect en sparringpartner.
+# 16. AI Agent Rules
 
 Claude:
 
-- maakt technische keuzes
-- ontwerpt workflows
-- splitst features in kleine tickets
-- bepaalt welke bestanden geraakt moeten worden
-
-Claude schrijft alleen code wanneer expliciet gevraagd.
-
-### Codex
-
-Codex is uitvoerder.
+- architect
+- reviewer
+- sparringpartner
 
 Codex:
 
-- wijzigt alleen expliciet genoemde bestanden
-- maakt kleine patches
-- voert geen brede refactors uit
-- zoekt niet zelfstandig door de hele repository
-- voert geen tests of commands uit zonder opdracht
+- uitvoerder
+- kleine afgebakende wijzigingen
+- geen brede refactors zonder expliciete opdracht
 
-Elke Codex-taak moet klein, controleerbaar en afgebakend zijn.
+Nieuwe architectuurpatronen moeten eerst worden besproken voordat ze projectbreed worden toegepast.
 
 ---
 
-## 17. Implementation Priority
+# 17. Golden Rule
 
-Fase 1 richt zich op:
+Wanneer standaard Symfony of standaard Sulu het probleem oplost:
 
-1. publieke website
-2. aanvraagflow
-3. opslag van aanvragen
-4. Sulu maatwerkmodule
-5. basis reisplanbeheer
-6. eenvoudige PDF-export
-7. responsive frontend
-8. basis SEO
+Gebruik standaard Symfony of standaard Sulu.
 
-Niet in fase 1:
-
-- klantportaal
-- betaalmodule
-- externe reisdata-koppelingen
-- complexe e-mailautomatisering
-- interactieve klantomgeving
-- zware achtergrondprocessen
-
----
-
-## 18. Golden Rule
-
-Als een oplossing eenvoudiger kan met standaard Symfony of Sulu functionaliteit, gebruik die oplossing.
-
-Geen abstractie toevoegen voordat het probleem echt bestaat.
+Voeg pas abstracties toe wanneer een daadwerkelijk probleem ontstaat.

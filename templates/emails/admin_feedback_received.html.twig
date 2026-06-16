@@ -1,0 +1,36 @@
+{% extends 'emails/base.html.twig' %}
+
+{% block subject %}Nieuwe feedbackronde ontvangen{% endblock %}
+
+{% block content %}
+    <p style="margin:0 0 8px;color:#9b7a19;font-size:12px;font-weight:bold;letter-spacing:1.4px;text-transform:uppercase;">
+        Nieuwe feedbackronde
+    </p>
+
+    <h1 style="margin:0 0 12px;color:#0f293a;font-family:Georgia,'Times New Roman',serif;font-size:30px;font-weight:normal;line-height:1.25;">
+        Nieuwe feedbackronde ontvangen
+    </h1>
+
+    <p style="margin:0 0 18px;color:#4d5d68;font-size:15px;line-height:1.6;">
+        {{ contact.fullName|default('Een klant') }} heeft
+        <strong style="color:#0f293a;">{{ feedback_count }}</strong>
+        {{ feedback_count == 1 ? 'feedbackpunt' : 'feedbackpunten' }} verstuurd voor
+        <strong style="color:#0f293a;">{{ travel_plan.title }}</strong>.
+    </p>
+
+    {% if feedback_items|default([]) is not empty %}
+        <ul style="margin:0 0 24px;padding:0;list-style:none;">
+            {% for feedback in feedback_items %}
+                <li style="margin:0 0 10px;padding:14px 16px;border-left:4px solid #d4af37;background-color:#fff;color:#4d5d68;font-size:14px;line-height:1.6;">
+                    {{ feedback.message|nl2br }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <p style="margin:0;">
+        <a href="{{ admin_url }}" style="display:inline-block;padding:12px 18px;background-color:#0f293a;color:#fff;font-size:13px;font-weight:bold;letter-spacing:.8px;text-decoration:none;text-transform:uppercase;">
+            Open beheeromgeving
+        </a>
+    </p>
+{% endblock %}

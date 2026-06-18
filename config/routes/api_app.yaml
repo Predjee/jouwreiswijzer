@@ -1,0 +1,3 @@
+api_app_login:
+    path: /api/app/login
+    methods: [POST]

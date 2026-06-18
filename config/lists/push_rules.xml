@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<list xmlns="http://schemas.sulu.io/list-builder/list">
+    <key>push_rules</key>
+
+    <properties>
+        <property name="id" visibility="no" searchability="yes" translation="ID">
+            <field-name>id</field-name>
+            <entity-name>App\Entity\PushRule</entity-name>
+        </property>
+
+        <property name="name" visibility="always" searchability="yes" translation="Naam">
+            <field-name>name</field-name>
+            <entity-name>App\Entity\PushRule</entity-name>
+        </property>
+
+        <property name="triggerType" visibility="always" searchability="yes" translation="Trigger">
+            <field-name>triggerType</field-name>
+            <entity-name>App\Entity\PushRule</entity-name>
+            <filter type="select">
+                <params>
+                    <param name="options" type="collection">
+                        <param name="trip_start_offset" value="trip_start_offset"/>
+                        <param name="trip_end_offset" value="trip_end_offset"/>
+                        <param name="day_start" value="day_start"/>
+                        <param name="activity_start_offset" value="activity_start_offset"/>
+                    </param>
+                </params>
+            </filter>
+        </property>
+
+        <property name="channel" visibility="always" searchability="yes" translation="Kanaal">
+            <field-name>channel</field-name>
+            <entity-name>App\Entity\PushRule</entity-name>
+            <filter type="select">
+                <params>
+                    <param name="options" type="collection">
+                        <param name="trip_reminders" value="trip_reminders"/>
+                        <param name="trip_plan_ready" value="trip_plan_ready"/>
+                        <param name="general" value="general"/>
+                    </param>
+                </params>
+            </filter>
+        </property>
+
+        <property name="active" visibility="always" translation="Actief">
+            <field-name>active</field-name>
+            <entity-name>App\Entity\PushRule</entity-name>
+            <transformer type="bool"/>
+            <filter type="bool"/>
+        </property>
+
+        <property name="localTime" visibility="always" translation="Lokale tijd">
+            <field-name>localTime</field-name>
+            <entity-name>App\Entity\PushRule</entity-name>
+        </property>
+
+        <property name="offsetValue" visibility="always" translation="Offset">
+            <field-name>offsetValue</field-name>
+            <entity-name>App\Entity\PushRule</entity-name>
+        </property>
+
+        <property name="offsetUnit" visibility="always" translation="Offset eenheid">
+            <field-name>offsetUnit</field-name>
+            <entity-name>App\Entity\PushRule</entity-name>
+        </property>
+
+        <property name="updatedAt" visibility="always" translation="Gewijzigd">
+            <field-name>updatedAt</field-name>
+            <entity-name>App\Entity\PushRule</entity-name>
+            <transformer type="datetime"/>
+            <filter type="datetime"/>
+        </property>
+    </properties>
+</list>

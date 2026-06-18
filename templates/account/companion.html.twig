@@ -1,0 +1,327 @@
+{% extends 'base.html.twig' %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+    {% set total_days = trip.days|length %}
+    {% set current_day = trip.currentDay %}
+
+    <section class="account-companion-page account-companion-page--concierge" data-controller="companion-sections">
+        <div class="account-companion-shell account-companion-shell--app">
+            <header class="account-companion-app-header account-companion-app-header--concierge">
+                <div class="account-companion-statusbar">
+                    <div>
+                        <span>Travel Companion</span>
+                        <strong>{{ trip.title }}</strong>
+                    </div>
+                    {% if trip.currentDayNumber %}
+                        <p>Dag {{ trip.currentDayNumber }}{% if total_days > 0 %}/{{ total_days }}{% endif %}</p>
+                    {% endif %}
+                </div>
+            </header>
+
+            <main class="account-companion-app">
+                <section
+                    id="companion-tab-today"
+                    class="account-companion-tab-panel"
+                    data-companion-sections-target="tabPanel"
+                    data-companion-tab-panel="today"
+                >
+                    {% if current_day %}
+                        <section class="account-companion-today-hero">
+                            <p class="account-companion-eyebrow">Vandaag</p>
+                            <h1>{{ current_day.title }}</h1>
+                            <div class="account-companion-hero-facts">
+                                <span>Dag {{ current_day.dayNumber }}{% if total_days > 0 %} van {{ total_days }}{% endif %}</span>
+                                {% if current_day.location %}
+                                    <span>{{ current_day.location }}</span>
+                                {% endif %}
+                                {% if current_day.dateLabel %}
+                                    <span>{{ current_day.dateLabel }}</span>
+                                {% endif %}
+                            </div>
+                            {% if current_day.intro %}
+                                <div class="account-companion-hero-copy">{{ current_day.intro|raw }}</div>
+                            {% endif %}
+                        </section>
+
+                        {% if current_day.blocks is not empty %}
+                            <section class="account-companion-section">
+                                <div class="account-companion-section-heading">
+                                    <p>Volgende stap</p>
+                                    <span>{{ trip.dayStatusLabel }}</span>
+                                </div>
+                                {{ include('account/_companion_block.html.twig', {
+                                    trip: trip,
+                                    day: current_day,
+                                    block: current_day.blocks|first,
+                                    block_id: 'today-next',
+                                    mode: 'spotlight'
+                                }) }}
+                            </section>
+
+                            {% if current_day.blocks|length > 1 %}
+                                <section class="account-companion-section">
+                                    <div class="account-companion-section-heading">
+                                        <p>Later vandaag</p>
+                                        <span>{{ current_day.blocks|length - 1 }} onderdelen</span>
+                                    </div>
+                                    <div class="account-companion-flow-list">
+                                        {% for block in current_day.blocks|slice(1, 4) %}
+                                            {{ include('account/_companion_block.html.twig', {
+                                                trip: trip,
+                                                day: current_day,
+                                                block: block,
+                                                block_id: 'today-later-' ~ loop.index,
+                                                mode: 'compact'
+                                            }) }}
+                                        {% endfor %}
+                                    </div>
+                                </section>
+                            {% endif %}
+                        {% else %}
+                            <div class="account-companion-empty-panel">
+                                <h2>Vandaag is rustig</h2>
+                                <p>Er staan geen losse dagonderdelen klaar voor deze dag.</p>
+                            </div>
+                        {% endif %}
+
+                        <section class="account-companion-concierge-row" aria-label="Snelle toegang">
+                            <button
+                                type="button"
+                                data-companion-sections-target="tab"
+                                data-companion-tab="checklist"
+                                data-action="companion-sections#showTab"
+                                aria-controls="companion-tab-checklist"
+                                aria-selected="false"
+                            >
+                                <span>Checklist</span>
+                                <strong>{{ trip.checklistBlocks is not empty ? 'Bekijk voortgang' : 'Geen items' }}</strong>
+                            </button>
+                            <button
+                                type="button"
+                                data-companion-sections-target="tab"
+                                data-companion-tab="info"
+                                data-action="companion-sections#showTab"
+                                aria-controls="companion-tab-info"
+                                aria-selected="false"
+                            >
+                                <span>Info</span>
+                                <strong>{{ trip.infoBlocks is not empty ? trip.infoBlocks|length ~ ' modules' : 'Geen extra info' }}</strong>
+                            </button>
+                        </section>
+                    {% else %}
+                        <section class="account-companion-today-hero">
+                            <p class="account-companion-eyebrow">{{ trip.dayStatusLabel }}</p>
+                            <h1>{{ trip.title }}</h1>
+                            {% if trip.periodLabel %}
+                                <div class="account-companion-hero-facts">
+                                    <span>{{ trip.periodLabel }}</span>
+                                    {% if trip.durationLabel %}
+                                        <span>{{ trip.durationLabel }}</span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </section>
+
+                        <div class="account-companion-empty-panel">
+                            <h2>Geen actieve dag</h2>
+                            <p>Gebruik Reis of Info om je planning te bekijken.</p>
+                        </div>
+                    {% endif %}
+                </section>
+
+                <section
+                    id="companion-tab-trip"
+                    class="account-companion-tab-panel"
+                    data-companion-sections-target="tabPanel"
+                    data-companion-tab-panel="trip"
+                    hidden
+                >
+                    <section class="account-companion-page-intro">
+                        <p class="account-companion-eyebrow">Reis</p>
+                        <h1>{{ trip.title }}</h1>
+                        {% if trip.periodLabel %}
+                            <span>{{ trip.periodLabel }}{% if trip.durationLabel %} · {{ trip.durationLabel }}{% endif %}</span>
+                        {% endif %}
+                    </section>
+
+                    {% if trip.hasDays %}
+                        <div class="account-companion-itinerary">
+                            {% for day in trip.days %}
+                                <article class="account-companion-trip-day account-companion-trip-day--{{ day.status }}">
+                                    <button
+                                        type="button"
+                                        class="account-companion-trip-trigger"
+                                        data-companion-sections-target="trigger"
+                                        data-companion-panel="trip-day-{{ day.dayNumber }}"
+                                        data-action="companion-sections#toggle"
+                                        aria-controls="trip-day-{{ day.dayNumber }}"
+                                        aria-expanded="{{ day.current ? 'true' : 'false' }}"
+                                    >
+                                        <span>Dag {{ day.dayNumber }}</span>
+                                        <strong>{{ day.title }}</strong>
+                                        {% if day.dateLabel or day.location %}
+                                            <em>{{ day.location ?: day.dateLabel }}</em>
+                                        {% endif %}
+                                    </button>
+
+                                    <div
+                                        id="trip-day-{{ day.dayNumber }}"
+                                        class="account-companion-trip-panel"
+                                        data-companion-sections-target="panel"
+                                        data-companion-panel-current="{{ day.current ? 'true' : 'false' }}"
+                                        {{ day.current ? '' : 'hidden' }}
+                                    >
+                                        {% if day.intro %}
+                                            <div class="account-companion-panel-copy">{{ day.intro|raw }}</div>
+                                        {% endif %}
+
+                                        {% if day.blocks is not empty %}
+                                            <div class="account-companion-flow-list">
+                                                {% for block in day.blocks|slice(0, 5) %}
+                                                    {{ include('account/_companion_block.html.twig', {
+                                                        trip: trip,
+                                                        day: day,
+                                                        block: block,
+                                                        block_id: 'trip-day-' ~ day.dayNumber ~ '-block-' ~ loop.index,
+                                                        mode: 'compact'
+                                                    }) }}
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            <p class="account-travel-status-note">Deze dag heeft nog geen losse onderdelen.</p>
+                                        {% endif %}
+
+                                        <a href="{{ path('account_companion_day', {id: trip.id, dayNumber: day.dayNumber}) }}" class="account-companion-text-link">
+                                            Open dag
+                                        </a>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="account-companion-empty-panel">
+                            <h2>Geen reisroute beschikbaar</h2>
+                            <p>Er staan nog geen dagen klaar voor deze reis.</p>
+                        </div>
+                    {% endif %}
+                </section>
+
+                <section
+                    id="companion-tab-checklist"
+                    class="account-companion-tab-panel"
+                    data-companion-sections-target="tabPanel"
+                    data-companion-tab-panel="checklist"
+                    hidden
+                >
+                    <section class="account-companion-page-intro">
+                        <p class="account-companion-eyebrow">Checklist</p>
+                        <h1>Klaar voor vertrek</h1>
+                        <span>{{ trip.checklistBlocks is not empty ? trip.checklistBlocks|length ~ ' checklist modules' : 'Geen checklist beschikbaar' }}</span>
+                    </section>
+
+                    {% if trip.checklistBlocks is not empty %}
+                        <div class="account-companion-module-list">
+                            {% for block in trip.checklistBlocks %}
+                                {{ include('account/_companion_block.html.twig', {
+                                    trip: trip,
+                                    block: block,
+                                    block_id: 'checklist-block-' ~ loop.index,
+                                    mode: 'checklist'
+                                }) }}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="account-companion-empty-panel">
+                            <h2>Geen checklist</h2>
+                            <p>Voor deze reis staat nog geen checklist klaar.</p>
+                        </div>
+                    {% endif %}
+                </section>
+
+                <section
+                    id="companion-tab-info"
+                    class="account-companion-tab-panel"
+                    data-companion-sections-target="tabPanel"
+                    data-companion-tab-panel="info"
+                    hidden
+                >
+                    <section class="account-companion-page-intro">
+                        <p class="account-companion-eyebrow">Info</p>
+                        <h1>Alles bij de hand</h1>
+                        <span>{{ trip.infoBlocks is not empty ? trip.infoBlocks|length ~ ' informatie modules' : 'Geen extra info beschikbaar' }}</span>
+                    </section>
+
+                    {% if trip.infoBlocks is not empty %}
+                        <div class="account-companion-module-list">
+                            {% for block in trip.infoBlocks %}
+                                {{ include('account/_companion_block.html.twig', {
+                                    trip: trip,
+                                    block: block,
+                                    block_id: 'info-block-' ~ loop.index,
+                                    mode: 'info'
+                                }) }}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="account-companion-empty-panel">
+                            <h2>Geen extra info</h2>
+                            <p>Alle beschikbare informatie staat in de dagplanning.</p>
+                        </div>
+                    {% endif %}
+                </section>
+            </main>
+
+            <nav class="account-companion-bottom-nav account-companion-bottom-nav--concierge" aria-label="Companion navigatie">
+                <button
+                    type="button"
+                    class="is-active"
+                    data-companion-sections-target="tab"
+                    data-companion-tab="today"
+                    data-action="companion-sections#showTab"
+                    aria-controls="companion-tab-today"
+                    aria-selected="true"
+                >
+                    <img src="{{ asset('images/icons/calendar-days.svg') }}" alt="" aria-hidden="true">
+                    <span>Vandaag</span>
+                </button>
+                <button
+                    type="button"
+                    data-companion-sections-target="tab"
+                    data-companion-tab="trip"
+                    data-action="companion-sections#showTab"
+                    aria-controls="companion-tab-trip"
+                    aria-selected="false"
+                >
+                    <img src="{{ asset('images/icons/route.svg') }}" alt="" aria-hidden="true">
+                    <span>Reis</span>
+                </button>
+                <button
+                    type="button"
+                    data-companion-sections-target="tab"
+                    data-companion-tab="checklist"
+                    data-action="companion-sections#showTab"
+                    aria-controls="companion-tab-checklist"
+                    aria-selected="false"
+                >
+                    <img src="{{ asset('images/icons/list-check.svg') }}" alt="" aria-hidden="true">
+                    <span>Checklist</span>
+                </button>
+                <button
+                    type="button"
+                    data-companion-sections-target="tab"
+                    data-companion-tab="info"
+                    data-action="companion-sections#showTab"
+                    aria-controls="companion-tab-info"
+                    aria-selected="false"
+                >
+                    <img src="{{ asset('images/icons/info.svg') }}" alt="" aria-hidden="true">
+                    <span>Info</span>
+                </button>
+            </nav>
+        </div>
+    </section>
+{% endblock %}
+
+{% block footer %}{% endblock %}

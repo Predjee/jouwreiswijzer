@@ -1,22 +1,16 @@
 framework:
     messenger:
-        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
-        # failure_transport: failed
-
         transports:
-            # https://symfony.com/doc/current/messenger.html#transport-configuration
-            # async: '%env(MESSENGER_TRANSPORT_DSN)%'
-            # failed: 'doctrine://default?queue_name=failed'
-            # sync: 'sync://'
+            # Eigen, geïsoleerde transport voor push-berichten.
+            # Geen permanente worker: de consumer wordt periodiek kort gestart
+            # via een cronjob (messenger:consume push_messages --time-limit=...).
+            # Zie ARCHITECTURE.md sectie 16a.
+            push_messages:
+                dsn: 'doctrine://default?queue_name=push_messages'
+                retry_strategy:
+                    max_retries: 3
+                    delay: 1000
+                    multiplier: 2
 
         routing:
-            # Route your messages to the transports
-            # 'App\Message\YourMessage': async
-
-# when@test:
-#    framework:
-#        messenger:
-#            transports:
-#                # replace with your transport name here (e.g., my_transport: 'in-memory://')
-#                # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
-#                async: 'in-memory://'
+            App\PushMessage\SendPushMessage: push_messages

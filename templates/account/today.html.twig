@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <section class="account-today-page">
+        <div class="account-today-shell">
+            <header class="account-today-topbar">
+                <a href="{{ path('account') }}" class="account-today-back">Mijn Omgeving</a>
+                <a href="{{ path('account_notifications') }}" class="account-today-icon-link">Notificaties</a>
+            </header>
+
+            {% if context.hasTravelPlan %}
+                {% set travel_plan = context.travelPlan %}
+                <section class="account-today-app-header">
+                    <p class="type-kicker">{{ travel_plan.active ? 'Vandaag' : 'Binnenkort' }}</p>
+                    <h1>{{ travel_plan.title }}</h1>
+
+                    {% if travel_plan.active and travel_plan.currentDay %}
+                        <p class="account-today-day">Dag {{ travel_plan.currentDay }} van {{ travel_plan.totalDays }}</p>
+                    {% else %}
+                        <p class="account-today-day">{{ travel_plan.timingLabel }}</p>
+                    {% endif %}
+
+                    {% if travel_plan.periodLabel %}
+                        <p class="account-travel-period">
+                            {{ travel_plan.periodLabel }}{% if travel_plan.durationLabel %} · {{ travel_plan.durationLabel }}{% endif %}
+                        </p>
+                    {% endif %}
+                </section>
+
+                {% if travel_plan.active %}
+                    <p class="account-today-helper">
+                        Goedemorgen. Hier vind je snel wat voor vandaag handig is tijdens je reis.
+                    </p>
+
+                    <section class="account-today-card">
+                        <div class="account-today-card-heading">
+                            <span class="account-travel-status">
+                                <span aria-hidden="true"></span>
+                                Jouw dag
+                            </span>
+                            {% if travel_plan.currentDay %}
+                                <span class="account-today-chip">Dag {{ travel_plan.currentDay }}/{{ travel_plan.totalDays }}</span>
+                            {% endif %}
+                        </div>
+
+                        {% if travel_plan.dayTitle or travel_plan.dayIntro %}
+                            <div class="account-today-day-content">
+                                <h2>{{ travel_plan.dayTitle|default('Vandaag op reis') }}</h2>
+                                {% if travel_plan.dayDateLabel %}
+                                    <p class="account-travel-period">{{ travel_plan.dayDateLabel }}</p>
+                                {% endif %}
+                                {% if travel_plan.dayIntro %}
+                                    <div class="account-today-day-text">{{ travel_plan.dayIntro|raw }}</div>
+                                {% else %}
+                                    <p class="account-travel-status-note">
+                                        Je reisplan voor vandaag staat klaar.
+                                    </p>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="account-today-day-content">
+                                <h2>Je reisplan voor vandaag staat klaar</h2>
+                                <p class="account-travel-status-note">
+                                    De dagplanning wordt hier later verder uitgewerkt. Bekijk nu alvast je volledige reisplan.
+                                </p>
+                            </div>
+                        {% endif %}
+
+                        <a href="{{ path('account_companion', {id: travel_plan.id}) }}" class="account-today-subtle-link">
+                            Open volledige reishulp
+                        </a>
+                    </section>
+                {% else %}
+                    <section class="account-today-card">
+                        <div class="account-today-day-content">
+                            <h2>Je reis begint over {{ travel_plan.timingLabel|replace({'Vertrekt over ': ''}) }}</h2>
+                            <p class="account-travel-status-note">
+                                Je reisplan staat klaar om rustig door te nemen voordat je vertrekt.
+                            </p>
+                        </div>
+                        <a href="{{ path('account_travel_plan', {id: travel_plan.id}) }}" class="btn-primary account-today-action">
+                            Reisplan bekijken
+                        </a>
+                    </section>
+                {% endif %}
+
+                <nav class="account-today-actions" aria-label="Snelle acties">
+                    <a href="{{ path('account_companion', {id: travel_plan.id}) }}">Volledige reishulp</a>
+                    <a href="{{ path('account_travel_plan', {id: travel_plan.id}) }}">Klassiek reisplan</a>
+                    {% if travel_plan.pdfAvailable %}
+                        <a href="{{ path('account_travel_plan_pdf', {id: travel_plan.id}) }}" download>Reisgids downloaden</a>
+                    {% endif %}
+                    <a href="{{ path('account_notifications') }}">Notificaties</a>
+                </nav>
+            {% else %}
+                <div class="account-empty-state account-today-empty">
+                    <p class="type-kicker">Geen actieve reis</p>
+                    <h1 class="type-card-title">Er staat nu geen reis klaar voor vandaag</h1>
+                    <p class="type-body">
+                        Zodra je reis actief is of er een aankomende reis gepland staat, verschijnt die hier automatisch.
+                    </p>
+                    <a href="{{ path('account') }}" class="btn-primary account-today-action">
+                        Naar mijn reisplannen
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block footer %}{% endblock %}

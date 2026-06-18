@@ -49,4 +49,17 @@ final class TravelPlanRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    /**
+     * @return iterable<TravelPlan>
+     */
+    public function findPublishedForPushRuleEvaluation(): iterable
+    {
+        return $this->createQueryBuilder('travelPlan')
+            ->andWhere('travelPlan.status = :status')
+            ->setParameter('status', TravelPlan::STATUS_PUBLISHED)
+            ->orderBy('travelPlan.id', 'ASC')
+            ->getQuery()
+            ->toIterable();
+    }
 }

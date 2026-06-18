@@ -63,6 +63,8 @@
 
         {% if is_granted('ROLE_SULU_CUSTOMER') %}
             {% set unread_notifications = account_unread_notification_count() %}
+            {% set has_active_travel_plan = account_has_active_travel_plan() %}
+            {% set account_route = app.request.attributes.get('_route') %}
             <details class="nav-account-menu hidden md:block">
                 <summary class="nav-account-summary">
                     <svg class="nav-account-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -81,6 +83,15 @@
                         <strong>{{ app.user.fullName|default(app.user.userIdentifier) }}</strong>
                     </div>
                     <a href="{{ path('account') }}">Mijn reisplannen</a>
+                    <a
+                        href="{{ path('account_today') }}"
+                        class="nav-account-dropdown-row {{ account_route in ['account_today', 'account_companion', 'account_companion_day'] or has_active_travel_plan ? 'is-active' : '' }}"
+                    >
+                        <span>Reishulp</span>
+                        {% if has_active_travel_plan %}
+                            <span class="nav-account-badge">Nu</span>
+                        {% endif %}
+                    </a>
                     <a href="{{ path('account_notifications') }}" class="nav-account-dropdown-row">
                         <span>Notificaties</span>
                         {% if unread_notifications > 0 %}
@@ -152,6 +163,12 @@
                 {% if is_granted('ROLE_SULU_CUSTOMER') %}
                     <a href="{{ path('account') }}" class="nav-link block">
                         Mijn reisplannen
+                    </a>
+                    <a href="{{ path('account_today') }}" class="nav-link mt-4 flex items-center gap-2 {{ account_route in ['account_today', 'account_companion', 'account_companion_day'] or has_active_travel_plan ? 'is-active' : '' }}">
+                        Reishulp
+                        {% if has_active_travel_plan %}
+                            <span class="nav-account-badge">Nu</span>
+                        {% endif %}
                     </a>
                     <a href="{{ path('account_notifications') }}" class="nav-link mt-4 flex items-center gap-2">
                         Notificaties

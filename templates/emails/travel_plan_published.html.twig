@@ -1,0 +1,33 @@
+{% extends 'emails/base.html.twig' %}
+
+{% block subject %}Je reisplan staat klaar{% endblock %}
+
+{% block content %}
+    <p style="margin:0 0 8px;color:#9b7a19;font-size:12px;font-weight:bold;letter-spacing:1.4px;text-transform:uppercase;">
+        Mijn Omgeving
+    </p>
+
+    <h1 style="margin:0 0 12px;color:#0f293a;font-family:Georgia,'Times New Roman',serif;font-size:30px;font-weight:normal;line-height:1.25;">
+        Je reisplan staat klaar
+    </h1>
+
+    <p style="margin:0 0 18px;color:#4d5d68;font-size:15px;line-height:1.6;">
+        Beste {{ contact.firstName|default(contact.fullName)|default('reiziger')|striptags }},
+    </p>
+
+    <p style="margin:0 0 24px;color:#4d5d68;font-size:15px;line-height:1.6;">
+        Je persoonlijke reisplan <strong style="color:#0f293a;">{{ travel_plan.title }}</strong>
+        is gepubliceerd en staat klaar in Mijn Omgeving.
+    </p>
+
+    <p style="margin:0 0 24px;">
+        <a href="{{ account_url }}" style="display:inline-block;padding:12px 18px;background-color:#0f293a;color:#fff;font-size:13px;font-weight:bold;letter-spacing:.8px;text-decoration:none;text-transform:uppercase;">
+            Bekijk je reisplan
+        </a>
+    </p>
+
+    <p style="margin:0;color:#4d5d68;font-size:14px;line-height:1.7;">
+        Veel reisplezier,<br>
+        JouwReisWijzer
+    </p>
+{% endblock %}

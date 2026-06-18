@@ -6,9 +6,7 @@ namespace App\Service;
 
 use App\Entity\Notification;
 use App\Entity\TravelPlan;
-use App\Entity\TravelPlanFeedback;
 use App\Repository\NotificationRepository;
-use App\Repository\TravelPlanFeedbackRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
@@ -24,14 +22,11 @@ final readonly class NotificationService
     public function __construct(
         private EntityManagerInterface $entityManager,
         private NotificationRepository $notificationRepository,
-        private TravelPlanFeedbackRepository $feedbackRepository,
         private MailerInterface $mailer,
         private Environment $twig,
         private UrlGeneratorInterface $urlGenerator,
         #[Autowire('%env(FROM_EMAIL)%')]
         private string $fromEmail,
-        #[Autowire('%app.admin_email%')]
-        private string $adminEmail,
         private ?LoggerInterface $logger = null,
     ) {
     }
@@ -45,60 +40,6 @@ final readonly class NotificationService
             \sprintf('De PDF van "%s" is vrijgegeven en kan worden gedownload.', $travelPlan->getTitle()),
             $this->urlGenerator->generate('account_travel_plan', ['id' => $travelPlan->getId()]),
         );
-    }
-
-    public function notifyFeedbackRoundSubmitted(TravelPlan $travelPlan): int
-    {
-        $feedbackItems = $this->feedbackRepository->findActiveForTravelPlan($travelPlan);
-        $feedbackCount = \count($feedbackItems);
-
-        if (0 === $feedbackCount) {
-            return 0;
-        }
-
-        $contact = $travelPlan->getTravelRequest()->getContact();
-        $adminUrl = '/admin/';
-
-        try {
-            $this->createForAdmin(
-                Notification::TYPE_TRAVEL_PLAN_FEEDBACK_SUBMITTED,
-                'Nieuwe feedbackronde ontvangen',
-                \sprintf(
-                    '%s heeft %d feedbackpunt(en) verstuurd voor "%s".',
-                    $contact->getFullName(),
-                    $feedbackCount,
-                    $travelPlan->getTitle(),
-                ),
-                $adminUrl,
-            );
-        } catch (\Throwable $exception) {
-            $this->logger?->error('Unable to create admin feedback round notification.', [
-                'exception' => $exception,
-                'travelPlanId' => $travelPlan->getId(),
-            ]);
-        }
-
-        try {
-            $this->mailer->send((new Mail())
-                ->from($this->fromEmail)
-                ->to($this->adminEmail)
-                ->subject('Nieuwe feedbackronde ontvangen')
-                ->html($this->twig->render('emails/admin_feedback_received.html.twig', [
-                    'feedback_items' => $feedbackItems,
-                    'feedback_count' => $feedbackCount,
-                    'travel_plan' => $travelPlan,
-                    'contact' => $contact,
-                    'admin_url' => $adminUrl,
-                ])));
-        } catch (\Throwable $exception) {
-            $this->logger?->error('Unable to send admin feedback round email.', [
-                'exception' => $exception,
-                'travelPlanId' => $travelPlan->getId(),
-                'adminEmail' => $this->adminEmail,
-            ]);
-        }
-
-        return $feedbackCount;
     }
 
     public function notifyFeedbackProcessed(TravelPlan $travelPlan): void

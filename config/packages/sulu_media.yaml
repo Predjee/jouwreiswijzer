@@ -4,3 +4,7 @@ sulu_media:
             meta_title:
                 nl: Reisplannen
                 en: Travel plans
+        travel_memory_albums:
+            meta_title:
+                nl: Reisherinneringsalbums
+                en: Travel memory albums

@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+    <section class="account-companion-page account-companion-page--concierge">
+        <div class="account-companion-shell account-companion-shell--app">
+            <header class="account-companion-detail-topbar">
+                <a href="{{ path('account_companion', {id: trip.id}) }}" class="account-companion-text-link">Terug</a>
+                <span>Dag {{ day.dayNumber }}</span>
+            </header>
+
+            <section class="account-companion-today-hero account-companion-today-hero--detail">
+                <p class="account-companion-eyebrow">Dag {{ day.dayNumber }}</p>
+                <h1>{{ day.title }}</h1>
+                <div class="account-companion-hero-facts">
+                    {% if day.location %}
+                        <span>{{ day.location }}</span>
+                    {% endif %}
+                    {% if day.dateLabel %}
+                        <span>{{ day.dateLabel }}</span>
+                    {% endif %}
+                </div>
+                {% if day.intro %}
+                    <div class="account-companion-hero-copy">{{ day.intro|raw }}</div>
+                {% endif %}
+            </section>
+
+            {% if day.blocks is not empty %}
+                <section class="account-companion-section">
+                    <div class="account-companion-section-heading">
+                        <p>Planning</p>
+                        <span>{{ day.blocks|length }} onderdelen</span>
+                    </div>
+                    <div class="account-companion-flow-list">
+                        {% for block in day.blocks %}
+                            {{ include('account/_companion_block.html.twig', {
+                                trip: trip,
+                                day: day,
+                                block: block,
+                                block_id: 'day-detail-' ~ day.dayNumber ~ '-block-' ~ loop.index,
+                                mode: 'compact'
+                            }) }}
+                        {% endfor %}
+                    </div>
+                </section>
+            {% else %}
+                <div class="account-companion-empty-panel">
+                    <h2>Geen losse dagonderdelen</h2>
+                    <p>De dag staat in je reisplan, maar heeft nog geen afzonderlijke planningblokken.</p>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block footer %}{% endblock %}

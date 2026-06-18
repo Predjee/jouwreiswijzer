@@ -1,0 +1,140 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f4f0e8;
+    color: #17233b;
+    font-family: "Jost", sans-serif;
+    font-size: 10.5pt;
+    font-weight: 300;
+    line-height: 1.58;
+}
+
+.travel-memory-album {
+    color: #17233b;
+    font-family: "Jost", sans-serif;
+}
+
+.travel-memory-album h1 {
+    margin: 0;
+    color: #ffffff;
+    font-family: "Cormorant", serif;
+    font-size: 39pt;
+    font-weight: normal;
+    line-height: 1.04;
+}
+
+.travel-memory-album p {
+    margin: 0;
+}
+
+.travel-memory-album-cover {
+    box-sizing: border-box;
+    width: 210mm;
+    height: 297mm;
+    padding: 40mm 28mm 26mm;
+    background-color: #10243b;
+    color: #ffffff;
+    text-align: center;
+}
+
+.travel-memory-album-cover__eyebrow {
+    margin: 0 0 9mm;
+    color: #d4af62;
+    font-family: "JostRegular", "Jost", sans-serif;
+    font-size: 8.5pt;
+    letter-spacing: 2.2px;
+    text-transform: uppercase;
+}
+
+.travel-memory-album-cover__intro {
+    max-width: 128mm;
+    margin: 10mm auto 0;
+    color: #e7e0d3;
+    font-family: "Cormorant", serif;
+    font-size: 17pt;
+    font-style: italic;
+    line-height: 1.34;
+}
+
+.travel-memory-album-cover__rule {
+    width: 24mm;
+    height: 0;
+    margin: 16mm auto 7mm;
+    border-top: 0.5mm solid #b99550;
+    font-size: 0;
+    line-height: 0;
+}
+
+.travel-memory-album-cover__meta {
+    color: #d4af62;
+    font-family: "JostRegular", "Jost", sans-serif;
+    font-size: 8.5pt;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.travel-memory-photo {
+    min-height: 257mm;
+    page-break-inside: avoid;
+}
+
+.travel-memory-photo--page-break {
+    page-break-before: always;
+}
+
+.travel-memory-photo figure {
+    margin: 0;
+    padding: 0;
+}
+
+.travel-memory-photo img {
+    display: block;
+    width: 100%;
+    max-height: 204mm;
+    margin: 0 auto;
+    border: 0.2mm solid #ddd5c7;
+    object-fit: contain;
+}
+
+.travel-memory-photo figcaption {
+    margin-top: 7mm;
+    padding: 5mm 6mm 4.5mm;
+    border-left: 1mm solid #b99550;
+    background-color: #fbfaf7;
+}
+
+.travel-memory-photo__date {
+    margin-bottom: 1.5mm;
+    color: #8a6a31;
+    font-family: "JostRegular", "Jost", sans-serif;
+    font-size: 8.5pt;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.travel-memory-photo__caption {
+    color: #445064;
+    font-family: "Cormorant", serif;
+    font-size: 16pt;
+    font-style: italic;
+    line-height: 1.34;
+}
+
+.travel-memory-photo--empty {
+    padding: 24mm 18mm;
+    border-top: 0.6mm solid #b99550;
+    border-bottom: 0.2mm solid #ddd5c7;
+    background-color: #fbfaf7;
+    color: #445064;
+    text-align: center;
+}
+
+.travel-memory-album-footer {
+    padding-top: 2.5mm;
+    border-top: 0.2mm solid #c9c1b2;
+    color: #687184;
+    font-family: "JostRegular", "Jost", sans-serif;
+    font-size: 7.5pt;
+    letter-spacing: 0.3px;
+    text-align: center;
+}

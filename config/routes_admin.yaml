@@ -82,3 +82,45 @@ travel_request_plan.notify_feedback_processed:
         _format: json
     options:
         expose: true
+
+push_rules.get_collection:
+    path: /admin/api/push-rules
+    controller: App\Controller\Admin\PushRuleController::cgetAction
+    methods: [GET]
+    defaults:
+        _format: json
+
+push_rules.post:
+    path: /admin/api/push-rules
+    controller: App\Controller\Admin\PushRuleController::postAction
+    methods: [POST]
+    defaults:
+        _format: json
+
+push_rules.delete_collection:
+    path: /admin/api/push-rules
+    controller: App\Controller\Admin\PushRuleController::cdeleteAction
+    methods: [DELETE]
+    defaults:
+        _format: json
+
+push_rules.get:
+    path: /admin/api/push-rules/{id}
+    controller: App\Controller\Admin\PushRuleController::getAction
+    methods: [GET]
+    defaults:
+        _format: json
+
+push_rules.put:
+    path: /admin/api/push-rules/{id}
+    controller: App\Controller\Admin\PushRuleController::putAction
+    methods: [PUT]
+    defaults:
+        _format: json
+
+push_rules.delete:
+    path: /admin/api/push-rules/{id}
+    controller: App\Controller\Admin\PushRuleController::deleteAction
+    methods: [DELETE]
+    defaults:
+        _format: json

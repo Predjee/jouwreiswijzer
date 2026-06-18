@@ -191,7 +191,7 @@ final readonly class TravelPlanRenderer
             $renderedBlock = $this->twig->render(
                 self::DAY_BLOCK_TEMPLATES[$type],
                 [
-                    'block' => $block,
+                    'block' => $this->withTimeRange($block),
                     'accountView' => $accountView,
                     'travelPlan' => $travelPlan,
                 ],
@@ -229,6 +229,46 @@ final readonly class TravelPlanRenderer
             $html,
             1,
         ) ?? $html;
+    }
+
+    /**
+     * @param array<string, mixed> $block
+     *
+     * @return array<string, mixed>
+     */
+    private function withTimeRange(array $block): array
+    {
+        $startTime = $this->normalizeTime($block['startTime'] ?? $block['time'] ?? null);
+        $endTime = $this->normalizeTime($block['endTime'] ?? null);
+
+        $block['startTime'] = $startTime;
+        $block['endTime'] = $endTime;
+        $block['timeRangeLabel'] = match (true) {
+            '' === $startTime => '',
+            '' === $endTime || $endTime === $startTime => $startTime,
+            default => \sprintf('%s - %s', $startTime, $endTime),
+        };
+
+        return $block;
+    }
+
+    private function normalizeTime(mixed $time): string
+    {
+        if ($time instanceof \DateTimeInterface) {
+            return $time->format('H:i');
+        }
+
+        if (!\is_scalar($time)) {
+            return '';
+        }
+
+        $time = \trim((string) $time);
+
+        if (1 !== \preg_match('/^([01]?\d|2[0-3]):([0-5]\d)$/D', $time, $matches)) {
+            return '';
+        }
+
+        return \sprintf('%02d:%s', (int) $matches[1], $matches[2]);
     }
 
     private function iconMarkup(mixed $icon, bool $accountView): ?string

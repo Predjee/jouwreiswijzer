@@ -17,6 +17,21 @@ security:
             # Ensure dev tools and static assets are always allowed
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
+        app_api_login:
+            pattern: ^/api/app/login$
+            stateless: true
+            provider: sulu
+            json_login:
+                check_path: api_app_login
+                username_path: email
+                password_path: password
+                success_handler: App\Security\AppLoginSuccessHandler
+                failure_handler: App\Security\AppLoginFailureHandler
+        app_api:
+            pattern: ^/api/app
+            stateless: true
+            provider: sulu
+            jwt: ~
         admin:
             pattern: ^/admin(\/|$)
             lazy: true
@@ -54,6 +69,8 @@ security:
 
     # Note: Only the *first* matching rule is applied
     access_control:
+        - { path: ^/api/app/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/app, roles: ROLE_SULU_CUSTOMER }
         - { path: ^/admin/reset, allow_if: "not is_granted('ROLE_SULU_CUSTOMER')" }
         - { path: ^/admin/security/reset, allow_if: "not is_granted('ROLE_SULU_CUSTOMER')" }
         - { path: ^/admin/login$, allow_if: "not is_granted('ROLE_SULU_CUSTOMER')" }
@@ -66,6 +83,7 @@ security:
         - { path: ^/admin/p/, allow_if: "not is_granted('ROLE_SULU_CUSTOMER')" }
         - { path: ^/admin, allow_if: "is_granted('ROLE_USER') and not is_granted('ROLE_SULU_CUSTOMER')" }
         - { path: ^/account/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/account/forgot-password$, roles: PUBLIC_ACCESS }
         - { path: ^/account/reset/, roles: PUBLIC_ACCESS }
         - { path: ^/account, roles: ROLE_SULU_CUSTOMER }
 

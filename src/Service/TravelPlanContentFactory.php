@@ -51,6 +51,8 @@ final class TravelPlanContentFactory
             ],
             self::TYPE_TRIP_PROFILE => [
                 'type' => $type,
+                'startDate' => '',
+                'endDate' => '',
                 'period' => '',
                 'duration' => '',
                 'travelParty' => '',
@@ -84,6 +86,7 @@ final class TravelPlanContentFactory
                 'dayNumber' => 1,
                 'title' => '',
                 'dateLabel' => '',
+                'destinationTimezone' => '',
                 'intro' => '',
                 'blocks' => [],
             ],
@@ -97,6 +100,9 @@ final class TravelPlanContentFactory
                 'icon' => $this->defaultIcon($type),
                 'location' => '',
                 'timeLabel' => '',
+                'time' => '',
+                'startTime' => '',
+                'endTime' => '',
                 'bookingUrl' => '',
             ],
             self::TYPE_TIP,
@@ -108,6 +114,9 @@ final class TravelPlanContentFactory
                 'icon' => $this->defaultIcon($type),
                 'location' => '',
                 'timeLabel' => '',
+                'time' => '',
+                'startTime' => '',
+                'endTime' => '',
             ],
             self::TYPE_PRACTICAL_INFO,
             self::TYPE_BUDGET_NOTE,
@@ -172,8 +181,8 @@ final class TravelPlanContentFactory
         return [
             'introTitle' => $this->stringValue($intro, 'title'),
             'introText' => $this->stringValue($intro, 'text'),
-            'period' => $this->stringValue($tripProfile, 'period'),
-            'duration' => $this->stringValue($tripProfile, 'duration'),
+            'startDate' => $this->normalizeDateValue($tripProfile['startDate'] ?? null),
+            'endDate' => $this->normalizeDateValue($tripProfile['endDate'] ?? null),
             'travelParty' => $this->stringValue($tripProfile, 'travelParty'),
             'travelStyle' => $this->stringValue($tripProfile, 'travelStyle'),
             'packageType' => $this->stringValue($tripProfile, 'packageType'),
@@ -189,14 +198,27 @@ final class TravelPlanContentFactory
      */
     public function fromFormData(array $formData, array $currentContent = []): array
     {
+        $currentTripProfile = \is_array($currentContent['tripProfile'] ?? null)
+            ? $currentContent['tripProfile']
+            : [];
+        $startDate = $this->normalizeDateValue($formData['startDate'] ?? null);
+        $endDate = $this->normalizeDateValue($formData['endDate'] ?? null);
+
+        $this->validateDateRange($startDate, $endDate);
+
+        $derivedPeriod = $this->formatPeriod($startDate, $endDate);
+        $derivedDuration = $this->formatDuration($startDate, $endDate);
+
         return [
             'intro' => $this->createBlock(self::TYPE_TRAVEL_PLAN_INTRO, [
                 'title' => $this->stringValue($formData, 'introTitle'),
                 'text' => $this->stringValue($formData, 'introText'),
             ]),
             'tripProfile' => $this->createBlock(self::TYPE_TRIP_PROFILE, [
-                'period' => $this->stringValue($formData, 'period'),
-                'duration' => $this->stringValue($formData, 'duration'),
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'period' => '' !== $derivedPeriod ? $derivedPeriod : $this->stringValue($currentTripProfile, 'period'),
+                'duration' => '' !== $derivedDuration ? $derivedDuration : $this->stringValue($currentTripProfile, 'duration'),
                 'travelParty' => $this->stringValue($formData, 'travelParty'),
                 'travelStyle' => $this->stringValue($formData, 'travelStyle'),
                 'packageType' => $this->stringValue($formData, 'packageType'),
@@ -243,6 +265,8 @@ final class TravelPlanContentFactory
                 ? $content['intro']
                 : $this->createBlock(self::TYPE_TRAVEL_PLAN_INTRO),
             'tripProfile' => $this->createBlock(self::TYPE_TRIP_PROFILE, [
+                'startDate' => $this->normalizeDateValue($overview['startDate'] ?? null),
+                'endDate' => $this->normalizeDateValue($overview['endDate'] ?? null),
                 'period' => $this->stringValue($overview, 'period'),
                 'duration' => $this->stringValue($overview, 'duration'),
                 'travelParty' => $this->stringValue($overview, 'travelParty'),
@@ -290,6 +314,7 @@ final class TravelPlanContentFactory
                     'dayNumber' => \max(1, (int) ($section['dayNumber'] ?? 1)),
                     'title' => $this->stringValue($section, 'title'),
                     'dateLabel' => $this->stringValue($section, 'dateLabel'),
+                    'destinationTimezone' => $this->stringValue($section, 'destinationTimezone'),
                     'intro' => $this->stringValue($section, 'intro'),
                     'blocks' => $this->normalizeDayBlocks($section['blocks'] ?? []),
                 ]);
@@ -391,8 +416,18 @@ final class TravelPlanContentFactory
 
             foreach (\array_keys($defaults) as $field) {
                 if ('type' !== $field) {
-                    $values[$field] = $this->stringValue($block, $field);
+                    $values[$field] = \in_array($field, ['time', 'startTime', 'endTime'], true)
+                        ? $this->normalizeTimeValue($block[$field] ?? null)
+                        : $this->stringValue($block, $field);
                 }
+            }
+
+            if ('' === ($values['startTime'] ?? '') && '' !== ($values['time'] ?? '')) {
+                $values['startTime'] = $values['time'];
+            }
+
+            if ('' === ($values['time'] ?? '') && '' !== ($values['startTime'] ?? '')) {
+                $values['time'] = $values['startTime'];
             }
 
             $normalized[] = $this->createBlock($type, $values);
@@ -409,6 +444,131 @@ final class TravelPlanContentFactory
         $value = $data[$key] ?? '';
 
         return \is_scalar($value) ? (string) $value : '';
+    }
+
+    private function normalizeTimeValue(mixed $value): string
+    {
+        if ($value instanceof \DateTimeInterface) {
+            return $value->format('H:i');
+        }
+
+        if (!\is_scalar($value)) {
+            return '';
+        }
+
+        $value = \trim((string) $value);
+
+        if ('' === $value) {
+            return '';
+        }
+
+        if (1 === \preg_match('/^([01]?\d|2[0-3]):([0-5]\d)$/D', $value, $matches)) {
+            return \sprintf('%02d:%s', (int) $matches[1], $matches[2]);
+        }
+
+        try {
+            return (new \DateTimeImmutable($value))->format('H:i');
+        } catch (\Throwable) {
+            return '';
+        }
+    }
+
+    private function normalizeDateValue(mixed $value): string
+    {
+        if ($value instanceof \DateTimeInterface) {
+            return $value->format('Y-m-d');
+        }
+
+        if (!\is_scalar($value)) {
+            return '';
+        }
+
+        $value = \trim((string) $value);
+
+        if ('' === $value) {
+            return '';
+        }
+
+        if (1 === \preg_match('/^\d{4}-\d{2}-\d{2}$/D', $value)) {
+            return $value;
+        }
+
+        try {
+            return (new \DateTimeImmutable($value))->format('Y-m-d');
+        } catch (\Throwable) {
+            return '';
+        }
+    }
+
+    private function validateDateRange(string $startDate, string $endDate): void
+    {
+        if ('' === $startDate || '' === $endDate) {
+            return;
+        }
+
+        if ($this->createDate($endDate) < $this->createDate($startDate)) {
+            throw new \InvalidArgumentException('End date cannot be before start date.');
+        }
+    }
+
+    private function formatPeriod(string $startDate, string $endDate): string
+    {
+        if ('' === $startDate && '' === $endDate) {
+            return '';
+        }
+
+        if ('' === $startDate) {
+            return $this->formatDateLabel($endDate);
+        }
+
+        if ('' === $endDate) {
+            return $this->formatDateLabel($startDate);
+        }
+
+        return \sprintf('%s t/m %s', $this->formatDateLabel($startDate), $this->formatDateLabel($endDate));
+    }
+
+    private function formatDuration(string $startDate, string $endDate): string
+    {
+        if ('' === $startDate || '' === $endDate) {
+            return '';
+        }
+
+        $days = $this->createDate($startDate)->diff($this->createDate($endDate))->days;
+
+        if (false === $days) {
+            return '';
+        }
+
+        $days += 1;
+
+        return \sprintf('%d %s', $days, 1 === $days ? 'dag' : 'dagen');
+    }
+
+    private function formatDateLabel(string $date): string
+    {
+        $months = [
+            1 => 'januari',
+            2 => 'februari',
+            3 => 'maart',
+            4 => 'april',
+            5 => 'mei',
+            6 => 'juni',
+            7 => 'juli',
+            8 => 'augustus',
+            9 => 'september',
+            10 => 'oktober',
+            11 => 'november',
+            12 => 'december',
+        ];
+        $date = $this->createDate($date);
+
+        return \sprintf('%d %s', (int) $date->format('j'), $months[(int) $date->format('n')]);
+    }
+
+    private function createDate(string $date): \DateTimeImmutable
+    {
+        return new \DateTimeImmutable($date.' 00:00:00');
     }
 
     private function defaultIcon(string $type): string

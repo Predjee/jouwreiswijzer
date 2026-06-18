@@ -1,0 +1,128 @@
+<?xml version="1.0" ?>
+<form xmlns="http://schemas.sulu.io/template/template"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/form-1.0.xsd">
+    <key>push_rule_details</key>
+
+    <properties>
+        <section name="general">
+            <meta>
+                <title>Algemeen</title>
+            </meta>
+            <properties>
+                <property name="name" type="text_line" mandatory="true">
+                    <meta><title>Naam</title></meta>
+                    <params><param name="headline" value="true"/></params>
+                </property>
+
+                <property name="triggerType" type="single_select" mandatory="true" colspan="6">
+                    <meta><title>Trigger</title></meta>
+                    <params>
+                        <param name="info_text" value="day_start gebruikt lokale tijd en tijdzonestrategie. trip_start_offset en trip_end_offset gebruiken offsetwaarde en offseteenheid. activity_start_offset werkt alleen voor dagblokken met geldige tijden."/>
+                        <param name="values" type="collection">
+                            <param name="trip_start_offset" value="trip_start_offset"/>
+                            <param name="trip_end_offset" value="trip_end_offset"/>
+                            <param name="day_start" value="day_start"/>
+                            <param name="activity_start_offset" value="activity_start_offset"/>
+                        </param>
+                    </params>
+                </property>
+
+                <property name="channel" type="single_select" mandatory="true" colspan="6">
+                    <meta><title>Kanaal</title></meta>
+                    <params>
+                        <param name="values" type="collection">
+                            <param name="trip_reminders" value="trip_reminders"/>
+                            <param name="trip_plan_ready" value="trip_plan_ready"/>
+                            <param name="general" value="general"/>
+                        </param>
+                    </params>
+                </property>
+
+                <property name="active" type="checkbox" colspan="6">
+                    <meta><title>Actief</title></meta>
+                </property>
+            </properties>
+        </section>
+
+        <section name="schedule">
+            <meta>
+                <title>Planning</title>
+            </meta>
+            <properties>
+                <property name="offsetValue" type="number" colspan="4">
+                    <meta><title>Offsetwaarde</title></meta>
+                    <params><param name="info_text" value="Verplicht voor trip_start_offset, trip_end_offset en activity_start_offset."/></params>
+                </property>
+
+                <property name="offsetUnit" type="single_select" colspan="4">
+                    <meta><title>Offseteenheid</title></meta>
+                    <params>
+                        <param name="info_text" value="Verplicht voor offset-triggers."/>
+                        <param name="values" type="collection">
+                            <param name="minutes" value="minutes"/>
+                            <param name="hours" value="hours"/>
+                            <param name="days" value="days"/>
+                        </param>
+                    </params>
+                </property>
+
+                <property name="localTime" type="time" colspan="4">
+                    <meta><title>Lokale tijd</title></meta>
+                    <params><param name="info_text" value="Verplicht als trigger day_start is. Gebruik HH:mm."/></params>
+                </property>
+
+                <property name="timezoneStrategy" type="single_select" colspan="6">
+                    <meta><title>Tijdzonestrategie</title></meta>
+                    <params>
+                        <param name="info_text" value="day gebruikt de tijdzone van de dag, trip gebruikt de reistijdzone en fallback gebruikt Europe/Amsterdam als er geen passende tijdzone is."/>
+                        <param name="values" type="collection">
+                            <param name="day" value="day"/>
+                            <param name="trip" value="trip"/>
+                            <param name="fallback" value="fallback"/>
+                        </param>
+                    </params>
+                </property>
+            </properties>
+        </section>
+
+        <section name="message">
+            <meta>
+                <title>Bericht</title>
+            </meta>
+            <properties>
+                <property name="titleTemplate" type="text_line" mandatory="true">
+                    <meta><title>Titelsjabloon</title></meta>
+                    <params><param name="info_text" value="Toegestane placeholders: {{ trip.title }}, {{ trip.startDate }}, {{ trip.endDate }}, {{ trip.totalDays }}, {{ day.number }}, {{ day.title }}, {{ day.date }}, {{ customer.firstName }}."/></params>
+                </property>
+
+                <property name="bodyTemplate" type="text_area" mandatory="true">
+                    <meta><title>Tekstsjabloon</title></meta>
+                    <params><param name="info_text" value="Toegestane placeholders: {{ trip.title }}, {{ trip.startDate }}, {{ trip.endDate }}, {{ trip.totalDays }}, {{ day.number }}, {{ day.title }}, {{ day.date }}, {{ customer.firstName }}."/></params>
+                </property>
+            </properties>
+        </section>
+
+        <section name="action">
+            <meta>
+                <title>Actie</title>
+            </meta>
+            <properties>
+                <property name="actionType" type="single_select" colspan="6">
+                    <meta><title>Actietype</title></meta>
+                    <params>
+                        <param name="values" type="collection">
+                            <param name="none" value="none"/>
+                            <param name="screen" value="screen"/>
+                            <param name="external_url" value="external_url"/>
+                        </param>
+                    </params>
+                </property>
+
+                <property name="actionTarget" type="text_line" colspan="6">
+                    <meta><title>Actiedoel</title></meta>
+                </property>
+            </properties>
+        </section>
+    </properties>
+</form>

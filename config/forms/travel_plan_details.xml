@@ -57,8 +57,8 @@
         <section name="tripProfile">
             <meta><title>Reisprofiel</title></meta>
             <properties>
-                <property name="period" type="text_line" colspan="6"><meta><title>Periode</title></meta></property>
-                <property name="duration" type="text_line" colspan="6"><meta><title>Duur</title></meta></property>
+                <property name="startDate" type="date" colspan="6"><meta><title>Startdatum</title></meta></property>
+                <property name="endDate" type="date" colspan="6"><meta><title>Einddatum</title></meta></property>
                 <property name="travelParty" type="text_line" colspan="6"><meta><title>Reisgezelschap</title></meta></property>
                 <property name="travelStyle" type="text_line" colspan="6"><meta><title>Reisstijl</title></meta></property>
                 <property name="packageType" type="text_line" colspan="6"><meta><title>Pakkettype</title></meta></property>
@@ -116,6 +116,18 @@
                         <property name="_feedback" visibleCondition="__parent._feedback != null and __parent._feedback != ''" type="app_travel_plan_feedback"><meta><title>Klantfeedback</title></meta></property>
                         <property name="dayNumber" type="number" colspan="3"><meta><title>Dagnummer</title></meta></property>
                         <property name="dateLabel" type="text_line" colspan="9"><meta><title>Datumlabel</title></meta></property>
+                        <property name="destinationTimezone" type="single_select" colspan="6">
+                            <meta>
+                                <title>Tijdzone</title>
+                            </meta>
+                            <params>
+                                <param name="info_text" value="Typ om te zoeken naar een continent of stad"/>
+
+                                <param name="default_value" type="expression" value="service('App\\Content\\Select\\TimezoneSelect').getDefaultValue()" />
+
+                                <param name="values" type="expression" value="service('App\\Content\\Select\\TimezoneSelect').getValues()" />
+                            </params>
+                        </property>
                         <property name="title" type="text_line"><meta><title>Titel</title></meta></property>
                         <property name="intro" type="text_area"><meta><title>Introductie</title></meta></property>
                         <block name="blocks" default-type="activity">
@@ -129,7 +141,9 @@
                                         <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
                                         <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
                                         <property name="location" type="text_line" colspan="4"><meta><title>Locatie</title></meta></property>
-                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijd</title></meta></property>
+                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijdtekst</title></meta></property>
+                                        <property name="startTime" type="time" colspan="4"><meta><title>Van</title></meta></property>
+                                        <property name="endTime" type="time" colspan="4"><meta><title>Tot optioneel</title></meta></property>
                                         <property name="bookingUrl" type="url"><meta><title>Boekingslink</title></meta></property>
                                     </properties>
                                 </type>
@@ -141,7 +155,9 @@
                                         <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
                                         <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
                                         <property name="location" type="text_line" colspan="4"><meta><title>Locatie</title></meta></property>
-                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijd</title></meta></property>
+                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijdtekst</title></meta></property>
+                                        <property name="startTime" type="time" colspan="4"><meta><title>Van</title></meta></property>
+                                        <property name="endTime" type="time" colspan="4"><meta><title>Tot optioneel</title></meta></property>
                                         <property name="bookingUrl" type="url"><meta><title>Boekingslink</title></meta></property>
                                     </properties>
                                 </type>
@@ -153,7 +169,9 @@
                                         <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
                                         <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
                                         <property name="location" type="text_line" colspan="4"><meta><title>Locatie</title></meta></property>
-                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijd</title></meta></property>
+                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijdtekst</title></meta></property>
+                                        <property name="startTime" type="time" colspan="4"><meta><title>Van</title></meta></property>
+                                        <property name="endTime" type="time" colspan="4"><meta><title>Tot optioneel</title></meta></property>
                                         <property name="bookingUrl" type="url"><meta><title>Boekingslink</title></meta></property>
                                     </properties>
                                 </type>
@@ -165,7 +183,9 @@
                                         <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
                                         <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
                                         <property name="location" type="text_line" colspan="4"><meta><title>Locatie</title></meta></property>
-                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijd</title></meta></property>
+                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijdtekst</title></meta></property>
+                                        <property name="startTime" type="time" colspan="4"><meta><title>Van</title></meta></property>
+                                        <property name="endTime" type="time" colspan="4"><meta><title>Tot optioneel</title></meta></property>
                                         <property name="bookingUrl" type="url"><meta><title>Boekingslink</title></meta></property>
                                     </properties>
                                 </type>
@@ -177,7 +197,9 @@
                                         <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
                                         <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
                                         <property name="location" type="text_line" colspan="4"><meta><title>Locatie</title></meta></property>
-                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijd</title></meta></property>
+                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijdtekst</title></meta></property>
+                                        <property name="startTime" type="time" colspan="4"><meta><title>Van</title></meta></property>
+                                        <property name="endTime" type="time" colspan="4"><meta><title>Tot optioneel</title></meta></property>
                                     </properties>
                                 </type>
                                 <type name="note">
@@ -188,7 +210,9 @@
                                         <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
                                         <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
                                         <property name="location" type="text_line" colspan="4"><meta><title>Locatie</title></meta></property>
-                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijd</title></meta></property>
+                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijdtekst</title></meta></property>
+                                        <property name="startTime" type="time" colspan="4"><meta><title>Van</title></meta></property>
+                                        <property name="endTime" type="time" colspan="4"><meta><title>Tot optioneel</title></meta></property>
                                     </properties>
                                 </type>
                                 <type name="free_text">
@@ -199,7 +223,9 @@
                                         <property name="text" type="text_area"><meta><title>Tekst</title></meta></property>
                                         <property name="icon" type="single_icon_selection" colspan="4"><meta><title>Icoon</title></meta><params><param name="icon_set" value="travel_plan_icons"/></params></property>
                                         <property name="location" type="text_line" colspan="4"><meta><title>Locatie</title></meta></property>
-                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijd</title></meta></property>
+                                        <property name="timeLabel" type="text_line" colspan="4"><meta><title>Tijdtekst</title></meta></property>
+                                        <property name="startTime" type="time" colspan="4"><meta><title>Van</title></meta></property>
+                                        <property name="endTime" type="time" colspan="4"><meta><title>Tot optioneel</title></meta></property>
                                     </properties>
                                 </type>
                             </types>

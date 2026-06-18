@@ -10,6 +10,7 @@ use App\Entity\TravelPlanFeedback;
 use App\Entity\TravelRequest;
 use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelRequestRepository;
+use App\Service\TravelPlanPublisher;
 use App\Service\TravelPlanContentFactory;
 use App\TravelPlan\Pdf\TravelPlanPdfStorage;
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,6 +36,7 @@ final class TravelRequestController extends AbstractRestController implements Se
         private readonly TravelRequestRepository $repository,
         private readonly EntityManagerInterface $entityManager,
         private readonly TravelPlanContentFactory $contentFactory,
+        private readonly TravelPlanPublisher $travelPlanPublisher,
         private readonly TravelPlanPdfStorage $pdfStorage,
         private readonly TravelPlanFeedbackRepository $feedbackRepository,
     ) {
@@ -115,15 +117,22 @@ final class TravelRequestController extends AbstractRestController implements Se
             throw new BadRequestHttpException('Invalid travel plan status.');
         }
 
+        try {
+            $content = $this->contentFactory->fromFormData($formData, $travelPlan->getContent());
+        } catch (\InvalidArgumentException $exception) {
+            throw new BadRequestHttpException($exception->getMessage(), $exception);
+        }
+
         $travelPlan
             ->setTitle($title)
-            ->setStatus($status)
-            ->setContent($this->contentFactory->fromFormData($formData, $travelPlan->getContent()));
+            ->setContent($content);
 
-        if (TravelPlan::STATUS_PUBLISHED === $status && null === $travelPlan->getPublishedAt()) {
-            $travelPlan->setPublishedAt(new \DateTimeImmutable());
-        } elseif (TravelPlan::STATUS_DRAFT === $status) {
-            $travelPlan->setPublishedAt(null);
+        if (TravelPlan::STATUS_PUBLISHED === $status) {
+            $this->travelPlanPublisher->publish($travelPlan);
+        } else {
+            $travelPlan
+                ->setStatus(TravelPlan::STATUS_DRAFT)
+                ->setPublishedAt(null);
         }
 
         if (TravelPlan::STATUS_PUBLISHED === $status) {

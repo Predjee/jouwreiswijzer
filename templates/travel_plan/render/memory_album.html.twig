@@ -1,0 +1,52 @@
+<htmlpagefooter name="travelMemoryAlbumFooter">
+    <div class="travel-memory-album-footer">
+        JouwReisWijzer &nbsp;&middot;&nbsp; {{ albumTitle }} &nbsp;&middot;&nbsp; pagina {PAGENO}
+    </div>
+</htmlpagefooter>
+
+<article class="travel-memory-album">
+    <section class="travel-memory-album-cover">
+        <p class="travel-memory-album-cover__eyebrow">Reisalbum</p>
+        <h1>{{ albumTitle }}</h1>
+        {% if albumIntro %}
+            <div class="travel-memory-album-cover__intro">{{ albumIntro|nl2br }}</div>
+        {% endif %}
+        <div class="travel-memory-album-cover__rule">&nbsp;</div>
+        <p class="travel-memory-album-cover__meta">{{ photos|length }} herinneringen</p>
+    </section>
+
+    <pagebreak margin-left="16mm"
+               margin-right="16mm"
+               margin-top="18mm"
+               margin-bottom="22mm"
+               resetpagenum="1"
+               suppress="off"
+               odd-footer-name="travelMemoryAlbumFooter"
+               odd-footer-value="on"
+               even-footer-name="travelMemoryAlbumFooter"
+               even-footer-value="on" />
+
+    {% if photos %}
+        {% for photo in photos %}
+            <section class="travel-memory-photo{% if not loop.first %} travel-memory-photo--page-break{% endif %}">
+                <figure>
+                    <img src="{{ photo.src }}" alt="{{ photo.caption|default('Reisfoto', true) }}">
+                    {% if photo.caption or photo.capturedAt %}
+                        <figcaption>
+                            {% if photo.capturedAt %}
+                                <p class="travel-memory-photo__date">{{ photo.capturedAt }}</p>
+                            {% endif %}
+                            {% if photo.caption %}
+                                <p class="travel-memory-photo__caption">{{ photo.caption }}</p>
+                            {% endif %}
+                        </figcaption>
+                    {% endif %}
+                </figure>
+            </section>
+        {% endfor %}
+    {% else %}
+        <section class="travel-memory-photo travel-memory-photo--empty">
+            <p>Er zijn nog geen foto's geselecteerd voor dit reisalbum.</p>
+        </section>
+    {% endif %}
+</article>

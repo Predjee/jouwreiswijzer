@@ -62,66 +62,93 @@
                     </p>
                 </div>
             {% else %}
-                <ul class="account-travel-grid" role="list">
-                    {% for card in travel_plans %}
-                        {% set travel_plan = card.travelPlan %}
-                        <li class="account-travel-card">
-                            <div class="account-travel-card-top">
-                                <span class="account-travel-status">
-                                    <span aria-hidden="true"></span>
-                                    {{ card.statusLabel }}
-                                </span>
-                                <span class="account-travel-number">
-                                    {{ '%02d'|format(loop.index) }}
-                                </span>
-                            </div>
+                {% set sections = [
+                    {key: 'active', title: 'Actieve reis', cards: travel_plan_sections.active, featured: true},
+                    {key: 'upcoming', title: 'Aankomende reizen', cards: travel_plan_sections.upcoming, featured: false},
+                    {key: 'unknown', title: 'Reizen', cards: travel_plan_sections.unknown, featured: false},
+                    {key: 'past', title: 'Eerdere reizen', cards: travel_plan_sections.past, featured: false}
+                ] %}
 
-                            <div class="account-travel-card-copy">
-                                <h3 class="account-travel-title">{{ travel_plan.title }}</h3>
-                                {% if travel_plan.content.intro.title|default and travel_plan.content.intro.title != travel_plan.title %}
-                                    <p class="account-travel-subtitle">
-                                        {{ travel_plan.content.intro.title }}
-                                    </p>
-                                {% endif %}
-                                <p class="account-travel-status-note">
-                                    {% if card.openFeedbackCount > 0 %}
-                                        Er staat nog feedback open.
-                                    {% elseif card.pdfAvailable %}
-                                        Je definitieve reisgids staat klaar.
-                                    {% else %}
-                                        Je reisplan is nog in review.
-                                    {% endif %}
-                                </p>
-                            </div>
+                {% for section in sections %}
+                    {% if section.cards is not empty %}
+                        <section class="account-travel-section account-travel-section--{{ section.key }}">
+                            <h3 class="type-card-title">{{ section.title }}</h3>
 
-                            <div class="account-travel-actions">
-                                <a
-                                    href="{{ path('account_travel_plan', {id: travel_plan.id}) }}"
-                                    class="btn-primary account-travel-view"
-                                >
-                                    Bekijk reisplan
-                                </a>
+                            <ul class="account-travel-grid {{ section.featured ? 'account-travel-grid--featured' : '' }}" role="list">
+                                {% for card in section.cards %}
+                                    {% set travel_plan = card.travelPlan %}
 
-                                {% if card.pdfAvailable %}
-                                    <a
-                                        href="{{ path('account_travel_plan_pdf', {id: travel_plan.id}) }}"
-                                        class="btn-ghost account-travel-download"
-                                        download
-                                    >
-                                        Download reisgids
-                                    </a>
-                                {% elseif card.openFeedbackCount > 0 %}
-                                    <a
-                                        href="{{ path('account_travel_plan', {id: travel_plan.id, mode: 'feedback'}) }}"
-                                        class="btn-ghost account-travel-feedback"
-                                    >
-                                        Feedback geven
-                                    </a>
-                                {% endif %}
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
+                                    <li class="account-travel-card {{ section.featured ? 'account-travel-card--featured' : '' }}">
+                                        <div class="account-travel-card-top">
+                            <span class="account-travel-status">
+                                <span aria-hidden="true"></span>
+                                {{ card.statusLabel }}
+                            </span>
+                                        </div>
+
+                                        <div class="account-travel-card-copy">
+                                            <h3 class="account-travel-title">{{ travel_plan.title }}</h3>
+
+                                            {% if travel_plan.content.intro.title|default and travel_plan.content.intro.title != travel_plan.title %}
+                                                <p class="account-travel-subtitle">
+                                                    {{ travel_plan.content.intro.title }}
+                                                </p>
+                                            {% endif %}
+
+                                            {% if card.periodLabel %}
+                                                <p class="account-travel-period">
+                                                    {{ card.periodLabel }}{% if card.durationLabel %} · {{ card.durationLabel }}{% endif %}
+                                                </p>
+                                            {% endif %}
+
+                                            {% if card.timingLabel %}
+                                                <p class="account-travel-timing">{{ card.timingLabel }}</p>
+                                            {% endif %}
+
+                                            <p class="account-travel-status-note">
+                                                {% if card.openFeedbackCount > 0 %}
+                                                    Er staat nog feedback open.
+                                                {% elseif card.pdfAvailable %}
+                                                    Je definitieve reisgids staat klaar.
+                                                {% else %}
+                                                    Je reisplan is nog in review.
+                                                {% endif %}
+                                            </p>
+                                        </div>
+
+                                        <div class="account-travel-actions">
+                                            <a
+                                                href="{{ section.key == 'active' ? path('account_companion', {id: travel_plan.id}) : path('account_travel_plan', {id: travel_plan.id}) }}"
+                                                class="btn-primary account-travel-view"
+                                            >
+                                                {{ section.key == 'active' ? 'Reishulp openen' : 'Bekijk reisplan' }}
+                                            </a>
+
+                                            {% if card.pdfAvailable %}
+                                                <a
+                                                    href="{{ path('account_travel_plan_pdf', {id: travel_plan.id}) }}"
+                                                    class="btn-ghost account-travel-download"
+                                                    download
+                                                >
+                                                    Download reisgids
+                                                </a>
+                                            {% endif %}
+
+                                            {% if card.openFeedbackCount > 0 %}
+                                                <a
+                                                    href="{{ path('account_travel_plan', {id: travel_plan.id, mode: 'feedback'}) }}"
+                                                    class="btn-ghost account-travel-feedback"
+                                                >
+                                                    Feedback bekijken
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </section>
+                    {% endif %}
+                {% endfor %}
             {% endif %}
         </div>
     </section>

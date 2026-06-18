@@ -12,6 +12,7 @@ use Sulu\Bundle\SecurityBundle\Entity\User;
 #[ORM\Entity(repositoryClass: NotificationRepository::class)]
 class Notification
 {
+    public const TYPE_TRAVEL_PLAN_PUBLISHED = 'travel_plan_published';
     public const TYPE_TRAVEL_PLAN_PDF_RELEASED = 'travel_plan_pdf_released';
     public const TYPE_TRAVEL_PLAN_FEEDBACK_SUBMITTED = 'travel_plan_feedback_submitted';
     public const TYPE_TRAVEL_PLAN_FEEDBACK_RESOLVED = 'travel_plan_feedback_resolved';

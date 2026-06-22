@@ -6,6 +6,8 @@ namespace App\TravelPlan\Renderer;
 
 use App\Entity\TravelPlan;
 use App\Entity\TravelPlanFeedback;
+use App\Service\IconResolver;
+use App\Service\TravelCompanion\CompanionContentHelper;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Twig\Environment;
 
@@ -54,6 +56,7 @@ final readonly class TravelPlanRenderer
 
     public function __construct(
         private Environment $twig,
+        private IconResolver $iconResolver,
         #[Autowire('%kernel.project_dir%')]
         private string $projectDir,
     ) {
@@ -89,63 +92,91 @@ final readonly class TravelPlanRenderer
         $content = $travelPlan->getContent();
         $renderedSections = [];
 
-        foreach ($content['sections'] ?? [] as $sectionIndex => $section) {
-            if (!\is_array($section)) {
-                continue;
-            }
-
-            $type = $section['type'] ?? null;
-
-            if (!\is_string($type) || !isset(self::SECTION_TEMPLATES[$type])) {
-                continue;
-            }
-
-            if ('route_overview' === $type && \is_array($section['routeStops'] ?? null)) {
-                $section['routeStops'] = array_map(function (mixed $stop) use ($accountView): mixed {
-                    if (!\is_array($stop)) {
-                        return $stop;
-                    }
-
-                    $stop['_iconMarkup'] = $this->iconMarkup(
-                        $stop['icon'] ?? 'map',
-                        $accountView,
-                    );
-
-                    return $stop;
-                }, $section['routeStops']);
-            }
-
-            $context = [
-                'section' => $section,
+        foreach (CompanionContentHelper::destinations($content) as $destinationData) {
+            $destinationIndex = $destinationData['destinationIndex'];
+            $destination = $destinationData['destination'];
+            $destinationPath = \sprintf('destinations[%d]', $destinationIndex);
+            $renderedDestination = $this->twig->render(self::SECTION_TEMPLATES['destination'], [
+                'section' => $destination,
                 'accountView' => $accountView,
                 'travelPlan' => $travelPlan,
                 'feedbackEnabled' => $feedbackEnabled,
-            ];
-
-            if ('day' === $type) {
-                $context['renderedBlocks'] = $this->renderDayBlocks(
-                    $section['blocks'] ?? [],
-                    $travelPlan,
-                    (int) $sectionIndex,
-                    $accountView,
-                    $feedbackByPath,
-                    $feedbackEnabled,
-                );
-            }
-
-            $renderedSection = $this->twig->render(self::SECTION_TEMPLATES[$type], $context);
+            ]);
             $renderedSections[] = [
                 'html' => $this->prependIcon(
-                    $renderedSection,
-                    $section['icon'] ?? self::DEFAULT_SECTION_ICONS[$type] ?? null,
+                    $renderedDestination,
+                    $destination['icon'] ?? self::DEFAULT_SECTION_ICONS['destination'],
                     $accountView,
                 ),
-                'blockPath' => \sprintf('sections[%d]', $sectionIndex),
-                'blockType' => $type,
+                'blockPath' => $destinationPath,
+                'blockType' => 'destination',
                 'feedback' => $feedbackEnabled
-                    ? ($feedbackByPath[\sprintf('sections[%d]', $sectionIndex)] ?? null)
+                    ? ($feedbackByPath[$destinationPath] ?? null)
                     : null,
             ];
+
+            foreach ($destination['sections'] ?? [] as $sectionIndex => $section) {
+                if (!\is_array($section)) {
+                    continue;
+                }
+
+                $type = $section['type'] ?? null;
+
+                if (!\is_string($type) || !isset(self::SECTION_TEMPLATES[$type]) || 'destination' === $type) {
+                    continue;
+                }
+
+                if ('route_overview' === $type && \is_array($section['routeStops'] ?? null)) {
+                    $section['routeStops'] = array_map(function (mixed $stop) use ($accountView): mixed {
+                        if (!\is_array($stop)) {
+                            return $stop;
+                        }
+
+                        $stop['_iconMarkup'] = $this->iconMarkup(
+                            $stop['icon'] ?? 'map',
+                            $accountView,
+                        );
+
+                        return $stop;
+                    }, $section['routeStops']);
+                }
+
+                $context = [
+                    'section' => $section,
+                    'accountView' => $accountView,
+                    'travelPlan' => $travelPlan,
+                    'feedbackEnabled' => $feedbackEnabled,
+                ];
+
+                if ('day' === $type) {
+                    $context['renderedBlocks'] = $this->renderDayBlocks(
+                        $section['blocks'] ?? [],
+                        $travelPlan,
+                        $destinationIndex,
+                        (int) $sectionIndex,
+                        $accountView,
+                        $feedbackByPath,
+                        $feedbackEnabled,
+                    );
+                }
+
+                $sectionPath = \sprintf(
+                    'destinations[%d].sections[%d]',
+                    $destinationIndex,
+                    (int) $sectionIndex,
+                );
+                $renderedSection = $this->twig->render(self::SECTION_TEMPLATES[$type], $context);
+                $renderedSections[] = [
+                    'html' => $this->prependIcon(
+                        $renderedSection,
+                        $section['icon'] ?? self::DEFAULT_SECTION_ICONS[$type] ?? null,
+                        $accountView,
+                    ),
+                    'blockPath' => $sectionPath,
+                    'blockType' => $type,
+                    'feedback' => $feedbackEnabled ? ($feedbackByPath[$sectionPath] ?? null) : null,
+                ];
+            }
         }
 
         return $this->twig->render('travel_plan/render/base.html.twig', [
@@ -165,6 +196,7 @@ final readonly class TravelPlanRenderer
     private function renderDayBlocks(
         mixed $blocks,
         TravelPlan $travelPlan,
+        int $destinationIndex,
         int $sectionIndex,
         bool $accountView,
         array $feedbackByPath,
@@ -196,19 +228,21 @@ final readonly class TravelPlanRenderer
                     'travelPlan' => $travelPlan,
                 ],
             );
+            $blockPath = \sprintf(
+                'destinations[%d].sections[%d].blocks[%d]',
+                $destinationIndex,
+                $sectionIndex,
+                $blockIndex,
+            );
             $renderedBlocks[] = [
                 'html' => $this->prependIcon(
                     $renderedBlock,
                     $block['icon'] ?? self::DEFAULT_DAY_BLOCK_ICONS[$type],
                     $accountView,
                 ),
-                'blockPath' => \sprintf('sections[%d].blocks[%d]', $sectionIndex, $blockIndex),
+                'blockPath' => $blockPath,
                 'blockType' => $type,
-                'feedback' => $feedbackEnabled
-                    ? ($feedbackByPath[
-                        \sprintf('sections[%d].blocks[%d]', $sectionIndex, $blockIndex)
-                    ] ?? null)
-                    : null,
+                'feedback' => $feedbackEnabled ? ($feedbackByPath[$blockPath] ?? null) : null,
             ];
         }
 
@@ -291,41 +325,24 @@ final readonly class TravelPlanRenderer
 
     private function iconSvg(mixed $icon): ?string
     {
-        if (!\is_string($icon) || 1 !== preg_match('/^[a-z0-9][a-z0-9-]*$/', $icon)) {
+        if (!\is_string($icon)) {
             return null;
         }
 
-        $path = $this->projectDir.'/assets/images/icons/'.$icon.'.svg';
+        $svg = $this->iconResolver->getSvgIcon($icon);
 
-        if (!is_file($path) || false === $contents = file_get_contents($path)) {
-            return null;
-        }
-
-        $contents = str_replace(
-            ['currentColor', '#000000', '#000'],
-            '#d4af37',
-            $contents,
-        );
-        $contents = preg_replace(
-            '/<svg\b/',
-            '<svg class="travel-plan-icon" color="#d4af37"',
-            $contents,
-            1,
-        ) ?? $contents;
-
-        return $contents;
+        return '' === $svg ? null : $svg;
     }
 
     private function iconPngDataUri(mixed $icon): ?string
     {
-        if (!\is_string($icon) || 1 !== preg_match('/^[a-z0-9][a-z0-9-]*$/', $icon)) {
+        if (!\is_string($icon)) {
             return null;
         }
 
-        return $this->assetDataUri(
-            'assets/images/pdf/icons/'.$icon.'.png',
-            'image/png',
-        );
+        $dataUri = $this->iconResolver->getPdfIconDataUri($icon);
+
+        return '' === $dataUri ? null : $dataUri;
     }
 
     private function assetDataUri(string $relativePath, string $mimeType): ?string

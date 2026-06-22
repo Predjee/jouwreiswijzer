@@ -9,6 +9,8 @@
              alt=""
              role="presentation"
              loading="eager"
+             decoding="async"
+             fetchpriority="high"
              class="hero-bg-image absolute inset-0 w-full h-full object-cover object-center">
     {% endif %}
 
@@ -27,9 +29,12 @@
             </p>
         {% endif %}
 
-        <h1 class="hero-title type-hero-title">
-            {{ block.title|raw }}
-        </h1>
+        {% set safe_title = block.title|striptags('<em><i>') %}
+        {% if heading_tag|default('h2') == 'h1' %}
+            <h1 class="hero-title type-hero-title">{{ safe_title|raw }}</h1>
+        {% else %}
+            <h2 class="hero-title type-hero-title">{{ safe_title|raw }}</h2>
+        {% endif %}
 
         {% if block.subtitle|default %}
             <p class="type-body">

@@ -296,32 +296,48 @@ final class TravelRequestController extends AbstractRestController implements Se
             return;
         }
 
-        if (1 === \preg_match('/^sections\[(\d+)]$/D', $blockPath, $matches)) {
-            $sectionIndex = (int) $matches[1];
+        if (1 === \preg_match('/^destinations\[(\d+)]$/D', $blockPath, $matches)) {
+            $destinationIndex = (int) $matches[1];
 
-            if (isset($data['sections'][$sectionIndex]) && \is_array($data['sections'][$sectionIndex])) {
-                $data['sections'][$sectionIndex]['_feedback'] ??= $serialized;
+            if (isset($data['destinations'][$destinationIndex]) && \is_array($data['destinations'][$destinationIndex])) {
+                $data['destinations'][$destinationIndex]['_feedback'] ??= $serialized;
+            }
+
+            return;
+        }
+
+        if (1 === \preg_match(
+            '/^destinations\[(\d+)]\.sections\[(\d+)]$/D',
+            $blockPath,
+            $matches,
+        )) {
+            $destinationIndex = (int) $matches[1];
+            $sectionIndex = (int) $matches[2];
+
+            if (isset($data['destinations'][$destinationIndex]['sections'][$sectionIndex]) && \is_array($data['destinations'][$destinationIndex]['sections'][$sectionIndex])) {
+                $data['destinations'][$destinationIndex]['sections'][$sectionIndex]['_feedback'] ??= $serialized;
             }
 
             return;
         }
 
         if (1 !== \preg_match(
-            '/^sections\[(\d+)]\.blocks\[(\d+)]$/D',
+            '/^destinations\[(\d+)]\.sections\[(\d+)]\.blocks\[(\d+)]$/D',
             $blockPath,
             $matches,
         )) {
             return;
         }
 
-        $sectionIndex = (int) $matches[1];
-        $blockIndex = (int) $matches[2];
+        $destinationIndex = (int) $matches[1];
+        $sectionIndex = (int) $matches[2];
+        $blockIndex = (int) $matches[3];
 
         if (
-            isset($data['sections'][$sectionIndex]['blocks'][$blockIndex])
-            && \is_array($data['sections'][$sectionIndex]['blocks'][$blockIndex])
+            isset($data['destinations'][$destinationIndex]['sections'][$sectionIndex]['blocks'][$blockIndex])
+            && \is_array($data['destinations'][$destinationIndex]['sections'][$sectionIndex]['blocks'][$blockIndex])
         ) {
-            $data['sections'][$sectionIndex]['blocks'][$blockIndex]['_feedback'] ??= $serialized;
+            $data['destinations'][$destinationIndex]['sections'][$sectionIndex]['blocks'][$blockIndex]['_feedback'] ??= $serialized;
         }
     }
 
@@ -336,32 +352,48 @@ final class TravelRequestController extends AbstractRestController implements Se
             return 'Hele reisplan';
         }
 
-        if (1 === \preg_match('/^sections\[(\d+)]$/D', $blockPath, $matches)) {
-            $sectionIndex = (int) $matches[1];
-            $section = $data['sections'][$sectionIndex] ?? [];
+        if (1 === \preg_match('/^destinations\[(\d+)]$/D', $blockPath, $matches)) {
+            $destinationIndex = (int) $matches[1];
+            $destination = $data['destinations'][$destinationIndex] ?? [];
+            $title = \trim((string) ($destination['title'] ?? ''));
+
+            return \sprintf(
+                'Bestemming %d: %s',
+                $destinationIndex + 1,
+                '' !== $title ? $title : 'Bestemming',
+            );
+        }
+
+        if (1 === \preg_match('/^destinations\[(\d+)]\.sections\[(\d+)]$/D', $blockPath, $matches)) {
+            $destinationIndex = (int) $matches[1];
+            $sectionIndex = (int) $matches[2];
+            $section = $data['destinations'][$destinationIndex]['sections'][$sectionIndex] ?? [];
             $title = \trim((string) ($section['title'] ?? ''));
 
             return \sprintf(
-                'Sectie %d: %s',
+                'Bestemming %d, sectie %d: %s',
+                $destinationIndex + 1,
                 $sectionIndex + 1,
                 '' !== $title ? $title : ($feedback->getBlockType() ?? 'Onderdeel'),
             );
         }
 
         if (1 === \preg_match(
-            '/^sections\[(\d+)]\.blocks\[(\d+)]$/D',
+            '/^destinations\[(\d+)]\.sections\[(\d+)]\.blocks\[(\d+)]$/D',
             $blockPath,
             $matches,
         )) {
-            $sectionIndex = (int) $matches[1];
-            $blockIndex = (int) $matches[2];
-            $section = $data['sections'][$sectionIndex] ?? [];
+            $destinationIndex = (int) $matches[1];
+            $sectionIndex = (int) $matches[2];
+            $blockIndex = (int) $matches[3];
+            $section = $data['destinations'][$destinationIndex]['sections'][$sectionIndex] ?? [];
             $block = $section['blocks'][$blockIndex] ?? [];
             $dayNumber = \max(1, (int) ($section['dayNumber'] ?? $sectionIndex + 1));
             $title = \trim((string) ($block['title'] ?? ''));
 
             return \sprintf(
-                'Dag %d: %s',
+                'Bestemming %d, dag %d: %s',
+                $destinationIndex + 1,
                 $dayNumber,
                 '' !== $title ? $title : ($feedback->getBlockType() ?? 'Dagonderdeel'),
             );

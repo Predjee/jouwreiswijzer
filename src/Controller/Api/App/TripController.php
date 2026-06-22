@@ -41,15 +41,22 @@ final class TripController extends AbstractController
     public function active(TravelPlanRepository $travelPlanRepository): JsonResponse
     {
         [, $contact] = $this->getApiCustomer();
-        $travelPlan = $this->selectActiveTrip($travelPlanRepository->findPublishedByContact($contact));
+
+        $travelPlan = $this->selectActiveTrip(
+            $travelPlanRepository->findPublishedByContact($contact),
+        );
 
         if (null === $travelPlan) {
-            throw new NotFoundHttpException();
+            return new JsonResponse([
+                'activeTrip' => null,
+            ]);
         }
 
         return new JsonResponse([
-            'id' => $travelPlan->getId(),
-            'title' => $travelPlan->getTitle(),
+            'activeTrip' => [
+                'id' => $travelPlan->getId(),
+                'title' => $travelPlan->getTitle(),
+            ],
         ]);
     }
 

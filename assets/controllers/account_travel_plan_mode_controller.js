@@ -6,7 +6,9 @@ export default class extends Controller {
     connect() {
         const params = new URLSearchParams(window.location.search);
 
-        this.setMode(params.get('mode') === 'feedback' ? 'feedback' : 'view');
+        const feedbackAvailable = this.hasFeedbackButtonTarget && this.hasFeedbackPanelTarget;
+
+        this.setMode(feedbackAvailable && params.get('mode') === 'feedback' ? 'feedback' : 'view');
     }
 
     showView() {
@@ -18,16 +20,24 @@ export default class extends Controller {
     }
 
     setMode(mode) {
-        const isFeedbackMode = mode === 'feedback';
+        const isFeedbackMode = mode === 'feedback'
+            && this.hasFeedbackButtonTarget
+            && this.hasFeedbackPanelTarget;
 
         this.element.classList.toggle('account-travel-plan-page--view', !isFeedbackMode);
         this.element.classList.toggle('account-travel-plan-page--feedback', isFeedbackMode);
         this.viewPanelTarget.hidden = isFeedbackMode;
-        this.feedbackPanelTarget.hidden = !isFeedbackMode;
 
         this.viewButtonTarget.classList.toggle('is-active', !isFeedbackMode);
-        this.feedbackButtonTarget.classList.toggle('is-active', isFeedbackMode);
         this.viewButtonTarget.setAttribute('aria-pressed', String(!isFeedbackMode));
-        this.feedbackButtonTarget.setAttribute('aria-pressed', String(isFeedbackMode));
+
+        if (this.hasFeedbackPanelTarget) {
+            this.feedbackPanelTarget.hidden = !isFeedbackMode;
+        }
+
+        if (this.hasFeedbackButtonTarget) {
+            this.feedbackButtonTarget.classList.toggle('is-active', isFeedbackMode);
+            this.feedbackButtonTarget.setAttribute('aria-pressed', String(isFeedbackMode));
+        }
     }
 }

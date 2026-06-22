@@ -135,7 +135,7 @@ final class TravelRequestAdmin extends Admin
     {
         return [
             self::SULU_ADMIN_SECURITY_SYSTEM => [
-                'JouwReiswijzer' => [
+                'Jouw ReisWijzer' => [
                     self::SECURITY_CONTEXT => [
                         PermissionTypes::VIEW,
                         PermissionTypes::EDIT,

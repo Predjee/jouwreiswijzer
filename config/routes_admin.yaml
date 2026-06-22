@@ -124,3 +124,49 @@ push_rules.delete:
     methods: [DELETE]
     defaults:
         _format: json
+
+manual_push_messages.get_collection:
+    path: /admin/api/manual-push-messages
+    controller: App\Controller\Admin\ManualPushMessageController::cgetAction
+    methods: [GET]
+    defaults:
+        _format: json
+
+manual_push_messages.post:
+    path: /admin/api/manual-push-messages
+    controller: App\Controller\Admin\ManualPushMessageController::postAction
+    methods: [POST]
+    defaults:
+        _format: json
+
+manual_push_messages.get:
+    path: /admin/api/manual-push-messages/{id}
+    controller: App\Controller\Admin\ManualPushMessageController::getAction
+    methods: [GET]
+    defaults:
+        _format: json
+    requirements:
+        id: '\d+'
+
+manual_push_messages.put:
+    path: /admin/api/manual-push-messages/{id}
+    controller: App\Controller\Admin\ManualPushMessageController::putAction
+    methods: [PUT]
+    defaults:
+        _format: json
+    requirements:
+        id: '\d+'
+
+manual_push_messages.travel_plan_options:
+    path: /admin/api/manual-push-messages/travel-plan-options
+    controller: App\Controller\Admin\ManualPushMessageController::optionsAction
+    methods: [GET]
+    defaults:
+        _format: json
+
+manual_push_messages.preview:
+    path: /admin/api/manual-push-messages/preview
+    controller: App\Controller\Admin\ManualPushMessageController::previewAction
+    methods: [POST]
+    defaults:
+        _format: json

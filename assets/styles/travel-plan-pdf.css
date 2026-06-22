@@ -196,29 +196,48 @@ body {
 }
 
 .travel-plan-section--route {
-    page-break-inside: avoid;
+    page-break-inside: auto;
 }
 
 .travel-plan-route {
+    width: 100%;
     margin: 7mm 0 0;
-    padding: 0;
+    border-collapse: collapse;
+    border-top: 0.7mm solid #b99550;
+    background-color: #fbfaf7;
 }
 
-.travel-plan-route li {
-    margin: 0 0 4mm;
-    padding: 5mm 6mm;
-    border: 0.2mm solid #ddd5c7;
-    background-color: #fbfaf7;
+.travel-plan-route tr {
     page-break-inside: avoid;
 }
 
-.travel-plan-route li h3 {
+.travel-plan-route td {
+    padding: 4.5mm 5mm;
+    border-bottom: 0.2mm solid #ddd5c7;
+    vertical-align: top;
+}
+
+.travel-plan-route__marker {
+    width: 9mm;
+    border-right: 0.45mm solid #b99550;
+    color: #b99550;
+    font-family: "Cormorant", serif;
+    font-size: 17pt;
+    line-height: 1;
+    text-align: center;
+}
+
+.travel-plan-route__content h3 {
     margin-bottom: 0.8mm;
 }
 
-.travel-plan-route li > p {
+.travel-plan-route__location {
+    margin-bottom: 1.8mm;
     color: #8a6a31;
-    font-size: 9pt;
+    font-family: "JostRegular", "Jost", sans-serif;
+    font-size: 8pt;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
 }
 
 .travel-plan-section--day {
@@ -283,8 +302,18 @@ body {
 }
 
 .travel-plan-block--tip {
-    border-left-color: #d4af62;
-    background-color: #f5efe2;
+    border-color: #b99550;
+    border-left: 1.2mm solid #d4af62;
+    background-color: #12213d;
+    color: #f7f4ee;
+}
+
+.travel-plan-block--tip h3 {
+    color: #ffffff;
+}
+
+.travel-plan-block--tip > p:first-of-type {
+    color: #d4af62;
 }
 
 .travel-plan-block--note {
@@ -303,6 +332,7 @@ body {
 
 .travel-plan-section--checklist {
     page-break-before: always;
+    page-break-after: always;
 }
 
 .travel-plan-section--checklist > h2 {

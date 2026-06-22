@@ -1,0 +1,64 @@
+.app-travel-plan-selector {
+    display: grid;
+    gap: 8px;
+}
+
+.app-travel-plan-selector__search,
+.app-travel-plan-selector select,
+.app-date-time-input {
+    border: 1px solid #ccd3db;
+    border-radius: 3px;
+    box-sizing: border-box;
+    min-height: 36px;
+    padding: 7px 10px;
+    width: 100%;
+}
+
+.app-push-preview {
+    border: 1px solid #d8dde5;
+    border-radius: 4px;
+    display: grid;
+    gap: 14px;
+    padding: 14px;
+}
+
+.app-push-preview__bar button,
+.app-push-preview__tokens button {
+    border: 1px solid #ccd3db;
+    border-radius: 3px;
+    background: #fff;
+    cursor: pointer;
+    min-height: 30px;
+    padding: 5px 9px;
+}
+
+.app-push-preview__message {
+    background: #f7f8fa;
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.app-push-preview__message p {
+    margin: 6px 0 0;
+}
+
+.app-push-preview__tokens {
+    display: grid;
+    gap: 12px;
+}
+
+.app-push-preview__tokens h4 {
+    font-size: 13px;
+    margin: 0 0 6px;
+}
+
+.app-push-preview__tokens section div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.app-push-preview__token--unavailable {
+    color: #7b8491;
+    opacity: .65;
+}

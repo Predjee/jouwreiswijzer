@@ -12,6 +12,7 @@ use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelPlanRepository;
 use App\Service\FeedbackPathResolver;
 use App\Service\FeedbackRoundService;
+use App\Service\TravelCompanion\CompanionContentHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -53,6 +54,16 @@ final class TravelPlanFeedbackController extends AbstractController
             $submitRequest->csrfToken,
         )) {
             throw $this->createAccessDeniedException('Ongeldige formulierbeveiliging.');
+        }
+
+        if (CompanionContentHelper::hasTripStarted($travelPlan->getContent())) {
+            return $this->feedbackErrorResponse(
+                $request,
+                $travelPlan,
+                'Deze reis is al begonnen, feedback op het reisplan is niet meer mogelijk. Neem voor wijzigingen tijdens je reis rechtstreeks contact op.',
+                Response::HTTP_CONFLICT,
+                errorCode: 'trip_started',
+            );
         }
 
         $blockPath = $submitRequest->blockPath;
@@ -128,6 +139,7 @@ final class TravelPlanFeedbackController extends AbstractController
         Request $request,
         ValidatorInterface $validator,
         FeedbackRoundService $feedbackRoundService,
+        TravelPlanRepository $travelPlanRepository,
     ): Response {
         [, $contact] = $this->getCustomer();
         $submitRequest = new SubmitFeedbackRoundRequest(
@@ -144,6 +156,22 @@ final class TravelPlanFeedbackController extends AbstractController
             $submitRequest->csrfToken,
         )) {
             throw $this->createAccessDeniedException('Ongeldige formulierbeveiliging.');
+        }
+
+        $travelPlan = $travelPlanRepository->findPublishedForContact($id, $contact);
+
+        if (!$travelPlan instanceof TravelPlan) {
+            throw $this->createNotFoundException();
+        }
+
+        if (CompanionContentHelper::hasTripStarted($travelPlan->getContent())) {
+            return $this->feedbackErrorResponse(
+                $request,
+                $travelPlan,
+                'Deze reis is al begonnen, feedback op het reisplan is niet meer mogelijk. Neem voor wijzigingen tijdens je reis rechtstreeks contact op.',
+                Response::HTTP_CONFLICT,
+                errorCode: 'trip_started',
+            );
         }
 
         $feedbackCount = $feedbackRoundService->submit($submitRequest, $contact);
@@ -251,9 +279,14 @@ final class TravelPlanFeedbackController extends AbstractController
         ?string $blockPath = null,
         ?string $feedbackContext = null,
         ?string $feedbackLabel = null,
+        ?string $errorCode = null,
     ): Response {
         if ($request->isXmlHttpRequest()) {
             $response = ['message' => $message];
+
+            if (null !== $errorCode) {
+                $response['code'] = $errorCode;
+            }
 
             if ($feedback instanceof TravelPlanFeedback && null !== $feedbackContext) {
                 $response['html'] = $this->renderFeedbackFragment(

@@ -43,9 +43,9 @@
             <div class="flex flex-col gap-4 md:col-span-1">
                 <a href="{{ sulu_content_root_path() }}"
                    class="inline-block"
-                   aria-label="JouwReiswijzer homepage">
+                   aria-label="Jouw ReisWijzer homepage">
                     <img src="{{ asset('images/logo.svg') }}"
-                         alt="JouwReiswijzer"
+                         alt="Jouw ReisWijzer"
                          width="200"
                          height="106"
                          loading="lazy"
@@ -136,7 +136,7 @@
                            {% if cta_link_view.rel|default %}
                                rel="{{ cta_link_view.rel }}"
                            {% endif %}
-                           class="btn-primary">
+                           class="btn-primary self-start">
                             {{ footer.cta_label }}
                         </a>
                     {% endif %}
@@ -145,33 +145,37 @@
 
         </div>
 
-        {% if footer.copyright_text|default or footer_legal %}
-            <div class="site-footer-bottom flex flex-col gap-2 pt-6
-                        sm:flex-row sm:justify-between border-t">
-                {% if footer.copyright_text|default %}
-                    <p class="type-meta">
-                        © {{ 'now'|date('Y') }} {{ footer.copyright_text }}
-                    </p>
-                {% endif %}
+        <div class="site-footer-bottom flex flex-col gap-2 pt-6
+                    sm:flex-row sm:justify-between border-t">
+            {% if footer.copyright_text|default %}
+                <p class="type-meta">
+                    © {{ 'now'|date('Y') }} {{ footer.copyright_text }}
+                </p>
+            {% endif %}
 
+            <ul class="flex flex-wrap gap-x-5 gap-y-2" role="list">
+                <li>
+                    <a href="/privacybeleid"
+                       class="footer-link">
+                        Privacybeleid
+                    </a>
+                </li>
                 {% if footer_legal %}
-                    <ul class="flex flex-wrap gap-x-5 gap-y-2" role="list">
-                        {% for item in footer_legal %}
-                            <li>
-                                <a href="{{ sulu_content_path(item.url) }}"
-                                   class="footer-link">
-                                    {{ item.title }}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                    {% for item in footer_legal %}
+                        <li>
+                            <a href="{{ sulu_content_path(item.url) }}"
+                               class="footer-link">
+                                {{ item.title }}
+                            </a>
+                        </li>
+                    {% endfor %}
                 {% endif %}
+            </ul>
 
-                <span class="footer-mark type-meta" aria-hidden="true">
-                    ✦
-                </span>
-            </div>
-        {% endif %}
+            <span class="footer-mark type-meta" aria-hidden="true">
+                ✦
+            </span>
+        </div>
 
     </div>
 

@@ -39,6 +39,7 @@ final class TripDetailMapper
                         'status' => $day->status,
                         'title' => $day->title,
                         'dateLabel' => $day->dateLabel,
+                        'destinationTitle' => $day->destinationTitle,
                     ],
                     $trip->days,
                 ),

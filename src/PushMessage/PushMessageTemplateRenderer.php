@@ -5,65 +5,36 @@ declare(strict_types=1);
 namespace App\PushMessage;
 
 use App\Entity\TravelPlan;
-use App\Service\TravelCompanion\CompanionContentHelper;
 
 final readonly class PushMessageTemplateRenderer
 {
+    public function __construct(
+        private TravelPlanPersonalizationContextBuilder $contextBuilder,
+    ) {
+    }
+
     /**
      * @param array{number?: int, title?: string, date?: \DateTimeImmutable} $day
      */
     public function render(string $template, TravelPlan $travelPlan, array $day = []): string
     {
-        return \strtr($template, $this->placeholders($travelPlan, $day));
+        $contact = $travelPlan->getTravelRequest()->getContact();
+        $context = $this->contextBuilder->build($travelPlan, $contact, $day);
+
+        return $this->renderWithValues($template, $context['values']);
     }
 
     /**
-     * @param array{number?: int, title?: string, date?: \DateTimeImmutable} $day
-     *
-     * @return array<string, string>
+     * @param array<string, string> $values
      */
-    private function placeholders(TravelPlan $travelPlan, array $day): array
+    public function renderWithValues(string $template, array $values): string
     {
-        $content = $travelPlan->getContent();
-        $tripProfile = \is_array($content['tripProfile'] ?? null) ? $content['tripProfile'] : [];
-        $startDate = CompanionContentHelper::createDate($tripProfile['startDate'] ?? null);
-        $endDate = CompanionContentHelper::createDate($tripProfile['endDate'] ?? null);
-        $contact = $travelPlan->getTravelRequest()->getContact();
-
-        return [
-            '{{ trip.title }}' => $travelPlan->getTitle(),
-            '{{ trip.startDate }}' => $this->formatDate($startDate),
-            '{{ trip.endDate }}' => $this->formatDate($endDate),
-            '{{ trip.totalDays }}' => $this->totalDays($startDate, $endDate),
-            '{{ day.number }}' => isset($day['number']) ? (string) $day['number'] : '',
-            '{{ day.title }}' => $day['title'] ?? '',
-            '{{ day.date }}' => $this->formatDate($day['date'] ?? null),
-            '{{ customer.firstName }}' => $this->customerFirstName($contact),
-        ];
-    }
-
-    private function formatDate(?\DateTimeImmutable $date): string
-    {
-        return $date instanceof \DateTimeImmutable ? $date->format('Y-m-d') : '';
-    }
-
-    private function totalDays(?\DateTimeImmutable $startDate, ?\DateTimeImmutable $endDate): string
-    {
-        if (!$startDate instanceof \DateTimeImmutable || !$endDate instanceof \DateTimeImmutable || $endDate < $startDate) {
-            return '';
-        }
-
-        return (string) CompanionContentHelper::inclusiveDays($startDate, $endDate);
-    }
-
-    private function customerFirstName(object $contact): string
-    {
-        if (\method_exists($contact, 'getFirstName')) {
-            $firstName = $contact->getFirstName();
-
-            return \is_scalar($firstName) ? (string) $firstName : '';
-        }
-
-        return '';
+        return (string) \preg_replace_callback(
+            '/{{\s*([a-zA-Z][a-zA-Z0-9]*(?:\.[a-zA-Z][a-zA-Z0-9]*)*)\s*}}/',
+            static fn (array $matches): string => \array_key_exists($matches[1], $values)
+                ? $values[$matches[1]]
+                : $matches[0],
+            $template,
+        );
     }
 }

@@ -59,15 +59,26 @@ final readonly class GetTripChecklistQueryHandler
     private function checklists(TravelPlan $travelPlan, array $checkedItems): array
     {
         $content = $travelPlan->getContent();
-        $sections = \is_array($content['sections'] ?? null) ? $content['sections'] : [];
         $checklists = [];
 
-        foreach ($sections as $sectionIndex => $section) {
+        foreach (CompanionContentHelper::destinationSections($content) as $sectionData) {
+            $section = $sectionData['section'];
+
             if (!\is_array($section) || 'checklist' !== ($section['type'] ?? null)) {
                 continue;
             }
 
-            $items = $this->items($travelPlan->getId() ?? 0, (int) $sectionIndex, CompanionContentHelper::stringValue($section, 'text'), $checkedItems);
+            $sectionPath = \sprintf(
+                'destinations[%d].sections[%d]',
+                $sectionData['destinationIndex'],
+                $sectionData['sectionIndex'],
+            );
+            $items = $this->items(
+                $travelPlan->getId() ?? 0,
+                $sectionPath,
+                CompanionContentHelper::stringValue($section, 'text'),
+                $checkedItems,
+            );
 
             if ([] === $items) {
                 continue;
@@ -87,7 +98,7 @@ final readonly class GetTripChecklistQueryHandler
      *
      * @return list<array{id: string, label: string, checked: bool}>
      */
-    private function items(int $travelPlanId, int $sectionIndex, string $text, array $checkedItems): array
+    private function items(int $travelPlanId, string $sectionPath, string $text, array $checkedItems): array
     {
         $items = [];
         $itemIndex = 0;
@@ -99,7 +110,7 @@ final readonly class GetTripChecklistQueryHandler
                 continue;
             }
 
-            $key = $this->itemKey($travelPlanId, $sectionIndex, $itemIndex, $label);
+            $key = $this->itemKey($travelPlanId, $sectionPath, $itemIndex, $label);
             $items[] = [
                 'id' => $key,
                 'label' => $label,
@@ -119,8 +130,8 @@ final readonly class GetTripChecklistQueryHandler
         return \trim($line);
     }
 
-    private function itemKey(int $travelPlanId, int $sectionIndex, int $lineIndex, string $normalizedLine): string
+    private function itemKey(int $travelPlanId, string $sectionPath, int $lineIndex, string $normalizedLine): string
     {
-        return \sha1(\sprintf('%d|%d|%d|%s', $travelPlanId, $sectionIndex, $lineIndex, $normalizedLine));
+        return \sha1(\sprintf('%d|%s|%d|%s', $travelPlanId, $sectionPath, $lineIndex, $normalizedLine));
     }
 }

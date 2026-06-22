@@ -86,7 +86,7 @@ final readonly class PushRuleOccurrenceFactory
             return [];
         }
 
-        $sectionsByDayNumber = $this->sectionsByDayNumber($content['sections'] ?? []);
+        $sectionsByDayNumber = $this->sectionsByDayNumber($content);
         $tripTimezone = $this->tripTimezone($tripProfile);
         $occurrences = [];
 
@@ -132,7 +132,9 @@ final readonly class PushRuleOccurrenceFactory
         $tripTimezone = $this->tripTimezone($tripProfile);
         $occurrences = [];
 
-        foreach ($content['sections'] ?? [] as $section) {
+        foreach (CompanionContentHelper::destinationSections($content) as $sectionData) {
+            $section = $sectionData['section'];
+
             if (!\is_array($section) || TravelPlanContentFactory::TYPE_DAY !== ($section['type'] ?? null)) {
                 continue;
             }
@@ -263,19 +265,21 @@ final readonly class PushRuleOccurrenceFactory
     }
 
     /**
-     * @param mixed $sections
+     * @param mixed $content
      *
      * @return array<int, array<string, mixed>>
      */
-    private function sectionsByDayNumber(mixed $sections): array
+    private function sectionsByDayNumber(mixed $content): array
     {
-        if (!\is_array($sections)) {
+        if (!\is_array($content)) {
             return [];
         }
 
         $indexed = [];
 
-        foreach ($sections as $section) {
+        foreach (CompanionContentHelper::destinationSections($content) as $sectionData) {
+            $section = $sectionData['section'];
+
             if (!\is_array($section) || TravelPlanContentFactory::TYPE_DAY !== ($section['type'] ?? null)) {
                 continue;
             }

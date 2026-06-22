@@ -15,24 +15,38 @@ final readonly class FeedbackPathResolver
             return null;
         }
 
-        $sections = $travelPlan->getContent()['sections'] ?? null;
+        $destinations = $travelPlan->getContent()['destinations'] ?? null;
 
-        if (!\is_array($sections)) {
+        if (!\is_array($destinations)) {
             throw new BadRequestHttpException('Ongeldig reisplanonderdeel.');
         }
 
-        if (1 === \preg_match('/^sections\[(\d+)]$/D', $blockPath, $matches)) {
-            $section = $sections[(int) $matches[1]] ?? null;
+        if (1 === \preg_match('/^destinations\[(\d+)]$/D', $blockPath, $matches)) {
+            $destination = $destinations[(int) $matches[1]] ?? null;
+
+            if (\is_array($destination) && 'destination' === ($destination['type'] ?? null)) {
+                return 'destination';
+            }
+        }
+
+        if (1 === \preg_match('/^destinations\[(\d+)]\.sections\[(\d+)]$/D', $blockPath, $matches)) {
+            $destination = $destinations[(int) $matches[1]] ?? null;
+            $section = \is_array($destination)
+                ? ($destination['sections'][(int) $matches[2]] ?? null)
+                : null;
 
             if (\is_array($section) && \is_string($section['type'] ?? null)) {
                 return $section['type'];
             }
         }
 
-        if (1 === \preg_match('/^sections\[(\d+)]\.blocks\[(\d+)]$/D', $blockPath, $matches)) {
-            $section = $sections[(int) $matches[1]] ?? null;
+        if (1 === \preg_match('/^destinations\[(\d+)]\.sections\[(\d+)]\.blocks\[(\d+)]$/D', $blockPath, $matches)) {
+            $destination = $destinations[(int) $matches[1]] ?? null;
+            $section = \is_array($destination)
+                ? ($destination['sections'][(int) $matches[2]] ?? null)
+                : null;
             $block = \is_array($section)
-                ? ($section['blocks'][(int) $matches[2]] ?? null)
+                ? ($section['blocks'][(int) $matches[3]] ?? null)
                 : null;
 
             if (

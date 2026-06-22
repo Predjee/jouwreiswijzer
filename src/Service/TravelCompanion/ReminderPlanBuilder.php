@@ -16,6 +16,7 @@ final readonly class ReminderPlanBuilder
      *     tripId: int|null,
      *     dayNumber: int,
      *     dayTitle: string,
+     *     destinationTitle: string,
      *     blockType: string,
      *     title: string,
      *     text: string,
@@ -37,7 +38,10 @@ final readonly class ReminderPlanBuilder
 
         $reminders = [];
 
-        foreach ($content['sections'] ?? [] as $section) {
+        foreach (CompanionContentHelper::destinationSections($content) as $sectionData) {
+            $section = $sectionData['section'];
+            $destinationTitle = CompanionContentHelper::stringValue($sectionData['destination'], 'title');
+
             if (!\is_array($section) || 'day' !== ($section['type'] ?? null)) {
                 continue;
             }
@@ -76,6 +80,7 @@ final readonly class ReminderPlanBuilder
                     'tripId' => $travelPlan->getId(),
                     'dayNumber' => $dayNumber,
                     'dayTitle' => CompanionContentHelper::stringValue($section, 'title'),
+                    'destinationTitle' => $destinationTitle,
                     'blockType' => CompanionContentHelper::stringValue($block, 'type'),
                     'title' => CompanionContentHelper::stringValue($block, 'title'),
                     'text' => CompanionContentHelper::stringValue($block, 'text'),

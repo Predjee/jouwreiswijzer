@@ -11,6 +11,8 @@ final readonly class CompanionDay
      */
     public function __construct(
         public int $dayNumber,
+        public string $destinationTitle,
+        public int $destinationIndex,
         public string $title,
         public string $dateLabel,
         public string $subtitle,

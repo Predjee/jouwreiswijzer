@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 class ScheduledPushMessage
 {
     public const STATUS_PENDING = 'pending';
+    public const STATUS_QUEUED = 'queued';
     public const STATUS_SENT = 'sent';
     public const STATUS_FAILED = 'failed';
 
@@ -196,6 +197,11 @@ class ScheduledPushMessage
         return self::STATUS_PENDING === $this->status;
     }
 
+    public function isQueued(): bool
+    {
+        return self::STATUS_QUEUED === $this->status;
+    }
+
     public function getSentAt(): ?\DateTimeImmutable
     {
         return $this->sentAt;
@@ -223,6 +229,14 @@ class ScheduledPushMessage
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    public function markQueued(): self
+    {
+        $this->status = self::STATUS_QUEUED;
+        $this->lastError = null;
+
+        return $this;
     }
 
     public function markSent(): self

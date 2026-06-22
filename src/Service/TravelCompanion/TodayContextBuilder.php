@@ -174,7 +174,9 @@ final readonly class TodayContextBuilder
             return null;
         }
 
-        foreach ($travelPlan->getContent()['sections'] ?? [] as $section) {
+        foreach (CompanionContentHelper::destinationSections($travelPlan->getContent()) as $sectionData) {
+            $section = $sectionData['section'];
+
             if (!\is_array($section) || 'day' !== ($section['type'] ?? null)) {
                 continue;
             }

@@ -24,6 +24,17 @@ final class TravelPlanContentFactory
     public const TYPE_TIP = 'tip';
     public const TYPE_NOTE = 'note';
 
+    /** @var string[] */
+    private const DESTINATION_SECTION_TYPES = [
+        self::TYPE_ROUTE_OVERVIEW,
+        self::TYPE_DAY,
+        self::TYPE_PRACTICAL_INFO,
+        self::TYPE_CHECKLIST,
+        self::TYPE_BUDGET_NOTE,
+        self::TYPE_PERSONAL_NOTE,
+        self::TYPE_FREE_TEXT,
+    ];
+
     /**
      * @return array<string, mixed>
      */
@@ -32,7 +43,7 @@ final class TravelPlanContentFactory
         return [
             'intro' => $this->createBlock(self::TYPE_TRAVEL_PLAN_INTRO),
             'tripProfile' => $this->createBlock(self::TYPE_TRIP_PROFILE),
-            'sections' => [],
+            'destinations' => [],
         ];
     }
 
@@ -67,6 +78,7 @@ final class TravelPlanContentFactory
                 'city' => '',
                 'text' => '',
                 'icon' => 'map',
+                'sections' => [],
             ],
             self::TYPE_ROUTE_OVERVIEW => [
                 'type' => $type,
@@ -173,7 +185,6 @@ final class TravelPlanContentFactory
      */
     public function toFormData(array $content): array
     {
-        $content = $this->upgradeLegacyContent($content);
         $content = \array_replace_recursive($this->createDefault(), $content);
         $intro = \is_array($content['intro']) ? $content['intro'] : [];
         $tripProfile = \is_array($content['tripProfile']) ? $content['tripProfile'] : [];
@@ -186,7 +197,7 @@ final class TravelPlanContentFactory
             'travelParty' => $this->stringValue($tripProfile, 'travelParty'),
             'travelStyle' => $this->stringValue($tripProfile, 'travelStyle'),
             'packageType' => $this->stringValue($tripProfile, 'packageType'),
-            'sections' => $this->normalizeSections($content['sections'] ?? []),
+            'destinations' => $this->normalizeDestinations($content['destinations'] ?? []),
         ];
     }
 
@@ -223,81 +234,56 @@ final class TravelPlanContentFactory
                 'travelStyle' => $this->stringValue($formData, 'travelStyle'),
                 'packageType' => $this->stringValue($formData, 'packageType'),
             ]),
-            'sections' => $this->normalizeSections($formData['sections'] ?? []),
-        ];
-    }
-
-    /**
-     * @param array<string, mixed> $content
-     *
-     * @return array<string, mixed>
-     */
-    private function upgradeLegacyContent(array $content): array
-    {
-        if (isset($content['tripProfile'], $content['sections'])) {
-            return $content;
-        }
-
-        $overview = \is_array($content['overview'] ?? null) ? $content['overview'] : [];
-        $sections = [];
-
-        if ('' !== $this->stringValue($overview, 'destination')) {
-            $sections[] = $this->createBlock(self::TYPE_DESTINATION, [
-                'title' => $this->stringValue($overview, 'destination'),
-                'country' => $this->stringValue($overview, 'destination'),
-            ]);
-        }
-
-        if (\is_array($content['route'] ?? null) && [] !== $content['route']) {
-            $sections[] = $this->createBlock(self::TYPE_ROUTE_OVERVIEW, [
-                'routeStops' => $this->normalizeRouteStops($content['route']),
-            ]);
-        }
-
-        foreach (['days', 'practicalInfo', 'personalNotes'] as $key) {
-            if (\is_array($content[$key] ?? null)) {
-                $sections = \array_merge($sections, $content[$key]);
-            }
-        }
-
-        return [
-            'intro' => \is_array($content['intro'] ?? null)
-                ? $content['intro']
-                : $this->createBlock(self::TYPE_TRAVEL_PLAN_INTRO),
-            'tripProfile' => $this->createBlock(self::TYPE_TRIP_PROFILE, [
-                'startDate' => $this->normalizeDateValue($overview['startDate'] ?? null),
-                'endDate' => $this->normalizeDateValue($overview['endDate'] ?? null),
-                'period' => $this->stringValue($overview, 'period'),
-                'duration' => $this->stringValue($overview, 'duration'),
-                'travelParty' => $this->stringValue($overview, 'travelParty'),
-                'travelStyle' => $this->stringValue($overview, 'travelStyle'),
-                'packageType' => $this->stringValue($overview, 'packageType'),
-            ]),
-            'sections' => $sections,
+            'destinations' => $this->normalizeDestinations($formData['destinations'] ?? []),
         ];
     }
 
     /**
      * @return array<int, array<string, mixed>>
      */
-    private function normalizeSections(mixed $sections): array
+    private function normalizeDestinations(mixed $destinations): array
+    {
+        if (!\is_array($destinations)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($destinations as $destination) {
+            if (!\is_array($destination)) {
+                continue;
+            }
+
+            $type = $destination['type'] ?? self::TYPE_DESTINATION;
+
+            if (self::TYPE_DESTINATION !== $type) {
+                continue;
+            }
+
+            $normalized[] = $this->createBlock(self::TYPE_DESTINATION, [
+                'title' => $this->stringValue($destination, 'title'),
+                'country' => $this->stringValue($destination, 'country'),
+                'region' => $this->stringValue($destination, 'region'),
+                'city' => $this->stringValue($destination, 'city'),
+                'text' => $this->stringValue($destination, 'text'),
+                'icon' => $this->stringValue($destination, 'icon') ?: 'map',
+                'sections' => $this->normalizeDestinationSections($destination['sections'] ?? []),
+            ]);
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function normalizeDestinationSections(mixed $sections): array
     {
         if (!\is_array($sections)) {
             return [];
         }
 
         $normalized = [];
-        $allowedTypes = [
-            self::TYPE_DESTINATION,
-            self::TYPE_ROUTE_OVERVIEW,
-            self::TYPE_DAY,
-            self::TYPE_PRACTICAL_INFO,
-            self::TYPE_CHECKLIST,
-            self::TYPE_BUDGET_NOTE,
-            self::TYPE_PERSONAL_NOTE,
-            self::TYPE_FREE_TEXT,
-        ];
-
         foreach ($sections as $section) {
             if (!\is_array($section)) {
                 continue;
@@ -305,7 +291,7 @@ final class TravelPlanContentFactory
 
             $type = $section['type'] ?? null;
 
-            if (!\is_string($type) || !\in_array($type, $allowedTypes, true)) {
+            if (!\is_string($type) || !\in_array($type, self::DESTINATION_SECTION_TYPES, true)) {
                 continue;
             }
 

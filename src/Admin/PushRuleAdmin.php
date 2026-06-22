@@ -18,11 +18,17 @@ final class PushRuleAdmin extends Admin
     public const RESOURCE_KEY = 'push_rules';
     public const LIST_KEY = 'push_rules';
     public const FORM_KEY = 'push_rule_details';
+    public const MANUAL_RESOURCE_KEY = 'manual_push_messages';
+    public const MANUAL_LIST_KEY = 'manual_push_messages';
+    public const MANUAL_FORM_KEY = 'manual_push_message_details';
     public const SECURITY_CONTEXT = 'jouwreiswijzer.push_rules';
 
     private const LIST_VIEW = 'jouwreiswijzer.push_rules.list';
     private const ADD_VIEW = 'jouwreiswijzer.push_rules.add';
     private const EDIT_VIEW = 'jouwreiswijzer.push_rules.edit';
+    private const MANUAL_LIST_VIEW = 'jouwreiswijzer.manual_push_messages.list';
+    private const MANUAL_ADD_VIEW = 'jouwreiswijzer.manual_push_messages.add';
+    private const MANUAL_EDIT_VIEW = 'jouwreiswijzer.manual_push_messages.edit';
 
     public function __construct(
         private readonly ViewBuilderFactoryInterface $viewBuilderFactory,
@@ -43,7 +49,12 @@ final class PushRuleAdmin extends Admin
         $rules->setPosition(10);
         $rules->setView(self::LIST_VIEW);
 
+        $manualMessages = new NavigationItem('Handmatig bericht');
+        $manualMessages->setPosition(20);
+        $manualMessages->setView(self::MANUAL_LIST_VIEW);
+
         $module->addChild($rules);
+        $module->addChild($manualMessages);
         $navigationItemCollection->add($module);
     }
 
@@ -108,6 +119,58 @@ final class PushRuleAdmin extends Admin
         }
 
         $viewCollection->add($formView);
+
+        $manualListView = $this->viewBuilderFactory->createListViewBuilder(self::MANUAL_LIST_VIEW, '/manual-push-messages')
+            ->setResourceKey(self::MANUAL_RESOURCE_KEY)
+            ->setListKey(self::MANUAL_LIST_KEY)
+            ->setTitle('Handmatige pushberichten')
+            ->addListAdapters(['table'])
+            ->setEditView(self::MANUAL_EDIT_VIEW);
+
+        if ($this->securityChecker->hasPermission(self::SECURITY_CONTEXT, PermissionTypes::ADD)) {
+            $manualListView
+                ->setAddView(self::MANUAL_ADD_VIEW)
+                ->addToolbarActions([new ToolbarAction('sulu_admin.add')]);
+        }
+
+        $viewCollection->add($manualListView);
+
+        if ($this->securityChecker->hasPermission(self::SECURITY_CONTEXT, PermissionTypes::ADD)) {
+            $viewCollection->add(
+                $this->viewBuilderFactory->createResourceTabViewBuilder(self::MANUAL_ADD_VIEW, '/manual-push-messages/add')
+                    ->setResourceKey(self::MANUAL_RESOURCE_KEY)
+                    ->setBackView(self::MANUAL_LIST_VIEW),
+            );
+
+            $viewCollection->add(
+                $this->viewBuilderFactory->createFormViewBuilder(self::MANUAL_ADD_VIEW.'.details', '/details')
+                    ->setResourceKey(self::MANUAL_RESOURCE_KEY)
+                    ->setFormKey(self::MANUAL_FORM_KEY)
+                    ->setTabTitle('Bericht')
+                    ->setEditView(self::MANUAL_EDIT_VIEW)
+                    ->setParent(self::MANUAL_ADD_VIEW)
+                    ->addToolbarActions([new ToolbarAction('sulu_admin.save')]),
+            );
+        }
+
+        $viewCollection->add(
+            $this->viewBuilderFactory->createResourceTabViewBuilder(self::MANUAL_EDIT_VIEW, '/manual-push-messages/:id')
+                ->setResourceKey(self::MANUAL_RESOURCE_KEY)
+                ->setBackView(self::MANUAL_LIST_VIEW)
+                ->setTitleProperty('travelPlanLabel'),
+        );
+
+        $manualFormView = $this->viewBuilderFactory->createFormViewBuilder(self::MANUAL_EDIT_VIEW.'.details', '/details')
+            ->setResourceKey(self::MANUAL_RESOURCE_KEY)
+            ->setFormKey(self::MANUAL_FORM_KEY)
+            ->setTabTitle('Bericht')
+            ->setParent(self::MANUAL_EDIT_VIEW);
+
+        if ($this->securityChecker->hasPermission(self::SECURITY_CONTEXT, PermissionTypes::EDIT)) {
+            $manualFormView->addToolbarActions([new ToolbarAction('sulu_admin.save')]);
+        }
+
+        $viewCollection->add($manualFormView);
     }
 
     public function getSecurityContexts(): array

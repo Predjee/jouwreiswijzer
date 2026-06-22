@@ -4,7 +4,7 @@
 
     <div class="cta-banner-content relative z-10 flex flex-col gap-5">
         <h2 class="type-section-title">
-            {{ block.title|raw }}
+            {{ block.title|striptags('<em><i>')|raw }}
         </h2>
 
         {% if block.body|default %}

@@ -8,6 +8,7 @@ use App\Entity\TravelPlan;
 use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelPlanRepository;
 use App\Service\FeedbackIndex;
+use App\Service\TravelCompanion\CompanionContentHelper;
 use App\TravelPlan\Pdf\TravelPlanPdfGenerator;
 use App\TravelPlan\Pdf\TravelPlanPdfStorage;
 use App\TravelPlan\Renderer\TravelPlanRenderer;
@@ -38,13 +39,17 @@ final class TravelPlanController extends AbstractController
 
         $feedbackItems = $feedbackRepository->findForPlanAndContact($travelPlan, $contact);
         $feedbackByPath = $feedbackIndex->byPath($feedbackItems);
+        $feedbackEnabled = !CompanionContentHelper::hasTripStarted($travelPlan->getContent());
 
         return $this->render('account/travel_plan.html.twig', [
             'travel_plan' => $travelPlan,
+            'feedback_enabled' => $feedbackEnabled,
             'travel_plan_feedback' => $feedbackByPath[''] ?? null,
             'feedback_round_count' => $feedbackIndex->countActive($feedbackItems),
             'travel_plan_view_html' => $renderer->renderForAccount($travelPlan, [], false),
-            'travel_plan_feedback_html' => $renderer->renderForAccount($travelPlan, $feedbackByPath),
+            'travel_plan_feedback_html' => $feedbackEnabled
+                ? $renderer->renderForAccount($travelPlan, $feedbackByPath)
+                : '',
         ]);
     }
 

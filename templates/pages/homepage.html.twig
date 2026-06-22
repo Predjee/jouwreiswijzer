@@ -1,11 +1,19 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
+    {% set blocks = content.blocks|default([]) %}
+    {% set first_block = blocks|first|default({}) %}
+    {% if first_block.type|default('') != 'hero' %}
+        <h1 class="sr-only">{{ content.title|default('Jouw ReisWijzer') }}</h1>
+    {% endif %}
     <div class="page-blocks">
-        {% for block in content.blocks|default([]) %}
+        {% for block in blocks %}
             {{ include(
                 'blocks/_' ~ block.type ~ '.html.twig',
-                {block: block},
+                {
+                    block: block,
+                    heading_tag: loop.first and block.type == 'hero' ? 'h1' : 'h2',
+                },
                 with_context: true,
                 ignore_missing: true,
             ) }}

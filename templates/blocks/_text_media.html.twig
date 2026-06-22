@@ -19,7 +19,10 @@
                         <figure class="text-media__grid-item">
                             <img src="{{ image.thumbnails['text-media-grid'] }}"
                                  alt="{{ image.title|default('') }}"
-                                 loading="lazy">
+                                 width="640"
+                                 height="480"
+                                 loading="lazy"
+                                 decoding="async">
                         </figure>
                     {% endfor %}
                 </div>
@@ -36,7 +39,10 @@
                 <figure class="text-media__media">
                     <img src="{{ block.image.thumbnails['text-media-landscape'] }}"
                          alt="{{ block.image.title|default('') }}"
-                         loading="lazy">
+                         width="960"
+                         height="640"
+                         loading="lazy"
+                         decoding="async">
                     {% if block.image_caption|default %}
                         <figcaption class="text-media__caption">
                             {{ block.image_caption }}
@@ -52,7 +58,7 @@
 
                 {% if block.title|default %}
                     <h2 class="type-section-title">
-                        {{ block.title|raw }}
+                        {{ block.title|striptags('<em><i>')|raw }}
                     </h2>
                 {% endif %}
 

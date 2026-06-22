@@ -39,7 +39,7 @@ final readonly class SendPushMessageHandler
             return;
         }
 
-        if (!$scheduledMessage->isPending()) {
+        if (!$scheduledMessage->isQueued()) {
             // Al verwerkt door een eerdere consumer-run; voorkomt dubbel versturen.
             return;
         }

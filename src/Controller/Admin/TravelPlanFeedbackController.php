@@ -139,14 +139,20 @@ final class TravelPlanFeedbackController extends AbstractRestController implemen
             return $content;
         }
 
-        if (1 === \preg_match('/^sections\[(\d+)]$/D', $blockPath, $matches)) {
-            $snapshot = $content['sections'][(int) $matches[1]] ?? null;
+        if (1 === \preg_match('/^destinations\[(\d+)]$/D', $blockPath, $matches)) {
+            $snapshot = $content['destinations'][(int) $matches[1]] ?? null;
         } elseif (1 === \preg_match(
-            '/^sections\[(\d+)]\.blocks\[(\d+)]$/D',
+            '/^destinations\[(\d+)]\.sections\[(\d+)]$/D',
             $blockPath,
             $matches,
         )) {
-            $snapshot = $content['sections'][(int) $matches[1]]['blocks'][(int) $matches[2]] ?? null;
+            $snapshot = $content['destinations'][(int) $matches[1]]['sections'][(int) $matches[2]] ?? null;
+        } elseif (1 === \preg_match(
+            '/^destinations\[(\d+)]\.sections\[(\d+)]\.blocks\[(\d+)]$/D',
+            $blockPath,
+            $matches,
+        )) {
+            $snapshot = $content['destinations'][(int) $matches[1]]['sections'][(int) $matches[2]]['blocks'][(int) $matches[3]] ?? null;
         } else {
             $snapshot = null;
         }

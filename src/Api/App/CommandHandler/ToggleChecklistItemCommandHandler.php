@@ -95,15 +95,21 @@ final readonly class ToggleChecklistItemCommandHandler
     private function itemIds(TravelPlan $travelPlan): array
     {
         $content = $travelPlan->getContent();
-        $sections = \is_array($content['sections'] ?? null) ? $content['sections'] : [];
         $itemIds = [];
 
-        foreach ($sections as $sectionIndex => $section) {
+        foreach (CompanionContentHelper::destinationSections($content) as $sectionData) {
+            $section = $sectionData['section'];
+
             if (!\is_array($section) || 'checklist' !== ($section['type'] ?? null)) {
                 continue;
             }
 
             $itemIndex = 0;
+            $sectionPath = \sprintf(
+                'destinations[%d].sections[%d]',
+                $sectionData['destinationIndex'],
+                $sectionData['sectionIndex'],
+            );
 
             foreach (\preg_split('/\R/', CompanionContentHelper::stringValue($section, 'text')) ?: [] as $line) {
                 $label = $this->normalizeLine((string) $line);
@@ -112,7 +118,7 @@ final readonly class ToggleChecklistItemCommandHandler
                     continue;
                 }
 
-                $itemIds[] = $this->itemKey($travelPlan->getId() ?? 0, (int) $sectionIndex, $itemIndex, $label);
+                $itemIds[] = $this->itemKey($travelPlan->getId() ?? 0, $sectionPath, $itemIndex, $label);
                 ++$itemIndex;
             }
         }
@@ -150,8 +156,8 @@ final readonly class ToggleChecklistItemCommandHandler
         return \trim($line);
     }
 
-    private function itemKey(int $travelPlanId, int $sectionIndex, int $lineIndex, string $normalizedLine): string
+    private function itemKey(int $travelPlanId, string $sectionPath, int $lineIndex, string $normalizedLine): string
     {
-        return \sha1(\sprintf('%d|%d|%d|%s', $travelPlanId, $sectionIndex, $lineIndex, $normalizedLine));
+        return \sha1(\sprintf('%d|%s|%d|%s', $travelPlanId, $sectionPath, $lineIndex, $normalizedLine));
     }
 }

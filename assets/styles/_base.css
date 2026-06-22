@@ -58,3 +58,29 @@ body {
     color: var(--color-navy-deepest);
     background: var(--color-gold);
 }
+
+.skip-link {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 100;
+    padding: 0.75rem 1rem;
+    transform: translateY(-200%);
+    background: var(--color-gold);
+    color: var(--color-navy-deepest);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.skip-link:focus {
+    transform: translateY(0);
+}
+
+:where(a, button, input, textarea, select, summary):focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+}
+
+#main-content {
+    scroll-margin-top: 1rem;
+}

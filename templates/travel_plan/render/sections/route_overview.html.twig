@@ -2,17 +2,32 @@
     {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
     {% if section.text|default %}<div>{{ section.text|raw }}</div>{% endif %}
     {% if section.routeStops|default %}
-        <ol class="travel-plan-route">
-            {% for stop in section.routeStops %}
-                <li>
-                    {% if stop._iconMarkup|default %}
-                        {{ stop._iconMarkup|raw }}
-                    {% endif %}
-                    {% if stop.title|default %}<h3>{{ stop.title }}</h3>{% endif %}
-                    {% if stop.location|default %}<p>{{ stop.location }}</p>{% endif %}
-                    {% if stop.text|default %}<div>{{ stop.text|raw }}</div>{% endif %}
-                </li>
-            {% endfor %}
-        </ol>
+        {% if accountView %}
+            <ol class="travel-plan-route">
+                {% for stop in section.routeStops %}
+                    <li>
+                        {% if stop._iconMarkup|default %}
+                            {{ stop._iconMarkup|raw }}
+                        {% endif %}
+                        {% if stop.title|default %}<h3>{{ stop.title }}</h3>{% endif %}
+                        {% if stop.location|default %}<p>{{ stop.location }}</p>{% endif %}
+                        {% if stop.text|default %}<div>{{ stop.text|raw }}</div>{% endif %}
+                    </li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <table class="travel-plan-route">
+                {% for stop in section.routeStops %}
+                    <tr>
+                        <td class="travel-plan-route__marker">{{ loop.index }}</td>
+                        <td class="travel-plan-route__content">
+                            {% if stop.title|default %}<h3>{{ stop.title }}</h3>{% endif %}
+                            {% if stop.location|default %}<p class="travel-plan-route__location">{{ stop.location }}</p>{% endif %}
+                            {% if stop.text|default %}<div>{{ stop.text|raw }}</div>{% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
     {% endif %}
 </section>

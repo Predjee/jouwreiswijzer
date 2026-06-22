@@ -6,12 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     {% block meta %}
+        {% set seo_title = extension.seo.title|default(content.title|default('Jouw ReisWijzer - Persoonlijk reisadvies op maat')) %}
+        {% set seo_description = extension.seo.description|default('Persoonlijk reisadvies voor een onvergetelijke reis.') %}
         {{ include('@SuluWebsite/Extension/seo.html.twig', {
             seo: extension.seo|default([]),
             content: content|default([]),
             localizations: localizations|default([]),
             shadowBaseLocale: shadowBaseLocale|default(),
         }) }}
+        {% if not extension.seo.description|default %}
+            <meta name="description" content="Persoonlijk reisadvies op maat, zorgvuldig samengesteld rond jouw wensen, tempo en budget.">
+        {% endif %}
+        <meta property="og:title" content="{{ seo_title }}">
+        <meta property="og:description" content="{{ seo_description }}">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ app.request.uri }}">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ seo_title }}">
+        <meta name="twitter:description" content="{{ seo_description }}">
+        <meta name="theme-color" content="#07141d">
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
     {% endblock %}
 
     {% block style %}
@@ -23,13 +40,15 @@
 <body class="bg-navy-deepest text-content-primary font-body antialiased
              min-h-screen flex flex-col">
 
+<a href="#main-content" class="skip-link">Direct naar de inhoud</a>
+
 <header class="relative z-20">
     {% block header %}
         {{ include('components/_nav.html.twig') }}
     {% endblock %}
 </header>
 
-<main class="flex-1">
+<main id="main-content" class="flex-1" tabindex="-1">
     {% block content %}{% endblock %}
 </main>
 

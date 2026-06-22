@@ -34,6 +34,71 @@ final class CompanionContentHelper
         return \is_scalar($value) ? (string) $value : '';
     }
 
+    /**
+     * @param array<string, mixed> $content
+     *
+     * @return list<array{destinationIndex: int, destination: array<string, mixed>}>
+     */
+    public static function destinations(array $content): array
+    {
+        if (!\is_array($content['destinations'] ?? null)) {
+            return [];
+        }
+
+        $destinations = [];
+
+        foreach ($content['destinations'] as $destinationIndex => $destination) {
+            if (!\is_array($destination) || 'destination' !== ($destination['type'] ?? null)) {
+                continue;
+            }
+
+            $destinations[] = [
+                'destinationIndex' => (int) $destinationIndex,
+                'destination' => $destination,
+            ];
+        }
+
+        return $destinations;
+    }
+
+    /**
+     * @param array<string, mixed> $content
+     *
+     * @return list<array{
+     *     destinationIndex: int,
+     *     sectionIndex: int,
+     *     destination: array<string, mixed>,
+     *     section: array<string, mixed>
+     * }>
+     */
+    public static function destinationSections(array $content): array
+    {
+        $sections = [];
+
+        foreach (self::destinations($content) as $destinationData) {
+            $destination = $destinationData['destination'];
+
+            if (!\is_array($destination['sections'] ?? null)) {
+                continue;
+            }
+
+            foreach ($destination['sections'] as $sectionIndex => $section) {
+                if (!\is_array($section)) {
+                    continue;
+                }
+
+                $sections[] = [
+                    'destinationIndex' => $destinationData['destinationIndex'],
+                    'sectionIndex' => (int) $sectionIndex,
+                    'destination' => $destination,
+                    'section' => $section,
+                ];
+            }
+        }
+
+        return $sections;
+    }
+
     public static function createDate(mixed $value): ?\DateTimeImmutable
     {
         if ($value instanceof \DateTimeInterface) {
@@ -61,6 +126,18 @@ final class CompanionContentHelper
         }
 
         return $date;
+    }
+
+    /**
+     * @param array<string, mixed> $content
+     */
+    public static function hasTripStarted(array $content): bool
+    {
+        $tripProfile = \is_array($content['tripProfile'] ?? null) ? $content['tripProfile'] : [];
+        $startDate = self::createDate($tripProfile['startDate'] ?? null);
+
+        return $startDate instanceof \DateTimeImmutable
+            && $startDate <= new \DateTimeImmutable('today');
     }
 
     public static function dateLabel(\DateTimeImmutable $date): string

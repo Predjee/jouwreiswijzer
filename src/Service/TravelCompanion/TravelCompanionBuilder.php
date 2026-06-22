@@ -32,9 +32,9 @@ final class TravelCompanionBuilder
         $endDate = CompanionContentHelper::createDate($tripProfile['endDate'] ?? null);
         $currentDayNumber = $this->currentDayNumber($startDate, $endDate);
         $checkedItems = $this->checklistStateRepository->checkedMapForPlan($contact, $travelPlan);
-        $days = $this->days($content['sections'] ?? [], $startDate, $endDate, $currentDayNumber, $checkedItems);
+        $days = $this->days($content, $startDate, $endDate, $currentDayNumber, $checkedItems);
         $currentDay = $this->currentDay($days, $currentDayNumber);
-        $blocks = $this->overviewBlocks($content['sections'] ?? [], $checkedItems);
+        $blocks = $this->overviewBlocks($content, $checkedItems);
 
         return new CompanionTrip(
             $travelPlan->getId() ?? 0,
@@ -58,26 +58,30 @@ final class TravelCompanionBuilder
      * @return list<CompanionDay>
      */
     private function days(
-        mixed $sections,
+        mixed $content,
         ?\DateTimeImmutable $startDate,
         ?\DateTimeImmutable $endDate,
         ?int $currentDayNumber,
         array $checkedItems,
     ): array {
-        if (!\is_array($sections)) {
-            $sections = [];
+        if (!\is_array($content)) {
+            $content = [];
         }
 
         $sectionsByDayNumber = [];
 
-        foreach ($sections as $sectionIndex => $section) {
+        foreach (CompanionContentHelper::destinationSections($content) as $sectionData) {
+            $section = $sectionData['section'];
+
             if (!\is_array($section) || 'day' !== ($section['type'] ?? null)) {
                 continue;
             }
 
             $dayNumber = \max(1, (int) ($section['dayNumber'] ?? 1));
             $sectionsByDayNumber[$dayNumber] = [
-                'index' => (int) $sectionIndex,
+                'destinationIndex' => $sectionData['destinationIndex'],
+                'destinationTitle' => CompanionContentHelper::stringValue($sectionData['destination'], 'title'),
+                'sectionIndex' => $sectionData['sectionIndex'],
                 'section' => $section,
             ];
         }
@@ -88,13 +92,17 @@ final class TravelCompanionBuilder
         foreach ($dayNumbers as $dayNumber) {
             $sectionData = $sectionsByDayNumber[$dayNumber] ?? null;
             $section = \is_array($sectionData) && \is_array($sectionData['section']) ? $sectionData['section'] : [];
-            $sectionIndex = \is_array($sectionData) ? (int) $sectionData['index'] : 0;
+            $destinationIndex = \is_array($sectionData) ? (int) $sectionData['destinationIndex'] : 0;
+            $destinationTitle = \is_array($sectionData) ? (string) $sectionData['destinationTitle'] : '';
+            $sectionIndex = \is_array($sectionData) ? (int) $sectionData['sectionIndex'] : 0;
             $status = $this->dayStatus($dayNumber, $currentDayNumber);
             $dateLabel = CompanionContentHelper::stringValue($section, 'dateLabel');
             $dateLabel = '' !== $dateLabel ? $dateLabel : $this->dateLabelForDay($startDate, $dayNumber);
 
             $days[] = new CompanionDay(
                 $dayNumber,
+                $destinationTitle,
+                $destinationIndex,
                 CompanionContentHelper::stringValue($section, 'title') ?: \sprintf('Dag %d', $dayNumber),
                 $dateLabel,
                 CompanionContentHelper::stringValue($section, 'subtitle'),
@@ -104,7 +112,11 @@ final class TravelCompanionBuilder
                 'past' === $status,
                 'current' === $status,
                 'upcoming' === $status,
-                $this->blocks($section['blocks'] ?? [], \sprintf('sections[%d].blocks', (int) $sectionIndex), $checkedItems),
+                $this->blocks(
+                    $section['blocks'] ?? [],
+                    \sprintf('destinations[%d].sections[%d].blocks', $destinationIndex, $sectionIndex),
+                    $checkedItems,
+                ),
             );
         }
 
@@ -114,7 +126,7 @@ final class TravelCompanionBuilder
     }
 
     /**
-     * @param array<int, array{index: int, section: array<string, mixed>}> $sectionsByDayNumber
+     * @param array<int, array{destinationIndex: int, destinationTitle: string, sectionIndex: int, section: array<string, mixed>}> $sectionsByDayNumber
      *
      * @return list<int>
      */
@@ -147,27 +159,45 @@ final class TravelCompanionBuilder
      *
      * @return list<CompanionBlock>
      */
-    private function overviewBlocks(mixed $sections, array $checkedItems): array
+    private function overviewBlocks(mixed $content, array $checkedItems): array
     {
-        if (!\is_array($sections)) {
+        if (!\is_array($content)) {
             return [];
         }
 
         $blocks = [];
 
-        foreach ($sections as $index => $section) {
-            if (!\is_array($section) || 'day' === ($section['type'] ?? null)) {
-                continue;
+        foreach (CompanionContentHelper::destinations($content) as $destinationData) {
+            $destinationIndex = $destinationData['destinationIndex'];
+            $destination = $destinationData['destination'];
+            $destinationBlock = $this->block(
+                $destination,
+                \sprintf('destinations[%d]', $destinationIndex),
+                $checkedItems,
+            );
+
+            if ($destinationBlock->hasContent()) {
+                $blocks[] = $destinationBlock;
             }
 
-            if ($this->isTechnicalType(CompanionContentHelper::stringValue($section, 'type'))) {
-                continue;
-            }
+            foreach ($destination['sections'] ?? [] as $sectionIndex => $section) {
+                if (!\is_array($section) || 'day' === ($section['type'] ?? null)) {
+                    continue;
+                }
 
-            $block = $this->block($section, \sprintf('sections[%d]', (int) $index), $checkedItems);
+                if ($this->isTechnicalType(CompanionContentHelper::stringValue($section, 'type'))) {
+                    continue;
+                }
 
-            if ($block->hasContent()) {
-                $blocks[] = $block;
+                $block = $this->block(
+                    $section,
+                    \sprintf('destinations[%d].sections[%d]', $destinationIndex, (int) $sectionIndex),
+                    $checkedItems,
+                );
+
+                if ($block->hasContent()) {
+                    $blocks[] = $block;
+                }
             }
         }
 

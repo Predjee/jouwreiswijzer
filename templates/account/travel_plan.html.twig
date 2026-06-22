@@ -12,13 +12,6 @@
             </a>
 
             <div class="account-travel-plan-actions">
-                <a
-                    href="{{ path('account_companion', {id: travel_plan.id}) }}"
-                    class="btn-ghost"
-                >
-                    Reishulp
-                </a>
-
                 <div class="account-travel-plan-mode" aria-label="Reisplanmodus">
                     <button
                         type="button"
@@ -29,15 +22,17 @@
                     >
                         Reisplan bekijken
                     </button>
-                    <button
-                        type="button"
-                        class="account-travel-plan-mode__button"
-                        data-account-travel-plan-mode-target="feedbackButton"
-                        data-action="account-travel-plan-mode#showFeedback"
-                        aria-pressed="false"
-                    >
-                        Feedback geven
-                    </button>
+                    {% if feedback_enabled %}
+                        <button
+                            type="button"
+                            class="account-travel-plan-mode__button"
+                            data-account-travel-plan-mode-target="feedbackButton"
+                            data-action="account-travel-plan-mode#showFeedback"
+                            aria-pressed="false"
+                        >
+                            Feedback geven
+                        </button>
+                    {% endif %}
                 </div>
 
                 {% if travel_plan.pdfReleasedAt %}
@@ -59,11 +54,12 @@
             {{ travel_plan_view_html|raw }}
         </div>
 
-        <div
-            class="account-travel-plan-panel account-travel-plan-panel--feedback"
-            data-account-travel-plan-mode-target="feedbackPanel"
-            hidden
-        >
+        {% if feedback_enabled %}
+            <div
+                class="account-travel-plan-panel account-travel-plan-panel--feedback"
+                data-account-travel-plan-mode-target="feedbackPanel"
+                hidden
+            >
             {% if not travel_plan.pdfReleasedAt %}
                 <div class="account-feedback-notice account-feedback-notice--review" role="status">
                     Je reisplan is nog in review. De definitieve PDF verschijnt hier zodra alles is afgerond.
@@ -118,6 +114,7 @@
             <div class="account-travel-plan-content">
                 {{ travel_plan_feedback_html|raw }}
             </div>
-        </div>
+            </div>
+        {% endif %}
     </section>
 {% endblock %}

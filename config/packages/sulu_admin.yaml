@@ -15,6 +15,11 @@ sulu_admin:
                 list: push_rules.get_collection
                 detail: push_rules.get
             security_context: jouwreiswijzer.push_rules
+        manual_push_messages:
+            routes:
+                list: manual_push_messages.get_collection
+                detail: manual_push_messages.get
+            security_context: jouwreiswijzer.push_rules
     icon_sets:
         decor: "svg://%kernel.project_dir%/assets/images/icons"
         travel_plan_icons: "svg://%kernel.project_dir%/assets/images/icons"

@@ -37,6 +37,14 @@ export default class extends Controller {
                     return;
                 }
 
+                if (data.code === 'trip_started') {
+                    this.setLoading(buttons, false);
+                    this.deactivateNewFeedback();
+                    this.showStatus(data.message, 'error');
+                    this.restoreScroll(scrollPosition);
+                    return;
+                }
+
                 throw new Error(data.message || 'De actie kon niet worden uitgevoerd.');
             }
 
@@ -85,6 +93,19 @@ export default class extends Controller {
 
         this.statusTarget.textContent = message;
         this.statusTarget.dataset.state = state;
+    }
+
+    deactivateNewFeedback() {
+        document.querySelectorAll('.account-feedback-form').forEach((form) => {
+            form.setAttribute('aria-disabled', 'true');
+            form.querySelectorAll('textarea, button[type="submit"]').forEach((control) => {
+                control.disabled = true;
+            });
+        });
+
+        document.querySelectorAll('[data-feedback-round-submit]').forEach((button) => {
+            button.disabled = true;
+        });
     }
 
     updateFeedbackRound(count) {

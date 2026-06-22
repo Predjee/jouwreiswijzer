@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+<list xmlns="http://schemas.sulu.io/list-builder/list">
+    <key>manual_push_messages</key>
+
+    <joins name="travelPlan">
+        <join>
+            <entity-name>travelPlan</entity-name>
+            <field-name>App\Entity\ScheduledPushMessage.travelPlan</field-name>
+        </join>
+    </joins>
+
+    <properties>
+        <property name="id" visibility="no" searchability="yes" translation="ID">
+            <field-name>id</field-name>
+            <entity-name>App\Entity\ScheduledPushMessage</entity-name>
+        </property>
+
+        <property name="title" visibility="always" searchability="yes" translation="Titel">
+            <field-name>title</field-name>
+            <entity-name>App\Entity\ScheduledPushMessage</entity-name>
+        </property>
+
+        <property name="travelPlanTitle" visibility="always" searchability="yes" translation="Reisplan">
+            <field-name>title</field-name>
+            <entity-name>travelPlan</entity-name>
+            <joins ref="travelPlan"/>
+        </property>
+
+        <property name="channel" visibility="always" searchability="yes" translation="Kanaal">
+            <field-name>channel</field-name>
+            <entity-name>App\Entity\ScheduledPushMessage</entity-name>
+        </property>
+
+        <property name="scheduledFor" visibility="always" translation="Gepland voor">
+            <field-name>scheduledFor</field-name>
+            <entity-name>App\Entity\ScheduledPushMessage</entity-name>
+            <transformer type="datetime"/>
+            <filter type="datetime"/>
+        </property>
+
+        <property name="status" visibility="always" searchability="yes" translation="Status">
+            <field-name>status</field-name>
+            <entity-name>App\Entity\ScheduledPushMessage</entity-name>
+        </property>
+
+        <property name="createdAt" visibility="yes" translation="Aangemaakt">
+            <field-name>createdAt</field-name>
+            <entity-name>App\Entity\ScheduledPushMessage</entity-name>
+            <transformer type="datetime"/>
+            <filter type="datetime"/>
+        </property>
+    </properties>
+</list>

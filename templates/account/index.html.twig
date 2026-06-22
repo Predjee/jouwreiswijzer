@@ -118,10 +118,10 @@
 
                                         <div class="account-travel-actions">
                                             <a
-                                                href="{{ section.key == 'active' ? path('account_companion', {id: travel_plan.id}) : path('account_travel_plan', {id: travel_plan.id}) }}"
+                                                href="{{ path('account_travel_plan', {id: travel_plan.id}) }}"
                                                 class="btn-primary account-travel-view"
                                             >
-                                                {{ section.key == 'active' ? 'Reishulp openen' : 'Bekijk reisplan' }}
+                                                Bekijk reisplan
                                             </a>
 
                                             {% if card.pdfAvailable %}

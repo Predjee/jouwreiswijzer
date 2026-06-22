@@ -14,11 +14,11 @@
     {# Logo #}
     <a href="{{ root_path }}"
        class="flex items-center shrink-0"
-       aria-label="JouwReiswijzer – naar homepage">
+       aria-label="Jouw ReisWijzer – naar homepage">
 
         {# Desktop: volledig logo #}
         <img src="{{ asset('images/logo.svg') }}"
-             alt="JouwReiswijzer"
+             alt="Jouw ReisWijzer"
              width="160"
              height="85"
              loading="lazy"
@@ -26,7 +26,7 @@
 
         {# Mobiel: alleen beeldmerk #}
         <img src="{{ asset('images/logo-mark.svg') }}"
-             alt="JouwReiswijzer"
+             alt="Jouw ReisWijzer"
              width="50"
              height="53"
              loading="lazy"
@@ -84,8 +84,8 @@
                     </div>
                     <a href="{{ path('account') }}">Mijn reisplannen</a>
                     <a
-                        href="{{ path('account_today') }}"
-                        class="nav-account-dropdown-row {{ account_route in ['account_today', 'account_companion', 'account_companion_day'] or has_active_travel_plan ? 'is-active' : '' }}"
+                        href="{{ path('account') }}"
+                        class="nav-account-dropdown-row {{ account_route == 'account' or has_active_travel_plan ? 'is-active' : '' }}"
                     >
                         <span>Reishulp</span>
                         {% if has_active_travel_plan %}
@@ -164,7 +164,7 @@
                     <a href="{{ path('account') }}" class="nav-link block">
                         Mijn reisplannen
                     </a>
-                    <a href="{{ path('account_today') }}" class="nav-link mt-4 flex items-center gap-2 {{ account_route in ['account_today', 'account_companion', 'account_companion_day'] or has_active_travel_plan ? 'is-active' : '' }}">
+                    <a href="{{ path('account') }}" class="nav-link mt-4 flex items-center gap-2 {{ account_route == 'account' or has_active_travel_plan ? 'is-active' : '' }}">
                         Reishulp
                         {% if has_active_travel_plan %}
                             <span class="nav-account-badge">Nu</span>

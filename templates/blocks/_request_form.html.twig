@@ -17,7 +17,7 @@
             {% if block.title|default or block.intro|default %}
                 <div class="request-form-copy">
                     {% if block.title|default %}
-                        <h2 class="type-section-title">{{ block.title|raw }}</h2>
+                        <h2 class="type-section-title">{{ block.title|striptags('<em><i>')|raw }}</h2>
                     {% endif %}
 
                     {% if block.intro|default %}
@@ -57,6 +57,10 @@
                                     'data-action': 'submit->request-form#submit',
                                 },
                             }) }}
+                            <p class="type-meta mt-4">
+                                Met je aanvraag ga je akkoord met het verwerken van je gegevens volgens het
+                                <a href="/privacybeleid" class="footer-link">privacybeleid</a>.
+                            </p>
                         </div>
                     </div>
                 </dialog>
@@ -68,6 +72,10 @@
                             'data-action': 'submit->request-form#submit',
                         },
                     }) }}
+                    <p class="type-meta mt-4">
+                        Met je aanvraag ga je akkoord met het verwerken van je gegevens volgens het
+                        <a href="/privacybeleid" class="footer-link">privacybeleid</a>.
+                    </p>
                 </div>
             {% endif %}
         </div>

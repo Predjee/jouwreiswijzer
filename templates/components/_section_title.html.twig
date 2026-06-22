@@ -1,5 +1,5 @@
 {% if title|default %}
     <h2 class="type-section-title {{ class ?? '' }}">
-        {{ title|raw }}
+        {{ title|striptags('<em><i>')|raw }}
     </h2>
 {% endif %}

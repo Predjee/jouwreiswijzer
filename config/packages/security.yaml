@@ -21,6 +21,9 @@ security:
             pattern: ^/api/app/login$
             stateless: true
             provider: sulu
+            login_throttling:
+                max_attempts: 5
+                interval: '1 minute'
             json_login:
                 check_path: api_app_login
                 username_path: email

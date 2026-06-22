@@ -1,0 +1,73 @@
+<?xml version="1.0" ?>
+<form xmlns="http://schemas.sulu.io/template/template"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/form-1.0.xsd">
+    <key>manual_push_message_details</key>
+
+    <properties>
+        <section name="general">
+            <meta>
+                <title>Bericht</title>
+            </meta>
+            <properties>
+                <property name="travelPlanId" type="app_travel_plan_selector" mandatory="true" colspan="12">
+                    <meta><title>Reisplan</title></meta>
+                </property>
+
+                <property name="channel" type="single_select" mandatory="true" colspan="6">
+                    <meta><title>Kanaal</title></meta>
+                    <params>
+                        <param name="values" type="collection">
+                            <param name="trip_reminders" value="trip_reminders"/>
+                            <param name="trip_plan_ready" value="trip_plan_ready"/>
+                            <param name="general" value="general"/>
+                        </param>
+                    </params>
+                </property>
+
+                <property name="sendNow" type="checkbox" colspan="6">
+                    <meta><title>Nu versturen</title></meta>
+                </property>
+
+                <property name="scheduledFor" type="app_datetime_input" colspan="6">
+                    <meta><title>Gepland voor</title></meta>
+                    <params><param name="info_text" value="Wordt genegeerd wanneer Nu versturen aan staat."/></params>
+                </property>
+            </properties>
+        </section>
+
+        <section name="message">
+            <meta>
+                <title>Tekst</title>
+            </meta>
+            <properties>
+                <property name="titleTemplate" type="text_line" mandatory="true" colspan="12">
+                    <meta><title>Titelsjabloon</title></meta>
+                </property>
+
+                <property name="bodyTemplate" type="text_area" mandatory="true" colspan="12">
+                    <meta><title>Tekstsjabloon</title></meta>
+                </property>
+
+                <property name="preview" type="app_push_message_preview" colspan="12">
+                    <meta><title>Voorbeeld en tokens</title></meta>
+                </property>
+            </properties>
+        </section>
+
+        <section name="status">
+            <meta>
+                <title>Status</title>
+            </meta>
+            <properties>
+                <property name="status" type="text_line" disabledCondition="true" colspan="6">
+                    <meta><title>Status</title></meta>
+                </property>
+
+                <property name="createdAt" type="text_line" disabledCondition="true" colspan="6">
+                    <meta><title>Aangemaakt</title></meta>
+                </property>
+            </properties>
+        </section>
+    </properties>
+</form>

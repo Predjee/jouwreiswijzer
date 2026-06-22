@@ -24,11 +24,17 @@
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="{{ seo_title }}">
         <meta name="twitter:description" content="{{ seo_description }}">
+        <meta name="application-name" content="Jouw ReisWijzer">
+        <meta name="apple-mobile-web-app-title" content="Jouw ReisWijzer">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <meta name="theme-color" content="#07141d">
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32x32.png') }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16x16.png') }}">
+        <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
+        <link rel="manifest" href="{{ path('site_webmanifest') }}">
     {% endblock %}
 
     {% block style %}
@@ -38,7 +44,8 @@
     {{ importmap('app') }}
 </head>
 <body class="bg-navy-deepest text-content-primary font-body antialiased
-             min-h-screen flex flex-col">
+             min-h-screen flex flex-col"
+      data-controller="cookie-consent scroll-reveal">
 
 <a href="#main-content" class="skip-link">Direct naar de inhoud</a>
 

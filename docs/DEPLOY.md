@@ -1,83 +1,201 @@
 # Deployment
 
+## OTAP-overzicht
+
+| Omgeving | Branch | Domain | APP_ENV | Releases-pad |
+|---|---|---|---|---|
+| Productie | `main` | `jouwreiswijzer.nl` | `prod` | `/home/derei1602/production` |
+| Acceptance | `acceptance` | `acceptance.jouwreiswijzer.nl` | `stage` | `/home/derei1602/acceptance` |
+
+Deploys gaan automatisch via GitHub Actions. De pipeline staat één keer in een herbruikbare workflow,
+de twee omgevingen roepen die alleen aan met hun eigen paden en secrets:
+
+```text
+.github/workflows/
+  deploy.yml              ← reusable: volledige build + deploy pipeline
+  rollback.yml             ← reusable: rollback pipeline
+  deploy-production.yml    ← caller: push naar main
+  deploy-acceptance.yml    ← caller: push naar acceptance
+
+deploy/
+  write-env-local.sh        ← genereert .env.local op de runner
+  release.sh                 ← voltooit een release op de server (via SSH)
+  rollback.sh                 ← wijst current terug naar een eerdere release
+```
+
+De server-side logica staat in losse, leesbare bash-scripts (`deploy/*.sh`) in plaats van inline in de
+YAML — die kun je los lezen, los testen, en los aanpassen zonder de workflow-structuur te raken.
+
+Release-strategie: elke deploy krijgt een eigen timestamp-map onder `releases/`, gedeelde data (uploads,
+logs, JWT-keypair) staat in `shared/` en blijft buiten elke release, en `current` wordt na een succesvolle
+deploy atomisch verlegd. Rollback kan via `workflow_dispatch` met een `rollback_release`-timestamp, op
+zowel productie als acceptance.
+
+Werkwijze: ontwikkelen tegen `acceptance`, na akkoord mergen naar `main` voor productie. Tot er een
+expliciete reden is voor afwijking (bijv. een hotfix die niet via acceptance kan), is `main` altijd
+een afspiegeling van wat al op acceptance is goedgekeurd.
+
+**Let op — SEAL/Loupe:** `cmsig/seal-symfony-bundle` is geïnstalleerd (`SEAL_DSN` in `.env.example`),
+maar er bestaat nog geen schema en geen reindex-provider; de zoekfunctie is dus nog niet in gebruik.
+`var/indexes` wordt daarom momenteel niet als shared directory behandeld in `release.sh` — zodra SEAL
+daadwerkelijk gebruikt wordt, moet die map worden toegevoegd, anders verdwijnt de index bij elke deploy.
+
 ## Vereisten
 
-- PHP 8.2 of hoger met de extensies die Composer vereist.
+- PHP 8.4 met de extensies die Composer vereist.
 - MySQL 8.0 of compatibel.
 - Apache met `mod_rewrite`.
 - Document root ingesteld op `public/`, niet op de projectroot.
+- SSH-toegang op het KeurigOnline-account (voor de GitHub Actions deploy).
 
 ## Environment Setup
 
-Maak op de server een `.env.local` aan met de productievariabelen uit `.env.example`.
-Gebruik geen productiegeheimen in `.env`.
+`.env.local` wordt per omgeving automatisch gegenereerd door de GitHub Actions workflow, uit GitHub
+Secrets (zie "GitHub Secrets" hieronder). Niet handmatig aanmaken op de server — de workflow overschrijft
+hem bij elke deploy.
 
-Genereer per omgeving een JWT keypair:
+Genereer **eenmalig per omgeving** (niet bij elke deploy) een JWT keypair, en zet die in de `shared`-map
+zodat bestaande tokens een deploy overleven:
 
 ```bash
 php bin/console lexik:jwt:generate-keypair
+# verplaats private.pem en public.pem naar:
+#   productie:   /home/derei1602/production/shared/jwt/
+#   acceptance:  /home/derei1602/acceptance/shared/jwt/
 ```
 
-Controleer dat deze variabelen naar de keypair wijzen:
+Maak in Sulu een privacybeleid-pagina aan op `/privacybeleid` — los per omgeving, want elke omgeving heeft
+een eigen database. De footer en aanvraagformulieren verwijzen naar die URL.
 
-```dotenv
-JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem
-JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem
-JWT_PASSPHRASE=
-```
+## GitHub Secrets
 
-Maak in Sulu een privacybeleid-pagina aan op `/privacybeleid`. De footer en aanvraagformulieren verwijzen naar die URL.
+Per omgeving een eigen set, met prefix `PROD_` resp. `STAGE_`:
 
-## Composer Install
+| Secret | Voorbeeld |
+|---|---|
+| `{PREFIX}_APP_SECRET` | 32-karakter random string |
+| `{PREFIX}_DATABASE_URL` | `mysql://user:pass@localhost:3306/dbnaam?serverVersion=8.0` |
+| `{PREFIX}_MAILER_DSN` | `smtp://user:pass@smtp.provider.com:587` |
+| `{PREFIX}_SULU_ADMIN_EMAIL` | beheer-e-mailadres |
+| `{PREFIX}_DEFAULT_URI` | `https://jouwreiswijzer.nl` resp. `https://acceptance.jouwreiswijzer.nl` |
+| `{PREFIX}_NOTIFICATION_EMAIL` | beheer-e-mailadres |
+| `{PREFIX}_FROM_EMAIL` | `noreply@jouwreiswijzer.nl` |
+| `{PREFIX}_JWT_PASSPHRASE` | passphrase van het JWT keypair |
+| `{PREFIX}_PUSH_VAPID_PUBLIC_KEY` / `_PRIVATE_KEY` | web-push VAPID keypair |
+
+Gedeeld tussen beide omgevingen (geen prefix):
+
+| Secret | Inhoud |
+|---|---|
+| `SSH_PRIVATE_KEY` | private key voor het deploy-account |
+| `DEPLOY_USER` | `derei1602` |
+| `DEPLOY_HOST` | server-hostname van KeurigOnline |
+| `DEPLOY_PORT` | SSH-poort |
+
+Genereer per omgeving losse VAPID- en JWT-keypairs; deel ze niet tussen productie en acceptance.
+
+## Composer Install & Assets Builden
+
+Gebeurt automatisch in de GitHub Actions workflow. Handmatig (bijv. lokaal testen van een build):
 
 ```bash
 composer install --no-dev --optimize-autoloader --classmap-authoritative
-```
-
-## Assets Builden
-
-Build assets lokaal en upload de gecompileerde output naar de server:
-
-```bash
 php bin/console importmap:install
 php bin/console asset-map:compile
 ```
 
 ## Database Sync
 
+Het project heeft op dit moment nog geen Doctrine-migraties (`migrations/` is leeg). De deploy-workflow
+draait daarom standaard:
+
 ```bash
+APP_ENV=prod php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+```
+
+`--allow-no-migration` zorgt dat dit niet faalt zolang er nog niets te migreren is.
+
+**Allereerste deploy per omgeving** (productie en acceptance hebben elk een lege database): vóór de
+eerste push naar `main`/`acceptance`, eenmalig handmatig op de server:
+
+```bash
+cd {releases-pad}/current
 APP_ENV=prod php bin/console doctrine:schema:update --force
 ```
 
-## Cache Warmup
+Dit zet in één keer het volledige schema neer, inclusief de `messenger_messages`-tabel die Symfony
+Messenger nodig heeft voor de `push_messages`-transport (`auto_setup=0` in `.env.local` betekent dat de
+applicatie deze tabel zelf niet aanmaakt).
+
+**Vanaf de eerstvolgende schemawijziging**: gebruik Doctrine-migraties, niet `schema:update --force`
+opnieuw. `schema:update --force` op een database met bestaande klantdata is niet veilig — het kan kolommen
+of tabellen droppen zonder bevestiging. Genereer migraties met:
 
 ```bash
-APP_ENV=prod php bin/console cache:warmup
+php bin/console doctrine:migrations:diff
 ```
+
+en commit het resultaat in `migrations/`. Vanaf dat moment voert de deploy-workflow ze automatisch uit.
+
+## Cache Warmup
+
+Gebeurt automatisch na elke deploy, voor alle drie de Sulu-consoles (`console`, `websiteconsole`,
+`adminconsole`).
 
 ## Permissions
 
-Zet deze mappen schrijfbaar voor de webserver:
+Wordt automatisch gezet door de deploy-workflow voor `shared/var/log`. Indien handmatig nodig:
 
 ```bash
-chmod -R 775 var/cache var/log public/uploads
+chmod -R 775 shared/var/log
 ```
+
+`shared/uploads` en `shared/media/cache` hoeven geen afwijkende permissies te hebben zolang de
+PHP-process-user (via SSH-user `derei1602`) eigenaar is.
 
 ## Cron Jobs
 
-Configureer in het KeurigOnline cron-paneel elke 5 minuten:
+Drie aparte cronjobs, met verschillende frequentie (zie `docs/ARCHITECTURE.md` sectie 16a). Geen
+permanente `messenger:consume`-worker — de consumer start kort op, verwerkt een beperkt aantal
+berichten, en stopt.
+
+**1× per dag** — evalueert actieve push-regels en maakt `ScheduledPushMessage`-records aan (idempotent):
 
 ```bash
-php /volledig/pad/bin/console app:evaluate-push-rules --env=prod
-php /volledig/pad/bin/console app:dispatch-due-push-messages --env=prod
+php /home/derei1602/production/current/bin/console app:push-rules:evaluate --env=prod
 ```
+
+**Elke 5 minuten** — zet due berichten op de Messenger-queue:
+
+```bash
+php /home/derei1602/production/current/bin/console app:push-messages:dispatch-due --env=prod
+```
+
+**Elke 5 minuten** — verstuurt gequeuede berichten via Expo Push, stopt na 4 minuten of leeg:
+
+```bash
+php /home/derei1602/production/current/bin/console messenger:consume push_messages --time-limit=240 --env=prod
+```
+
+Voor acceptance: dezelfde drie cronjobs, met `--env=stage` en pad
+`/home/derei1602/acceptance/current/bin/console`.
+
+Gebruik in het KeurigOnline cron-paneel altijd het pad via `current/`, niet een specifieke release-map
+— dat pad blijft kloppen na elke deploy zonder de cronjob-configuratie aan te passen.
 
 ## Document Root
 
-Stel de hosting document root in op public/, niet op de projectroot.
+cPanel/KeurigOnline: koppel de domain/subdomain document root aan `current/public`, niet aan de
+projectroot. De deploy-workflow legt deze symlink automatisch aan
+(`{DOMAIN_PATH}/public_html → current/public`); eenmalig controleren dat het domein/subdomein in
+cPanel zelf naar dat `public_html`-pad wijst.
 
 ## Sulu Setup
+
+Eenmalig per omgeving, na de eerste succesvolle deploy en database-migratie:
 
 ```bash
 APP_ENV=prod php bin/console sulu:build dev --no-interaction
 ```
+
+Voor acceptance: `APP_ENV=stage`.

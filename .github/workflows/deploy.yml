@@ -1,0 +1,140 @@
+name: Deploy (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      app_env:
+        description: "Symfony APP_ENV (prod of stage)"
+        required: true
+        type: string
+      base_path:
+        description: "Releases-pad op de server, bijv. /home/derei1602/production"
+        required: true
+        type: string
+      domain_path:
+        description: "Domain-pad op de server, bijv. /home/derei1602/domains/jouwreiswijzer.nl"
+        required: true
+        type: string
+    secrets:
+      APP_SECRET:
+        required: true
+      DATABASE_URL:
+        required: true
+      MAILER_DSN:
+        required: false
+      SULU_ADMIN_EMAIL:
+        required: false
+      DEFAULT_URI:
+        required: false
+      NOTIFICATION_EMAIL:
+        required: false
+      FROM_EMAIL:
+        required: false
+      JWT_PASSPHRASE:
+        required: false
+      PUSH_VAPID_PUBLIC_KEY:
+        required: false
+      PUSH_VAPID_PRIVATE_KEY:
+        required: false
+      SSH_PRIVATE_KEY:
+        required: true
+      DEPLOY_USER:
+        required: true
+      DEPLOY_HOST:
+        required: true
+      DEPLOY_PORT:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐘 Setup PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: intl, pdo, pdo_mysql, mbstring, zip, xml, gd, curl, json, tokenizer, dom, iconv, fileinfo, sodium, ctype
+          ini-values: memory_limit=-1
+
+      - name: 📦 Get Composer cache dir
+        id: composer-cache-dir
+        run: echo "dir=$(composer config --global cache-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: 📦 Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache-dir.outputs.dir }}
+          key: composer-${{ inputs.app_env }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ inputs.app_env }}-
+
+      - name: 📦 Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction --no-scripts --prefer-dist --classmap-authoritative
+
+      - name: 🕓 Generate release name
+        run: echo "RELEASE_NAME=$(date +%Y%m%d%H%M%S)" >> "$GITHUB_ENV"
+
+      - name: 📝 Write .env.local
+        env:
+          APP_ENV: ${{ inputs.app_env }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          MAILER_DSN: ${{ secrets.MAILER_DSN }}
+          SULU_ADMIN_EMAIL: ${{ secrets.SULU_ADMIN_EMAIL }}
+          DEFAULT_URI: ${{ secrets.DEFAULT_URI }}
+          NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
+          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+          JWT_PASSPHRASE: ${{ secrets.JWT_PASSPHRASE }}
+          PUSH_VAPID_PUBLIC_KEY: ${{ secrets.PUSH_VAPID_PUBLIC_KEY }}
+          PUSH_VAPID_PRIVATE_KEY: ${{ secrets.PUSH_VAPID_PRIVATE_KEY }}
+        run: bash deploy/write-env-local.sh
+
+      - name: 🧱 Build frontend assets (AssetMapper)
+        run: |
+          php bin/console importmap:install --no-interaction --env="${{ inputs.app_env }}"
+          php bin/console asset-map:compile --no-interaction --env="${{ inputs.app_env }}"
+
+      - name: 📦 Build release archive
+        run: |
+          mkdir -p deploy_temp
+          rsync -a --delete \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='var' \
+            --exclude='tests' \
+            --exclude='.github' \
+            --exclude='deploy_temp' \
+            --exclude='config/jwt' \
+            ./ deploy_temp/
+          cp .env.local deploy_temp/.env.local
+          tar -czf deploy.tar.gz -C deploy_temp .
+
+      - name: 🔐 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} -t rsa ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+
+      - name: 🚚 Upload release archive and deploy script
+        run: |
+          REMOTE="${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}"
+          RELEASE_DIR="${{ inputs.base_path }}/releases/${RELEASE_NAME}"
+
+          ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "mkdir -p '${RELEASE_DIR}'"
+          scp -P ${{ secrets.DEPLOY_PORT }} deploy.tar.gz "$REMOTE:${RELEASE_DIR}/deploy.tar.gz"
+          scp -P ${{ secrets.DEPLOY_PORT }} deploy/release.sh "$REMOTE:${RELEASE_DIR}/release.sh"
+
+      - name: 🚀 Run release script on server
+        run: |
+          REMOTE="${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}"
+          RELEASE_DIR="${{ inputs.base_path }}/releases/${RELEASE_NAME}"
+
+          ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" \
+            "bash '${RELEASE_DIR}/release.sh' '${{ inputs.base_path }}' '${RELEASE_NAME}' '${{ inputs.domain_path }}' '${{ inputs.app_env }}'"
+
+      - name: 🧼 Cleanup local build
+        if: always()
+        run: rm -rf deploy_temp deploy.tar.gz .env.local

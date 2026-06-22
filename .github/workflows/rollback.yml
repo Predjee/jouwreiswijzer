@@ -1,0 +1,45 @@
+name: Rollback (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      base_path:
+        required: true
+        type: string
+      domain_path:
+        required: true
+        type: string
+      rollback_release:
+        description: "Release-timestamp om naar terug te gaan (YYYYMMDDHHMMSS)"
+        required: true
+        type: string
+    secrets:
+      SSH_PRIVATE_KEY:
+        required: true
+      DEPLOY_USER:
+        required: true
+      DEPLOY_HOST:
+        required: true
+      DEPLOY_PORT:
+        required: true
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔐 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} -t rsa ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+
+      - name: 🔁 Run rollback script on server
+        run: |
+          REMOTE="${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}"
+          scp -P ${{ secrets.DEPLOY_PORT }} deploy/rollback.sh "$REMOTE:/tmp/rollback.sh"
+          ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" \
+            "bash /tmp/rollback.sh '${{ inputs.base_path }}' '${{ inputs.rollback_release }}' '${{ inputs.domain_path }}'"

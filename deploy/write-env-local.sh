@@ -24,8 +24,6 @@ FROM_EMAIL=${FROM_EMAIL:-}
 JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem
 JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem
 JWT_PASSPHRASE=${JWT_PASSPHRASE:-}
-PUSH_VAPID_PUBLIC_KEY=${PUSH_VAPID_PUBLIC_KEY:-}
-PUSH_VAPID_PRIVATE_KEY=${PUSH_VAPID_PRIVATE_KEY:-}
 MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0
 LOCK_DSN=flock
 # SEAL/Loupe is geïnstalleerd maar nog niet in gebruik (geen schema's, geen

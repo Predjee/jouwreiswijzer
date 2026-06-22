@@ -32,10 +32,6 @@ on:
         required: false
       JWT_PASSPHRASE:
         required: false
-      PUSH_VAPID_PUBLIC_KEY:
-        required: false
-      PUSH_VAPID_PRIVATE_KEY:
-        required: false
       SSH_PRIVATE_KEY:
         required: true
       DEPLOY_USER:
@@ -87,8 +83,6 @@ jobs:
           NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
           FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
           JWT_PASSPHRASE: ${{ secrets.JWT_PASSPHRASE }}
-          PUSH_VAPID_PUBLIC_KEY: ${{ secrets.PUSH_VAPID_PUBLIC_KEY }}
-          PUSH_VAPID_PRIVATE_KEY: ${{ secrets.PUSH_VAPID_PRIVATE_KEY }}
         run: bash deploy/write-env-local.sh
 
       - name: 🧱 Build frontend assets (AssetMapper)

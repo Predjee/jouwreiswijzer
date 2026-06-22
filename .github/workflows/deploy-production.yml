@@ -27,8 +27,6 @@ jobs:
       NOTIFICATION_EMAIL: ${{ secrets.PROD_NOTIFICATION_EMAIL }}
       FROM_EMAIL: ${{ secrets.PROD_FROM_EMAIL }}
       JWT_PASSPHRASE: ${{ secrets.PROD_JWT_PASSPHRASE }}
-      PUSH_VAPID_PUBLIC_KEY: ${{ secrets.PROD_PUSH_VAPID_PUBLIC_KEY }}
-      PUSH_VAPID_PRIVATE_KEY: ${{ secrets.PROD_PUSH_VAPID_PRIVATE_KEY }}
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
       DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}

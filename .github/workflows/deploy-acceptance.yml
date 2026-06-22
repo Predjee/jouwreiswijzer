@@ -27,8 +27,6 @@ jobs:
       NOTIFICATION_EMAIL: ${{ secrets.STAGE_NOTIFICATION_EMAIL }}
       FROM_EMAIL: ${{ secrets.STAGE_FROM_EMAIL }}
       JWT_PASSPHRASE: ${{ secrets.STAGE_JWT_PASSPHRASE }}
-      PUSH_VAPID_PUBLIC_KEY: ${{ secrets.STAGE_PUSH_VAPID_PUBLIC_KEY }}
-      PUSH_VAPID_PRIVATE_KEY: ${{ secrets.STAGE_PUSH_VAPID_PRIVATE_KEY }}
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
       DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}

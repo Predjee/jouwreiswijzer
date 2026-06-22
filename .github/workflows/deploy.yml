@@ -85,8 +85,9 @@ jobs:
           JWT_PASSPHRASE: ${{ secrets.JWT_PASSPHRASE }}
         run: bash deploy/write-env-local.sh
 
-      - name: 🧱 Build frontend assets (AssetMapper)
+      - name: 🧱 Build frontend assets (Tailwind + AssetMapper)
         run: |
+          php bin/console tailwind:build --minify --env="${{ inputs.app_env }}"
           php bin/console importmap:install --no-interaction --env="${{ inputs.app_env }}"
           php bin/console asset-map:compile --no-interaction --env="${{ inputs.app_env }}"
 

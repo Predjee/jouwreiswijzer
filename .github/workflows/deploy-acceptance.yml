@@ -1,0 +1,46 @@
+name: 🧪 Deploy to Acceptance
+
+on:
+  push:
+    branches:
+      - acceptance
+  workflow_dispatch:
+    inputs:
+      rollback_release:
+        description: 'Rollback naar release (YYYYMMDDHHMMSS) — leeg laten voor een gewone deploy'
+        required: false
+
+jobs:
+  deploy:
+    if: github.event.inputs.rollback_release == ''
+    uses: ./.github/workflows/deploy.yml
+    with:
+      app_env: stage
+      base_path: /home/derei1602/acceptance
+      domain_path: /home/derei1602/domains/acceptance.jouwreiswijzer.nl
+    secrets:
+      APP_SECRET: ${{ secrets.STAGE_APP_SECRET }}
+      DATABASE_URL: ${{ secrets.STAGE_DATABASE_URL }}
+      MAILER_DSN: ${{ secrets.STAGE_MAILER_DSN }}
+      SULU_ADMIN_EMAIL: ${{ secrets.STAGE_SULU_ADMIN_EMAIL }}
+      DEFAULT_URI: ${{ secrets.STAGE_DEFAULT_URI }}
+      NOTIFICATION_EMAIL: ${{ secrets.STAGE_NOTIFICATION_EMAIL }}
+      FROM_EMAIL: ${{ secrets.STAGE_FROM_EMAIL }}
+      JWT_PASSPHRASE: ${{ secrets.STAGE_JWT_PASSPHRASE }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+
+  rollback:
+    if: github.event.inputs.rollback_release != ''
+    uses: ./.github/workflows/rollback.yml
+    with:
+      base_path: /home/derei1602/acceptance
+      domain_path: /home/derei1602/domains/acceptance.jouwreiswijzer.nl
+      rollback_release: ${{ github.event.inputs.rollback_release }}
+    secrets:
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}

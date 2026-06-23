@@ -1,13 +1,14 @@
 {% set style = button.style ?? 'gold' %}
 {% set extra_class = class|default('') %}
+{% set resolved_url = button.link_type|default('page') == 'page' and button.page|default ? button.page.url|default('') : button.external_url|default('') %}
 
-{% if button.label|default and button.url|default %}
+{% if button.label|default %}
     {% if style == 'gold' %}
-        <a href="{{ button.url }}" class="btn-primary {{ extra_class }}">
+        <a href="{{ resolved_url ?: '#' }}" class="btn-primary {{ extra_class }}">
             {{ button.label }}
         </a>
     {% else %}
-        <a href="{{ button.url }}" class="btn-ghost {{ extra_class }}">
+        <a href="{{ resolved_url ?: '#' }}" class="btn-ghost {{ extra_class }}">
             {{ button.label }}
         </a>
     {% endif %}

@@ -15,10 +15,42 @@
             </meta>
         </property>
 
-        <property name="url" type="text_line" mandatory="true">
+        <property name="link_type" type="single_select" colspan="12">
             <meta>
-                <title lang="nl">URL of pad</title>
+                <title lang="nl">Linktype</title>
             </meta>
+            <params>
+                <param name="default_value" value="page"/>
+                <param name="values" type="collection">
+                    <param name="page">
+                        <meta>
+                            <title lang="nl">Interne pagina</title>
+                        </meta>
+                    </param>
+                    <param name="external">
+                        <meta>
+                            <title lang="nl">Externe URL / e-mail / telefoon</title>
+                        </meta>
+                    </param>
+                </param>
+            </params>
+        </property>
+
+        <property name="page" type="single_page_selection" colspan="12"
+                  visibleCondition="__parent.link_type == 'page'">
+            <meta>
+                <title lang="nl">Pagina</title>
+            </meta>
+        </property>
+
+        <property name="external_url" type="text_line" colspan="12"
+                  visibleCondition="__parent.link_type == 'external'">
+            <meta>
+                <title lang="nl">URL, mailto: of tel:</title>
+            </meta>
+            <params>
+                <param name="info_text" value="Bijv. https://partner.nl, mailto:info@jouwreiswijzer.nl of tel:+31201234567"/>
+            </params>
         </property>
 
         <property name="style" type="single_select">

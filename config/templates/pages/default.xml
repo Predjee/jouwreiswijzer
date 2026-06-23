@@ -37,14 +37,6 @@
             <tag name="sulu.rlp"/>
         </property>
 
-        <property name="article" type="text_editor">
-            <meta>
-                <title lang="en">Article</title>
-                <title lang="de">Artikel</title>
-                <title lang="nl">Artikel</title>
-            </meta>
-        </property>
-
         <section name="content">
             <meta>
                 <title lang="nl">Content blokken</title>

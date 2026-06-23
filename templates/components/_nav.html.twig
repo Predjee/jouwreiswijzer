@@ -63,9 +63,8 @@
 
         {% if is_granted('ROLE_SULU_CUSTOMER') %}
             {% set unread_notifications = account_unread_notification_count() %}
-            {% set has_active_travel_plan = account_has_active_travel_plan() %}
             {% set account_route = app.request.attributes.get('_route') %}
-            <details class="nav-account-menu hidden md:block">
+            <details class="nav-account-menu hidden md:block" data-controller="nav-account-menu">
                 <summary class="nav-account-summary">
                     <svg class="nav-account-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
@@ -82,15 +81,11 @@
                         <span>Ingelogd als</span>
                         <strong>{{ app.user.fullName|default(app.user.userIdentifier) }}</strong>
                     </div>
-                    <a href="{{ path('account') }}">Mijn reisplannen</a>
                     <a
                         href="{{ path('account') }}"
-                        class="nav-account-dropdown-row {{ account_route == 'account' or has_active_travel_plan ? 'is-active' : '' }}"
+                        class="nav-account-dropdown-row {{ account_route == 'account' ? 'is-active' : '' }}"
                     >
-                        <span>Reishulp</span>
-                        {% if has_active_travel_plan %}
-                            <span class="nav-account-badge">Nu</span>
-                        {% endif %}
+                        <span>Mijn reisplannen</span>
                     </a>
                     <a href="{{ path('account_notifications') }}" class="nav-account-dropdown-row">
                         <span>Notificaties</span>
@@ -121,7 +116,7 @@
 
         {# Hamburger mobiel #}
         <button type="button"
-                class="md:hidden flex flex-col gap-1.5 p-2"
+                class="nav-toggle md:hidden flex flex-col gap-1.5 p-2"
                 aria-expanded="false"
                 aria-controls="mobile-menu"
                 aria-label="Menu openen"
@@ -139,6 +134,9 @@
                 border-b"
         aria-hidden="true">
         <ul class="flex flex-col px-5 py-6 gap-5" role="list">
+            <li>
+                <span class="mobile-menu-label">Navigatie</span>
+            </li>
             <li>
                 <a href="{{ root_path }}"
                    class="nav-link {{ app.request.pathInfo == root_path ? 'is-active' : '' }}">
@@ -161,14 +159,13 @@
             </li>
             <li class="mobile-account-links pt-2 border-t">
                 {% if is_granted('ROLE_SULU_CUSTOMER') %}
-                    <a href="{{ path('account') }}" class="nav-link block">
+                    <div class="mobile-account-card">
+                        <span>Ingelogd als</span>
+                        <strong>{{ app.user.fullName|default(app.user.userIdentifier) }}</strong>
+                    </div>
+                    <span class="mobile-menu-label">Mijn omgeving</span>
+                    <a href="{{ path('account') }}" class="nav-link flex items-center gap-2 {{ account_route == 'account' ? 'is-active' : '' }}">
                         Mijn reisplannen
-                    </a>
-                    <a href="{{ path('account') }}" class="nav-link mt-4 flex items-center gap-2 {{ account_route == 'account' or has_active_travel_plan ? 'is-active' : '' }}">
-                        Reishulp
-                        {% if has_active_travel_plan %}
-                            <span class="nav-account-badge">Nu</span>
-                        {% endif %}
                     </a>
                     <a href="{{ path('account_notifications') }}" class="nav-link mt-4 flex items-center gap-2">
                         Notificaties

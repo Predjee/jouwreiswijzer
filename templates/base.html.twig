@@ -6,10 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     {% block meta %}
-        {% set seo_title = extension.seo.title|default(content.title|default('Jouw ReisWijzer - Persoonlijk reisadvies op maat')) %}
+        {% set seo_title = extension.seo.title|default(content.title|default('Jouw ReisWijzer - Persoonlijk reisadvies op maat'))|replace({
+            'JouwReiswijzer': 'Jouw ReisWijzer',
+            'Jouw Reiswijzer': 'Jouw ReisWijzer',
+        }) %}
+        {% set seo = extension.seo|default([])|merge({ title: seo_title }) %}
         {% set seo_description = extension.seo.description|default('Persoonlijk reisadvies voor een onvergetelijke reis.') %}
         {{ include('@SuluWebsite/Extension/seo.html.twig', {
-            seo: extension.seo|default([]),
+            seo: seo,
             content: content|default([]),
             localizations: localizations|default([]),
             shadowBaseLocale: shadowBaseLocale|default(),

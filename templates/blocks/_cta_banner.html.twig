@@ -17,7 +17,7 @@
             <ul class="flex flex-wrap gap-x-5 gap-y-3">
                 {% for item in block.trust_items|split('\n') %}
                     {% if item|trim %}
-                        <li class="type-meta flex items-center gap-2">
+                        <li class="cta-banner-trust-item type-meta flex items-center gap-2">
                             <span class="cta-banner-trust-icon" aria-hidden="true">✦</span>
                             {{ item|trim }}
                         </li>

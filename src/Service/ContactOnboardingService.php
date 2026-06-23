@@ -93,7 +93,7 @@ final readonly class ContactOnboardingService
             $this->mailer->send((new Mail())
                 ->from($this->fromEmail)
                 ->to($email)
-                ->subject('Welkom bij JouwReisWijzer')
+                ->subject('Welkom bij Jouw ReisWijzer')
                 ->html($this->twig->render('emails/account_created.html.twig', [
                     'contact' => $contact,
                     'reset_url' => $resetUrl,

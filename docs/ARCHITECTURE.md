@@ -1,4 +1,4 @@
-# JouwReiswijzer — Architecture Reference
+# Jouw ReisWijzer — Architecture Reference
 
 Compacte technische referentie voor ontwikkelaars en AI-agents.
 
@@ -9,7 +9,7 @@ Wanneer code en document conflicteren, moet eerst worden onderzocht of het docum
 
 # 1. Project
 
-JouwReisWijzer is een Symfony/Sulu platform voor persoonlijk reisadvies.
+Jouw ReisWijzer is een Symfony/Sulu platform voor persoonlijk reisadvies.
 
 Het platform bestaat uit:
 

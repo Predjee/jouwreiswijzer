@@ -10,7 +10,7 @@
 {% if not accountView %}
     <htmlpagefooter name="travelPlanFooter">
         <div class="travel-plan-footer">
-            JouwReisWijzer &nbsp;&middot;&nbsp; {{ travelPlan.title }} &nbsp;&middot;&nbsp; pagina {PAGENO}
+            Jouw ReisWijzer &nbsp;&middot;&nbsp; {{ travelPlan.title }} &nbsp;&middot;&nbsp; pagina {PAGENO}
         </div>
     </htmlpagefooter>
 {% endif %}
@@ -19,7 +19,7 @@
     {% if not accountView %}
         <section class="travel-plan-cover">
             {% if logoSrc %}
-                <img class="travel-plan-cover__logo" src="{{ logoSrc }}" alt="JouwReisWijzer">
+                <img class="travel-plan-cover__logo" src="{{ logoSrc }}" alt="Jouw ReisWijzer">
             {% endif %}
             <p class="travel-plan-cover__eyebrow">Persoonlijke reisgids</p>
             <h1>{{ travelPlan.title }}</h1>

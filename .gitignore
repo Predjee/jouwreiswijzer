@@ -64,3 +64,5 @@ phpstan.neon
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/
 ###< lexik/jwt-authentication-bundle ###
+
+!/public/build/admin/

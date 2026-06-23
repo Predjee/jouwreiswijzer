@@ -57,12 +57,14 @@ phpstan.neon
 
 ###> symfony/asset-mapper ###
 /public/assets/
-/public/build/
+/public/build/*
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+!/public/build/
+!/public/build/admin/
+!/public/build/admin/**
 
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/
 ###< lexik/jwt-authentication-bundle ###
-
-!/public/build/admin/

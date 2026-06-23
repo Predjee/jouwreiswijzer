@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block subject %}JouwReisWijzer{% endblock %}</title>
+    <title>{% block subject %}Jouw ReisWijzer{% endblock %}</title>
 </head>
 <body style="margin:0;padding:0;background-color:#0f293a;color:#243a4e;font-family:Arial,Helvetica,sans-serif;">
 {% set logoUrl = absolute_url(asset('email/logo-email.png')) %}
@@ -16,7 +16,7 @@
                     <td align="center" style="padding:0 8px 24px;">
                         <img
                             src="{{ logoUrl }}"
-                            alt="JouwReisWijzer"
+                            alt="Jouw ReisWijzer"
                             width="220"
                             style="display:block;width:220px;max-width:220px;height:auto;border:0;outline:none;text-decoration:none;"
                         >
@@ -35,7 +35,7 @@
                 {% block footer %}
                     <tr>
                         <td align="center" style="padding:20px 16px 0;color:#aab5bc;font-size:12px;line-height:1.6;">
-                            {% block footer_text %}Dit is een automatische e-mail van JouwReisWijzer.{% endblock %}
+                            {% block footer_text %}Dit is een automatische e-mail van Jouw ReisWijzer.{% endblock %}
                         </td>
                     </tr>
                 {% endblock %}

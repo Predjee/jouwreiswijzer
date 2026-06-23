@@ -1,4 +1,4 @@
-# Projectstatus JouwReisWijzer
+# Projectstatus Jouw ReisWijzer
 
 ## Stack
 Symfony 7, Sulu 3, Doctrine, Twig, mPDF.

@@ -1,18 +1,18 @@
-# JouwReiswijzer – Projectspecificatie
+# Jouw ReisWijzer – Projectspecificatie
 
 ## 1. Projectdoel
 
-JouwReiswijzer wordt een elegant marketing- en aanvraagplatform voor reizigers die een persoonlijk reisplan willen laten samenstellen. De website inspireert bezoekers, wekt vertrouwen en converteert naar een aanvraag voor maatwerk reisadvies.
+Jouw ReisWijzer wordt een elegant marketing- en aanvraagplatform voor reizigers die een persoonlijk reisplan willen laten samenstellen. De website inspireert bezoekers, wekt vertrouwen en converteert naar een aanvraag voor maatwerk reisadvies.
 
 De kern van het platform bestaat uit twee onderdelen:
 
 1. Een publieke marketingwebsite met sterke SEO, premium uitstraling en duidelijke conversieroutes.
 2. Een maatwerkmodule binnen Sulu CMS waarin aanvragen worden beheerd en persoonlijke reisvoorstellen worden opgebouwd.
-   JouwReiswijzer richt zich op reizigers die begeleiding willen bij het samenstellen van een reis, zoals een lang weekend, stedentrip, romantisch verblijf, korte rondreis of meerdaagse route.
+   Jouw ReisWijzer richt zich op reizigers die begeleiding willen bij het samenstellen van een reis, zoals een lang weekend, stedentrip, romantisch verblijf, korte rondreis of meerdaagse route.
 
 ## 2. Positionering
 
-JouwReiswijzer positioneert zich als persoonlijk, betrouwbaar en premium reisadviesplatform.
+Jouw ReisWijzer positioneert zich als persoonlijk, betrouwbaar en premium reisadviesplatform.
 
 De uitstraling is boutique travel: luxe zonder afstandelijk te worden, persoonlijk zonder amateuristisch te ogen, en inspirerend zonder druk of rommelig te worden.
 
@@ -84,7 +84,7 @@ De website bevat in fase 1 minimaal:
 - Aanvraagpagina of aanvraagflow
 - Inspiratiepagina’s
 - Voorbeeldreizen
-- Over JouwReiswijzer
+- Over Jouw ReisWijzer
 - Contactpagina
 - Privacyverklaring
 - Algemene informatiepagina’s
@@ -112,14 +112,14 @@ De website ondersteunt content rondom:
 De homepage bevat:
 
 - krachtige hero met duidelijke waardepropositie
-- korte introductie van JouwReiswijzer
+- korte introductie van Jouw ReisWijzer
 - uitleg van de werkwijze
 - voordelen van persoonlijk reisadvies
 - voorbeelden van mogelijke reizen
 - duidelijke call-to-action naar de aanvraagflow
 - vertrouwenwekkende elementen
 - SEO-vriendelijke contentsecties
-  De homepage moet direct duidelijk maken wat JouwReiswijzer doet en waarom een bezoeker een aanvraag zou indienen.
+  De homepage moet direct duidelijk maken wat Jouw ReisWijzer doet en waarom een bezoeker een aanvraag zou indienen.
 
 ## 5. Aanvraagflow
 
@@ -164,7 +164,7 @@ Na verzending wordt de aanvraag opgeslagen in de database en beschikbaar gemaakt
 
 Binnen Sulu CMS komt een maatwerkmodule voor het beheren van aanvragen en reisplannen.
 
-De module is bedoeld voor de beheerder van JouwReiswijzer en moet overzichtelijk, efficiënt en prettig werken.
+De module is bedoeld voor de beheerder van Jouw ReisWijzer en moet overzichtelijk, efficiënt en prettig werken.
 
 ### Functionaliteiten
 
@@ -258,7 +258,7 @@ De PDF bevat:
 - praktische informatie
 - contactgegevens
 - aanvullende opmerkingen
-  De PDF krijgt een nette vaste template die aansluit bij de visuele identiteit van JouwReiswijzer.
+  De PDF krijgt een nette vaste template die aansluit bij de visuele identiteit van Jouw ReisWijzer.
 
 ## 9. Technische stack
 
@@ -475,7 +475,7 @@ Codex voert concrete implementatietaken uit, zoals:
 
 ## 20. Eindresultaat
 
-Het eindresultaat is een snel, stijlvol en SEO-vriendelijk platform waarmee JouwReiswijzer bezoekers inspireert, aanvragen verzamelt en beheerders ondersteunt bij het maken van persoonlijke reisplannen.
+Het eindresultaat is een snel, stijlvol en SEO-vriendelijk platform waarmee Jouw ReisWijzer bezoekers inspireert, aanvragen verzamelt en beheerders ondersteunt bij het maken van persoonlijke reisplannen.
 
 Het platform combineert een premium marketingwebsite met een praktische maatwerkmodule in Sulu CMS.
 

@@ -1,5 +1,6 @@
 <section class="block-hero relative overflow-hidden
-                {{ block.background_image ? 'block-hero--image' : '' }}">
+                {{ block.background_image ? 'block-hero--image' : '' }}
+                {{ block.size|default('full') == 'compact' ? 'block-hero--compact' : '' }}">
 
     {% if block.background_image %}
         <img src="{{ block.background_image.thumbnails['hero-bg'] }}"
@@ -48,6 +49,29 @@
                     {{ include('components/_button.html.twig', { button: button }) }}
                 {% endfor %}
             </div>
+        {% endif %}
+
+        {% if block.micro_usps|default %}
+            <ul class="hero-micro-usps flex flex-wrap gap-4 pt-2" role="list">
+                {% for usp in block.micro_usps %}
+                    {% if usp.label|default %}
+                        <li class="hero-micro-usp flex items-center gap-2 type-meta">
+                            <svg class="hero-micro-usp__icon"
+                                 viewBox="0 0 16 16"
+                                 fill="none"
+                                 aria-hidden="true"
+                                 focusable="false">
+                                <path d="M13.5 4.25 6.5 11.25 2.75 7.5"
+                                      stroke="currentColor"
+                                      stroke-width="1.8"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                            </svg>
+                            {{ usp.label }}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
         {% endif %}
 
     </header>

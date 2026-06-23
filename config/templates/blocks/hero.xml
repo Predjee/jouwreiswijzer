@@ -32,6 +32,18 @@
             </meta>
         </property>
 
+        <property name="size" type="single_select" colspan="6">
+            <meta>
+                <title lang="nl">Formaat</title>
+            </meta>
+            <params>
+                <param name="values" type="collection">
+                    <param name="full" value="full"/>
+                    <param name="compact" value="compact"/>
+                </param>
+            </params>
+        </property>
+
         <property name="background_image" type="single_media_selection">
             <meta>
                 <title lang="nl">Achtergrondafbeelding</title>
@@ -47,6 +59,23 @@
             </meta>
             <types>
                 <type ref="button"/>
+            </types>
+        </property>
+
+        <property name="micro_usps" type="block" mandatory="false">
+            <meta>
+                <title lang="nl">Micro-USP's (max 3)</title>
+            </meta>
+            <types>
+                <type name="micro_usp">
+                    <properties>
+                        <property name="label" type="text_line">
+                            <meta>
+                                <title lang="nl">Tekst</title>
+                            </meta>
+                        </property>
+                    </properties>
+                </type>
             </types>
         </property>
 

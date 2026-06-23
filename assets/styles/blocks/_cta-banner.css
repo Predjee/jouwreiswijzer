@@ -1,5 +1,5 @@
 .cta-banner-content {
-    max-width: var(--measure-text);
+    max-width: var(--content-max-width);
 }
 
 .cta-banner-actions {
@@ -12,9 +12,19 @@
     justify-content: center;
 }
 
+.cta-banner-trust-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.875rem;
+    border: 1px solid var(--color-gold-20);
+    border-radius: 999px;
+    background: var(--color-gold-10);
+}
+
 .cta-banner-trust-icon {
     color: var(--color-gold);
-    opacity: 0.25;
+    opacity: 0.8;
 }
 
 @media (min-width: 640px) {

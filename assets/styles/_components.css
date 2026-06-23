@@ -57,8 +57,16 @@
     line-height: 1.4;
 }
 
+.type-body p {
+    margin-block: 0 1em;
+}
+
 .type-body > :first-child {
     margin-block-start: 0;
+}
+
+.type-body > :last-child {
+    margin-block-end: 0;
 }
 
 .type-body strong,
@@ -91,12 +99,27 @@
     color: var(--color-gold);
 }
 
+.type-body figure {
+    margin-block: 1em 1.5em;
+}
+
+.type-body figure.table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
 .type-body table {
     display: table;
     margin-block: 1em 1.5em;
     width: 100%;
     border-collapse: collapse;
     font-size: var(--text-meta);
+}
+
+.type-body figure.table table {
+    margin-block: 0;
+    min-width: 36rem;
 }
 
 .type-body th,
@@ -113,14 +136,22 @@
     background: var(--color-gold-08);
 }
 
+.type-body table:not(:has(thead)) tbody:first-child tr:first-child td {
+    color: var(--color-content-primary);
+    font-weight: 500;
+    background: var(--color-gold-08);
+}
+
+.type-body table:not(:has(thead)) tbody:first-child tr:first-child td strong {
+    font-weight: 500;
+}
+
 .type-body tr:nth-child(even) td {
     background: color-mix(in srgb, var(--color-content-primary) 3%, transparent);
 }
 
 @media (max-width: 640px) {
     .type-body table {
-        display: block;
-        overflow-x: auto;
         white-space: nowrap;
     }
 }

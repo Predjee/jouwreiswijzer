@@ -81,6 +81,7 @@ h6 {
 .travel-plan h3 {
     font-size: 13pt;
     font-weight: 500;
+    line-height: 1.2;
 }
 
 .travel-plan p {
@@ -177,6 +178,99 @@ h6 {
     margin-bottom: 14mm;
 }
 
+.travel-plan-section__content > *:last-child {
+    margin-bottom: 0;
+}
+
+.travel-plan-section__content h3 {
+    margin: 4.5mm 0 1.5mm;
+}
+
+.travel-plan-section__content p + h3,
+.travel-plan-section__content ul + h3,
+.travel-plan-section__content ol + h3 {
+    margin-top: 6mm;
+}
+
+.travel-plan-section__content ul,
+.travel-plan-section__content ol {
+    margin: 0 0 3.5mm;
+    padding-left: 6mm;
+}
+
+.travel-plan-section__content li {
+    margin-bottom: 1.5mm;
+}
+
+.travel-plan-section--practical-info,
+.travel-plan-section--free-text {
+    background-color: #ffffff;
+    border-bottom: 0.2mm solid #ddd5c7;
+    border-top: 0.6mm solid #b99550;
+    padding: 7mm 8mm;
+}
+
+.travel-plan-section--practical-info h2,
+.travel-plan-section--free-text h2 {
+    border-bottom: 0;
+    font-size: 21pt;
+    line-height: 1.2;
+    margin: 0 0 5.5mm;
+    padding-bottom: 0;
+}
+
+.travel-plan-section--practical-info .travel-plan-section__content,
+.travel-plan-section--free-text .travel-plan-section__content {
+    padding-top: 1mm;
+}
+
+.travel-plan-section__content figure.table,
+.travel-plan-section__content figure {
+    margin: 5mm 0 1mm;
+}
+
+.travel-plan-section__content table,
+.travel-plan-editor-table {
+    background-color: #ffffff;
+    border-collapse: collapse;
+    margin: 5mm 0 1mm;
+    width: 100%;
+}
+
+.travel-plan-section__content table th,
+.travel-plan-section__content table td,
+.travel-plan-editor-table th,
+.travel-plan-editor-table td {
+    border: 0.2mm solid #ddd5c7;
+    padding: 4mm 4.5mm;
+    vertical-align: top;
+}
+
+.travel-plan-section__content table th,
+.travel-plan-editor-table th {
+    background-color: #f4efe6;
+    color: #12213d;
+    font-family: "Jost", sans-serif;
+    font-size: 9.5pt;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.travel-plan-section__content table td,
+.travel-plan-editor-table td {
+    background-color: #ffffff;
+}
+
+.travel-plan-section__content table p,
+.travel-plan-editor-table p {
+    margin: 0 0 2.5mm;
+}
+
+.travel-plan-section__content table p:last-child,
+.travel-plan-editor-table p:last-child {
+    margin-bottom: 0;
+}
+
 .travel-plan-icon {
     float: left;
     height: 6mm;
@@ -184,12 +278,7 @@ h6 {
     width: 6mm;
 }
 
-.travel-plan-section--day {
-    page-break-before: always;
-}
-
-.travel-plan-section--checklist {
-    page-break-after: always;
+.travel-plan-page-break-before {
     page-break-before: always;
 }
 

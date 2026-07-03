@@ -1,4 +1,12 @@
+{% if accountView %}
 <aside class="travel-plan-section travel-plan-section--personal-note">
+{% else %}
+<div class="travel-plan-section travel-plan-section--personal-note">
+{% endif %}
     {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
     {% if section.text|default %}<p>{{ section.text }}</p>{% endif %}
+{% if accountView %}
 </aside>
+{% else %}
+</div>
+{% endif %}

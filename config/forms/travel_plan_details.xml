@@ -132,6 +132,11 @@
                                 <title>Klantfeedback</title>
                             </meta>
                         </property>
+                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                            <meta>
+                                <title>Nieuwe pagina</title>
+                            </meta>
+                        </property>
                         <property name="title" type="text_line">
                             <meta>
                                 <title>Titel</title>
@@ -181,6 +186,11 @@
                                                   type="app_travel_plan_feedback">
                                             <meta>
                                                 <title>Klantfeedback</title>
+                                            </meta>
+                                        </property>
+                                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                                            <meta>
+                                                <title>Nieuwe pagina</title>
                                             </meta>
                                         </property>
                                         <property name="title" type="text_line">
@@ -245,6 +255,11 @@
                                                 <title>Klantfeedback</title>
                                             </meta>
                                         </property>
+                                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                                            <meta>
+                                                <title>Nieuwe pagina</title>
+                                            </meta>
+                                        </property>
                                         <property name="dayNumber" type="number" colspan="3">
                                             <meta>
                                                 <title>Dagnummer</title>
@@ -295,6 +310,11 @@
                                                                   type="app_travel_plan_feedback">
                                                             <meta>
                                                                 <title>Klantfeedback</title>
+                                                            </meta>
+                                                        </property>
+                                                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                                                            <meta>
+                                                                <title>Nieuwe pagina</title>
                                                             </meta>
                                                         </property>
                                                         <property name="title" type="text_line">
@@ -354,6 +374,11 @@
                                                                 <title>Klantfeedback</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                                                            <meta>
+                                                                <title>Nieuwe pagina</title>
+                                                            </meta>
+                                                        </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
                                                                 <title>Titel</title>
@@ -409,6 +434,11 @@
                                                                   type="app_travel_plan_feedback">
                                                             <meta>
                                                                 <title>Klantfeedback</title>
+                                                            </meta>
+                                                        </property>
+                                                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                                                            <meta>
+                                                                <title>Nieuwe pagina</title>
                                                             </meta>
                                                         </property>
                                                         <property name="title" type="text_line">
@@ -468,6 +498,11 @@
                                                                 <title>Klantfeedback</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                                                            <meta>
+                                                                <title>Nieuwe pagina</title>
+                                                            </meta>
+                                                        </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
                                                                 <title>Titel</title>
@@ -525,6 +560,11 @@
                                                                 <title>Klantfeedback</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                                                            <meta>
+                                                                <title>Nieuwe pagina</title>
+                                                            </meta>
+                                                        </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
                                                                 <title>Titel</title>
@@ -577,6 +617,11 @@
                                                                 <title>Klantfeedback</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                                                            <meta>
+                                                                <title>Nieuwe pagina</title>
+                                                            </meta>
+                                                        </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
                                                                 <title>Titel</title>
@@ -627,6 +672,11 @@
                                                                   type="app_travel_plan_feedback">
                                                             <meta>
                                                                 <title>Klantfeedback</title>
+                                                            </meta>
+                                                        </property>
+                                                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                                                            <meta>
+                                                                <title>Nieuwe pagina</title>
                                                             </meta>
                                                         </property>
                                                         <property name="title" type="text_line">
@@ -686,6 +736,11 @@
                                                 <title>Klantfeedback</title>
                                             </meta>
                                         </property>
+                                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                                            <meta>
+                                                <title>Nieuwe pagina</title>
+                                            </meta>
+                                        </property>
                                         <property name="title" type="text_line">
                                             <meta>
                                                 <title>Titel</title>
@@ -718,6 +773,11 @@
                                                 <title>Klantfeedback</title>
                                             </meta>
                                         </property>
+                                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                                            <meta>
+                                                <title>Nieuwe pagina</title>
+                                            </meta>
+                                        </property>
                                         <property name="title" type="text_line">
                                             <meta>
                                                 <title>Titel</title>
@@ -740,6 +800,11 @@
                                                   type="app_travel_plan_feedback">
                                             <meta>
                                                 <title>Klantfeedback</title>
+                                            </meta>
+                                        </property>
+                                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                                            <meta>
+                                                <title>Nieuwe pagina</title>
                                             </meta>
                                         </property>
                                         <property name="title" type="text_line">
@@ -774,6 +839,11 @@
                                                 <title>Klantfeedback</title>
                                             </meta>
                                         </property>
+                                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                                            <meta>
+                                                <title>Nieuwe pagina</title>
+                                            </meta>
+                                        </property>
                                         <property name="title" type="text_line">
                                             <meta>
                                                 <title>Titel</title>
@@ -804,6 +874,11 @@
                                                   type="app_travel_plan_feedback">
                                             <meta>
                                                 <title>Klantfeedback</title>
+                                            </meta>
+                                        </property>
+                                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                                            <meta>
+                                                <title>Nieuwe pagina</title>
                                             </meta>
                                         </property>
                                         <property name="title" type="text_line">

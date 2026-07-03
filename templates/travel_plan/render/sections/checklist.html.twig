@@ -1,4 +1,8 @@
+{% if accountView %}
 <section class="travel-plan-section travel-plan-section--checklist">
+{% else %}
+<div class="travel-plan-section travel-plan-section--checklist">
+{% endif %}
     {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
     {% if section.text|default %}
         <table class="travel-plan-checklist">
@@ -12,4 +16,8 @@
             {% endfor %}
         </table>
     {% endif %}
+{% if accountView %}
 </section>
+{% else %}
+</div>
+{% endif %}

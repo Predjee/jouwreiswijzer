@@ -1,7 +1,15 @@
+{% if accountView %}
 <aside class="travel-plan-block travel-plan-block--note">
+{% else %}
+<div class="travel-plan-block travel-plan-block--note">
+{% endif %}
     {% if block.timeRangeLabel|default or block.timeLabel|default %}
         <p>{% if block.timeRangeLabel|default %}<strong>{{ block.timeRangeLabel }}</strong>{% endif %}{% if block.timeRangeLabel|default and block.timeLabel|default %} - {% endif %}{{ block.timeLabel|default('') }}</p>
     {% endif %}
     {% if block.title|default %}<h3>{{ block.title }}</h3>{% endif %}
     {% if block.text|default %}<p>{{ block.text }}</p>{% endif %}
+{% if accountView %}
 </aside>
+{% else %}
+</div>
+{% endif %}

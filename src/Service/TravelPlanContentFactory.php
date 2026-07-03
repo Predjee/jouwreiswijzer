@@ -72,6 +72,7 @@ final class TravelPlanContentFactory
             ],
             self::TYPE_DESTINATION => [
                 'type' => $type,
+                'startOnNewPage' => false,
                 'title' => '',
                 'country' => '',
                 'region' => '',
@@ -82,6 +83,7 @@ final class TravelPlanContentFactory
             ],
             self::TYPE_ROUTE_OVERVIEW => [
                 'type' => $type,
+                'startOnNewPage' => false,
                 'title' => '',
                 'text' => '',
                 'routeStops' => [],
@@ -95,6 +97,7 @@ final class TravelPlanContentFactory
             ],
             self::TYPE_DAY => [
                 'type' => $type,
+                'startOnNewPage' => false,
                 'dayNumber' => 1,
                 'title' => '',
                 'dateLabel' => '',
@@ -107,6 +110,7 @@ final class TravelPlanContentFactory
             self::TYPE_TRANSPORT,
             self::TYPE_MEAL => [
                 'type' => $type,
+                'startOnNewPage' => false,
                 'title' => '',
                 'text' => '',
                 'icon' => $this->defaultIcon($type),
@@ -121,6 +125,7 @@ final class TravelPlanContentFactory
             self::TYPE_NOTE,
             self::TYPE_FREE_TEXT => [
                 'type' => $type,
+                'startOnNewPage' => false,
                 'title' => '',
                 'text' => '',
                 'icon' => $this->defaultIcon($type),
@@ -134,12 +139,14 @@ final class TravelPlanContentFactory
             self::TYPE_BUDGET_NOTE,
             self::TYPE_PERSONAL_NOTE => [
                 'type' => $type,
+                'startOnNewPage' => false,
                 'title' => '',
                 'text' => '',
                 'icon' => $this->defaultIcon($type),
             ],
             self::TYPE_CHECKLIST => [
                 'type' => $type,
+                'startOnNewPage' => false,
                 'title' => '',
                 'text' => '',
             ],
@@ -261,6 +268,7 @@ final class TravelPlanContentFactory
             }
 
             $normalized[] = $this->createBlock(self::TYPE_DESTINATION, [
+                'startOnNewPage' => $this->boolValue($destination, 'startOnNewPage'),
                 'title' => $this->stringValue($destination, 'title'),
                 'country' => $this->stringValue($destination, 'country'),
                 'region' => $this->stringValue($destination, 'region'),
@@ -297,6 +305,7 @@ final class TravelPlanContentFactory
 
             if (self::TYPE_DAY === $type) {
                 $normalized[] = $this->createBlock($type, [
+                    'startOnNewPage' => $this->boolValue($section, 'startOnNewPage'),
                     'dayNumber' => \max(1, (int) ($section['dayNumber'] ?? 1)),
                     'title' => $this->stringValue($section, 'title'),
                     'dateLabel' => $this->stringValue($section, 'dateLabel'),
@@ -310,6 +319,7 @@ final class TravelPlanContentFactory
 
             if (self::TYPE_ROUTE_OVERVIEW === $type) {
                 $normalized[] = $this->createBlock($type, [
+                    'startOnNewPage' => $this->boolValue($section, 'startOnNewPage'),
                     'title' => $this->stringValue($section, 'title'),
                     'text' => $this->stringValue($section, 'text'),
                     'routeStops' => $this->normalizeRouteStops($section['routeStops'] ?? []),
@@ -323,7 +333,9 @@ final class TravelPlanContentFactory
 
             foreach (\array_keys($defaults) as $field) {
                 if ('type' !== $field) {
-                    $values[$field] = $this->stringValue($section, $field);
+                    $values[$field] = 'startOnNewPage' === $field
+                        ? $this->boolValue($section, $field)
+                        : $this->stringValue($section, $field);
                 }
             }
 
@@ -402,9 +414,11 @@ final class TravelPlanContentFactory
 
             foreach (\array_keys($defaults) as $field) {
                 if ('type' !== $field) {
-                    $values[$field] = \in_array($field, ['time', 'startTime', 'endTime'], true)
-                        ? $this->normalizeTimeValue($block[$field] ?? null)
-                        : $this->stringValue($block, $field);
+                    $values[$field] = match (true) {
+                        'startOnNewPage' === $field => $this->boolValue($block, $field),
+                        \in_array($field, ['time', 'startTime', 'endTime'], true) => $this->normalizeTimeValue($block[$field] ?? null),
+                        default => $this->stringValue($block, $field),
+                    };
                 }
             }
 
@@ -430,6 +444,28 @@ final class TravelPlanContentFactory
         $value = $data[$key] ?? '';
 
         return \is_scalar($value) ? (string) $value : '';
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function boolValue(array $data, string $key): bool
+    {
+        $value = $data[$key] ?? false;
+
+        if (\is_bool($value)) {
+            return $value;
+        }
+
+        if (\is_int($value)) {
+            return 1 === $value;
+        }
+
+        if (\is_string($value)) {
+            return \in_array(\strtolower(\trim($value)), ['1', 'true', 'yes', 'on'], true);
+        }
+
+        return false;
     }
 
     private function normalizeTimeValue(mixed $value): string
@@ -526,7 +562,7 @@ final class TravelPlanContentFactory
             return '';
         }
 
-        $days += 1;
+        ++$days;
 
         return \sprintf('%d %s', $days, 1 === $days ? 'dag' : 'dagen');
     }
@@ -554,7 +590,7 @@ final class TravelPlanContentFactory
 
     private function createDate(string $date): \DateTimeImmutable
     {
-        return new \DateTimeImmutable($date.' 00:00:00');
+        return new \DateTimeImmutable($date . ' 00:00:00');
     }
 
     private function defaultIcon(string $type): string

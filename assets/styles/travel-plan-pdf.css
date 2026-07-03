@@ -42,6 +42,11 @@ body {
     line-height: 1.15;
 }
 
+.travel-plan h2,
+.travel-plan h3 {
+    page-break-after: avoid;
+}
+
 .travel-plan p {
     margin: 0 0 3mm;
 }
@@ -172,6 +177,42 @@ body {
     margin: 0.5mm 3mm 2mm 0;
 }
 
+.travel-plan-editor-table {
+    width: 100%;
+    margin: 5mm 0 1mm;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    page-break-inside: auto;
+}
+
+.travel-plan-editor-table th,
+.travel-plan-editor-table td {
+    padding: 4mm 4.5mm;
+    border: 0.2mm solid #ddd5c7;
+    vertical-align: top;
+}
+
+.travel-plan-editor-table th {
+    background-color: #f4efe6;
+    color: #12213d;
+    font-family: "JostRegular", "Jost", sans-serif;
+    font-size: 9.5pt;
+    font-weight: bold;
+    line-height: 1.35;
+}
+
+.travel-plan-editor-table td {
+    background-color: #ffffff;
+}
+
+.travel-plan-editor-table p {
+    margin: 0 0 2.5mm;
+}
+
+.travel-plan-editor-table p:last-child {
+    margin-bottom: 0;
+}
+
 .travel-plan-section--destination {
     padding: 8mm 9mm 7mm;
     border-left: 1.2mm solid #b99550;
@@ -240,7 +281,7 @@ body {
     text-transform: uppercase;
 }
 
-.travel-plan-section--day {
+.travel-plan-page-break-before {
     page-break-before: always;
 }
 
@@ -326,13 +367,96 @@ body {
     padding: 7mm 8mm;
     border-top: 0.6mm solid #b99550;
     border-bottom: 0.2mm solid #ddd5c7;
-    background-color: #fbfaf7;
-    page-break-inside: avoid;
+    background-color: #ffffff;
+    page-break-inside: auto;
 }
 
-.travel-plan-section--checklist {
-    page-break-before: always;
-    page-break-after: always;
+.travel-plan-section-frame {
+    width: 100%;
+    margin-bottom: 13mm;
+    border-collapse: collapse;
+}
+
+.travel-plan-section-frame__cell {
+    padding: 7mm 8mm;
+    border-top: 0.6mm solid #b99550;
+    border-bottom: 0.2mm solid #ddd5c7;
+    background-color: #ffffff;
+    vertical-align: top;
+}
+
+.travel-plan-section-frame h2,
+.travel-plan table.travel-plan-section-frame td.travel-plan-section-frame__cell h2 {
+    margin: 0 0 5mm;
+    padding-bottom: 0;
+    border-bottom: none;
+    line-height: 1.2;
+    text-decoration: none;
+}
+
+.travel-plan-section-frame__title {
+    margin: 0 0 3mm;
+    color: #12213d;
+    font-family: "Cormorant", serif;
+    font-size: 21pt;
+    font-weight: normal;
+    line-height: 1.2;
+}
+
+.travel-plan-section-frame .travel-plan-section__content {
+    padding-top: 3mm;
+}
+
+.travel-plan-section-frame__title-spacer {
+    height: 2.5mm;
+    line-height: 2.5mm;
+    font-size: 1pt;
+}
+
+.travel-plan-paragraph-spacer {
+    height: 2.6mm;
+    line-height: 2.6mm;
+    font-size: 1pt;
+}
+
+.travel-plan-section-frame p,
+.travel-plan-section-frame ul,
+.travel-plan-section-frame ol {
+    margin: 0 0 3mm;
+    line-height: 1.58;
+}
+
+.travel-plan-section-frame p + p {
+    margin-top: 0;
+}
+
+.travel-plan-section-frame .travel-plan-section__content h3 {
+    margin: 6mm 0 2mm;
+    line-height: 1.2;
+}
+
+.travel-plan-section-frame .travel-plan-section__content h3:first-child {
+    margin-top: 0;
+}
+
+.travel-plan-section-frame .travel-plan-section__content p + h3,
+.travel-plan-section-frame .travel-plan-section__content ul + h3,
+.travel-plan-section-frame .travel-plan-section__content ol + h3 {
+    margin-top: 6mm;
+}
+
+.travel-plan-section-frame ul,
+.travel-plan-section-frame ol {
+    padding-left: 5.5mm;
+}
+
+.travel-plan-section-frame li {
+    margin-bottom: 1.5mm;
+}
+
+.travel-plan-section-frame .travel-plan-section__content > *:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
 .travel-plan-section--checklist > h2 {
@@ -414,4 +538,36 @@ body {
     font-size: 7.5pt;
     letter-spacing: 0.3px;
     text-align: center;
+}
+
+.travel-plan-section-frame .travel-plan-section__content h3 {
+    display: block;
+    margin: 0 !important;
+    padding: 6mm 0 2.2mm 0 !important;
+    color: #12213d;
+    font-family: "Cormorant", serif;
+    font-size: 15pt;
+    font-weight: normal;
+    line-height: 1.2 !important;
+}
+
+.travel-plan-section-frame .travel-plan-section__content h3:first-child {
+    padding-top: 1mm !important;
+}
+
+.travel-plan-section-frame .travel-plan-section__content p {
+    display: block;
+    margin: 0 0 4.2mm 0 !important;
+    padding: 0 !important;
+    font-size: 10.5pt;
+    line-height: 1.65 !important;
+}
+
+.travel-plan-section-frame .travel-plan-section__content p + h3 {
+    padding-top: 7mm !important;
+}
+
+.travel-plan-section-frame .travel-plan-section__content strong {
+    font-family: "JostRegular", "Jost", sans-serif;
+    font-weight: bold;
 }

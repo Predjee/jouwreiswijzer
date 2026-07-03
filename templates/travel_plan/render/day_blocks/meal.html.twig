@@ -1,4 +1,8 @@
+{% if accountView %}
 <article class="travel-plan-block travel-plan-block--meal">
+{% else %}
+<div class="travel-plan-block travel-plan-block--meal">
+{% endif %}
     {% if block.timeRangeLabel|default or block.timeLabel|default %}
         <p>{% if block.timeRangeLabel|default %}<strong>{{ block.timeRangeLabel }}</strong>{% endif %}{% if block.timeRangeLabel|default and block.timeLabel|default %} - {% endif %}{{ block.timeLabel|default('') }}</p>
     {% endif %}
@@ -6,4 +10,8 @@
     {% if block.location|default %}<p>{{ block.location }}</p>{% endif %}
     {% if block.text|default %}<p>{{ block.text }}</p>{% endif %}
     {% if block.bookingUrl|default %}<p><a href="{{ block.bookingUrl }}">Bekijk of reserveer</a></p>{% endif %}
+{% if accountView %}
 </article>
+{% else %}
+</div>
+{% endif %}

@@ -1,7 +1,15 @@
+{% if accountView %}
 <article class="travel-plan-block travel-plan-block--free-text">
+{% else %}
+<div class="travel-plan-block travel-plan-block--free-text">
+{% endif %}
     {% if block.timeRangeLabel|default or block.timeLabel|default %}
         <p>{% if block.timeRangeLabel|default %}<strong>{{ block.timeRangeLabel }}</strong>{% endif %}{% if block.timeRangeLabel|default and block.timeLabel|default %} - {% endif %}{{ block.timeLabel|default('') }}</p>
     {% endif %}
     {% if block.title|default %}<h3>{{ block.title }}</h3>{% endif %}
     {% if block.text|default %}<div>{{ block.text|raw }}</div>{% endif %}
+{% if accountView %}
 </article>
+{% else %}
+</div>
+{% endif %}

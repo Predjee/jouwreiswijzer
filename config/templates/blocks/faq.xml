@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<template xmlns="http://schemas.sulu.io/template/template"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/template-1.0.xsd">
+
+    <key>faq</key>
+
+    <meta>
+        <title lang="nl">FAQ</title>
+    </meta>
+
+    <properties>
+
+        <block name="faq" default-type="faq" minOccurs="0">
+            <types>
+                <type name="faq">
+                    <properties>
+                        <property name="title" type="text_line" mandatory="true">
+                            <meta>
+                                <title lang="nl">Vraag</title>
+                            </meta>
+                        </property>
+
+                        <property name="answer" type="text_area" mandatory="true">
+                            <meta>
+                                <title lang="nl">Antwoord</title>
+                            </meta>
+                        </property>
+                    </properties>
+                </type>
+            </types>
+        </block>
+    </properties>
+</template>

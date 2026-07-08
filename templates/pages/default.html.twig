@@ -4,7 +4,7 @@
     {% set blocks = content.blocks|default([]) %}
     {% set first_block = blocks|first|default({}) %}
     {% if first_block.type|default('') != 'hero' %}
-        <h1 class="sr-only">{{ content.title|default('Jouw ReisWijzer') }}</h1>
+        <h1 class="sr-only">{{ content.title|default('JouwReisWijzer') }}</h1>
     {% endif %}
     <div class="page-blocks">
         {% for block in blocks %}

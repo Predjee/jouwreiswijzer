@@ -57,6 +57,7 @@
                         <type ref="cta_banner"/>
                         <type ref="quote_single"/>
                         <type ref="request_form"/>
+                        <type ref="faq"/>
                     </types>
                 </property>
             </properties>

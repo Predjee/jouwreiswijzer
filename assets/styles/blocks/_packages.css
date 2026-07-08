@@ -86,11 +86,11 @@
     width: 100%;
     justify-content: center;
     margin-block-start: auto;
+    cursor: pointer;
 }
 
 button.package-card__button {
     border: 0;
-    cursor: pointer;
 }
 
 @media (min-width: 768px) {

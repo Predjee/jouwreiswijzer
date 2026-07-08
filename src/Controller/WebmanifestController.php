@@ -15,7 +15,7 @@ final class WebmanifestController
     public function __invoke(Packages $assets): JsonResponse
     {
         $response = new JsonResponse([
-            'name' => 'Jouw ReisWijzer',
+            'name' => 'JouwReisWijzer',
             'short_name' => 'ReisWijzer',
             'description' => 'Persoonlijk reisadvies op maat.',
             'id' => '/',

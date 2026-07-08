@@ -1,0 +1,47 @@
+<section class="section block-faq relative overflow-hidden">
+    {% include 'components/_decor.html.twig' with { block: block } %}
+
+    <div class="faq-content relative z-10 flex flex-col gap-10">
+        <header class="faq-header flex flex-col gap-4">
+            {{ include('components/_section_label.html.twig', {
+                label: block.label|default,
+            }) }}
+
+            {{ include('components/_section_title.html.twig', {
+                title: block.title|default,
+            }) }}
+        </header>
+
+        {% if block.faq|default %}
+            <dl class="faq-list">
+                {% for item in block.faq %}
+                    {% if item.type|default('faq') == 'faq' %}
+                        <div class="faq-item" data-controller="faq-item">
+                            <dt>
+                                <button
+                                    type="button"
+                                    class="faq-question"
+                                    data-action="click->faq-item#toggle"
+                                    data-faq-item-target="button"
+                                    aria-expanded="false"
+                                >
+                                    <span class="faq-question-text">
+                                        {{ item.title }}
+                                    </span>
+
+                                    <span class="faq-icon" data-faq-item-target="icon" aria-hidden="true"></span>
+                                </button>
+                            </dt>
+
+                            <dd class="faq-answer hidden" data-faq-item-target="answer">
+                                <div class="type-body faq-answer-inner">
+                                    {{ item.answer|nl2br }}
+                                </div>
+                            </dd>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </dl>
+        {% endif %}
+    </div>
+</section>

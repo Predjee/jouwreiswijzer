@@ -1,0 +1,107 @@
+.faq-content {
+    max-width: 56rem;
+    margin-inline: auto;
+}
+
+.faq-header {
+    max-width: 42rem;
+}
+
+.faq-list {
+    overflow: hidden;
+    border: 1px solid var(--color-gold-10);
+    background: color-mix(in srgb, var(--color-navy-mid) 88%, var(--color-gold) 12%);
+}
+
+.faq-item + .faq-item {
+    border-top: 1px solid var(--color-gold-10);
+}
+
+.faq-question {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 1.25rem;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 180ms ease, color 180ms ease;
+}
+
+.faq-question:hover,
+.faq-question:focus-visible {
+    background: var(--color-gold-08);
+}
+
+.faq-question:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: -2px;
+}
+
+.faq-question-text {
+    font-family: var(--font-display);
+    font-size: var(--text-display-card);
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--color-content-primary);
+    text-wrap: balance;
+}
+
+.faq-icon {
+    position: relative;
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid var(--color-gold-20);
+    border-radius: 999px;
+    color: var(--color-gold);
+    transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
+}
+
+.faq-icon::before,
+.faq-icon::after {
+    position: absolute;
+    width: 0.75rem;
+    height: 1px;
+    background: currentColor;
+    content: '';
+    transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.faq-icon::after {
+    transform: rotate(90deg);
+}
+
+.faq-item.is-open .faq-icon {
+    border-color: var(--color-gold-30);
+    background: var(--color-gold-10);
+    transform: rotate(180deg);
+}
+
+.faq-item.is-open .faq-icon::after {
+    opacity: 0;
+}
+
+.faq-answer {
+    padding-inline: 1.25rem;
+    padding-block-end: 1.35rem;
+}
+
+.faq-answer-inner {
+    max-width: 42rem;
+    padding-inline-start: 0;
+}
+
+@media (min-width: 768px) {
+    .faq-question {
+        padding: 1.5rem 1.75rem;
+    }
+
+    .faq-answer {
+        padding-inline: 1.75rem;
+        padding-block-end: 1.75rem;
+    }
+}

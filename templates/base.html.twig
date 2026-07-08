@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     {% block meta %}
-        {% set seo_title = extension.seo.title|default(content.title|default('Jouw ReisWijzer - Persoonlijk reisadvies op maat'))|replace({
-            'JouwReiswijzer': 'Jouw ReisWijzer',
-            'Jouw Reiswijzer': 'Jouw ReisWijzer',
+        {% set seo_title = extension.seo.title|default(content.title|default('JouwReisWijzer - Persoonlijk reisadvies op maat'))|replace({
+            'JouwReiswijzer': 'JouwReisWijzer',
+            'JouwReiswijzer': 'JouwReisWijzer',
         }) %}
         {% set seo = extension.seo|default([])|merge({ title: seo_title }) %}
         {% set seo_description = extension.seo.description|default('Persoonlijk reisadvies voor een onvergetelijke reis.') %}
@@ -28,8 +28,8 @@
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="{{ seo_title }}">
         <meta name="twitter:description" content="{{ seo_description }}">
-        <meta name="application-name" content="Jouw ReisWijzer">
-        <meta name="apple-mobile-web-app-title" content="Jouw ReisWijzer">
+        <meta name="application-name" content="JouwReisWijzer">
+        <meta name="apple-mobile-web-app-title" content="JouwReisWijzer">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">

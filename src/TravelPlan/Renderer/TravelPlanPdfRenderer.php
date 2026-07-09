@@ -45,12 +45,6 @@ final readonly class TravelPlanPdfRenderer
         'transport' => 'Bekijk vervoer',
     ];
 
-    private const BAR_COLORS = [
-        'auto' => TravelPlanPdfStyle::GOLD,
-        'primary' => TravelPlanPdfStyle::NAVY,
-        'secondary' => TravelPlanPdfStyle::GOLD_LIGHT,
-    ];
-
     /** Sectietypes die (nog) via de gedeelde templates renderen. */
     private const SHARED_TEMPLATE_SECTIONS = [
         'route_overview' => 'travel_plan/render/sections/route_overview.html.twig',
@@ -397,7 +391,10 @@ final readonly class TravelPlanPdfRenderer
      */
     private function barColor(array $section): string
     {
-        return self::BAR_COLORS[$this->colorVariant($section)] ?? TravelPlanPdfStyle::GOLD;
+        $variants = TravelPlanPdfStyle::variants();
+        $palette = $variants[$this->colorVariant($section)] ?? $variants['default'];
+
+        return (string) ($palette['bar'] ?? TravelPlanPdfStyle::GOLD);
     }
 
     /**

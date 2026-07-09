@@ -31,8 +31,69 @@ final class TravelPlanPdfStyle
      */
     public const KEEP_TOGETHER_MAX_CHARS = 3200;
 
+    /** Rustige donkere bodytekst (zachter dan puur navy). */
+    public const TEXT_BODY = '#333f52';
+
+    /** Zone-tint voor de kaartachtergrond binnen groepen: één tint dieper
+     * dan de pagina, zodat de nesting subtiel zichtbaar blijft. */
+    public const ZONE = '#f3eee1';
+
     /**
-     * @return array<string, string>
+     * Complete kleurpaletten per CMS-kleurkeuze ("PDF kleur"). Eén bron:
+     * kies je een variant, dan kleuren achtergrond, randen, accent, titel,
+     * tekst, meta en links consistent mee. `accent` null = geen accentbalk
+     * (de standaard blijft bewust kaal: luxe zit in terughoudendheid).
+     *
+     * @return array<string, array<string, string|null>>
+     */
+    public static function variants(): array
+    {
+        return [
+            'default' => [
+                'background' => self::WHITE,
+                'edge' => '#e6e2d7',
+                'accent' => null,
+                'bar' => self::GOLD,
+                'title' => self::NAVY,
+                'body' => self::TEXT_BODY,
+                'meta' => '#8a6a31',
+                'link' => '#86672f',
+            ],
+            'primary' => [
+                'background' => self::NAVY,
+                'edge' => self::NAVY,
+                'accent' => self::GOLD,
+                'bar' => self::NAVY,
+                'title' => self::WHITE,
+                'body' => self::TEXT_CONTENT_LIGHT,
+                'meta' => self::GOLD_LIGHT,
+                'link' => self::GOLD_LIGHT,
+            ],
+            'secondary' => [
+                'background' => '#fdf9ee',
+                'edge' => '#e8dcb4',
+                'accent' => self::GOLD,
+                'bar' => self::GOLD_LIGHT,
+                'title' => self::NAVY,
+                'body' => self::TEXT_BODY,
+                'meta' => '#8a6a31',
+                'link' => '#86672f',
+            ],
+            'gold' => [
+                'background' => '#faf3dc',
+                'edge' => '#ddc06d',
+                'accent' => self::GOLD,
+                'bar' => self::GOLD,
+                'title' => self::NAVY,
+                'body' => self::TEXT_BODY,
+                'meta' => '#8f6614',
+                'link' => '#8f6614',
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
      */
     public static function tokens(): array
     {
@@ -49,6 +110,9 @@ final class TravelPlanPdfStyle
             'white' => self::WHITE,
             'cardRadius' => self::CARD_RADIUS,
             'sectionRadius' => self::SECTION_RADIUS,
+            'zone' => self::ZONE,
+            'textBody' => self::TEXT_BODY,
+            'variants' => self::variants(),
         ];
     }
 }

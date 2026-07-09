@@ -22,7 +22,7 @@
 {% else %}
 <div class="travel-plan-section travel-plan-section--day{% if group.isPrimary %} travel-plan-section--primary{% elseif group.isSecondary %} travel-plan-section--secondary{% endif %}" style="border-radius: {{ t.sectionRadius }};">
 {{ groupOpen }}
-    <tr><td style="padding: 0; background-color: {{ t.cream }}; vertical-align: top;">
+    <tr><td style="padding: 0; background-color: {{ t.zone }}; vertical-align: top;">
         <div style="margin: 0; padding: 0;">
             {{ _self.headerTable(group, t, false) }}
             {% if group.boundCard %}
@@ -38,13 +38,13 @@
         {% else %}
             {% if not tableOpen %}{{ groupOpen }}{% set tableOpen = true %}{% endif %}
             {% if row.isFirstOfSegment or row.isLastOfSegment %}
-                <tr><td style="padding: 0; background-color: {{ t.cream }}; vertical-align: top;">
+                <tr><td style="padding: 0; background-color: {{ t.zone }}; vertical-align: top;">
                     <div style="margin: 0; padding: 0;">
                         {{ _self.creamWrap(group, t, sideBorders, row.block, '3.5mm 4.5mm ' ~ (row.isLastOfSegment ? '3.5mm' : '0'), row.isLastOfSegment) }}
                     </div>
                 </td></tr>
             {% else %}
-                <tr><td style="padding: 3.5mm 4.5mm 0; background-color: {{ t.cream }}; vertical-align: top; {{ sideBorders }}">
+                <tr><td style="padding: 3.5mm 4.5mm 0; background-color: {{ t.zone }}; vertical-align: top; {{ sideBorders }}">
                     {{ include('travel_plan/pdf/day_block.html.twig', { block: row.block, t: t }) }}
                 </td></tr>
             {% endif %}
@@ -56,12 +56,13 @@
 {% endif %}
 
 {% macro headerTable(group, t, standalone, closed = false) %}
-{% set headerBackground = group.isPrimary ? t.navy : (group.isSecondary ? '#fff7df' : t.white) %}
-{% set headerEdge = group.isPrimary ? t.gold : (group.isSecondary ? t.gold : t.edge) %}
-{% set headerText = group.isPrimary ? '#eef1f6' : '#17233b' %}
-{% set headerTitle = group.isPrimary ? t.white : t.navy %}
-{% set headerMeta = group.isPrimary ? t.goldLight : '#8a6a31' %}
-{% set headerIntro = group.isPrimary ? '#eef1f6' : '#17233b' %}
+{% set variant = group.isPrimary ? 'primary' : (group.isSecondary ? 'secondary' : 'default') %}
+{% set v = t.variants[variant] %}
+{% set headerBackground = v.background %}
+{% set headerText = v.body %}
+{% set headerTitle = v.title %}
+{% set headerMeta = v.meta %}
+{% set headerIntro = v.body %}
     {# Navy op de cellen (niet op de tabel): mPDF houdt celachtergronden
        bij geneste tabellen betrouwbaarder bij de inhoud dan div-achtergronden. #}
 <table style="width: 100%; border-collapse: separate; border-spacing: 0; page-break-inside: avoid;"><tr>
@@ -90,7 +91,7 @@
     {# Gele kaartzone met gouden zijranden; sluit onderaan het segment af
        met een gouden onderrand ("bodem" van de groep). #}
 <table style="width: 100%; border-collapse: separate; border-spacing: 0;{% if closeBottom %} border-radius: 0 0 {{ t.sectionRadius }} {{ t.sectionRadius }};{% endif %}"><tr>
-        <td style="padding: {{ padding }}; vertical-align: top; background-color: {{ t.cream }}; {{ sideBorders }}{% if closeBottom %} border-bottom: 0.2mm solid {{ t.edge }}; border-radius: 0 0 {{ t.sectionRadius }} {{ t.sectionRadius }};{% endif %}">
+        <td style="padding: {{ padding }}; vertical-align: top; background-color: {{ t.zone }}; {{ sideBorders }}{% if closeBottom %} border-bottom: 0.2mm solid {{ t.edge }}; border-radius: 0 0 {{ t.sectionRadius }} {{ t.sectionRadius }};{% endif %}">
             {{ include('travel_plan/pdf/day_block.html.twig', { block: block, t: t }) }}
         </td>
     </tr></table>

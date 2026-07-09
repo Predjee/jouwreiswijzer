@@ -1,0 +1,17 @@
+{% if accountView %}
+<section class="travel-plan-section travel-plan-section--image">
+{% else %}
+<div class="travel-plan-section travel-plan-section--image">
+{% endif %}
+    {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
+    {% if section.imageSrc|default %}
+        <figure class="travel-plan-image-block">
+            <img src="{{ section.imageSrc }}" alt="{{ section.title|default('Reisafbeelding') }}">
+            {% if section.caption|default %}<figcaption>{{ section.caption }}</figcaption>{% endif %}
+        </figure>
+    {% endif %}
+{% if accountView %}
+</section>
+{% else %}
+</div>
+{% endif %}

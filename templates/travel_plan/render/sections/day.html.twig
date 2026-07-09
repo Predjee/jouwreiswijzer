@@ -1,30 +1,47 @@
 {% if accountView %}
 <section class="travel-plan-section travel-plan-section--day">
-    <header>
 {% else %}
 <div class="travel-plan-section travel-plan-section--day">
-    <div>
 {% endif %}
-        <p>Dag {{ section.dayNumber|default(1) }}{% if section.dateLabel|default %} · {{ section.dateLabel }}{% endif %}</p>
-        {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
-        {% if section.intro|default %}<p>{{ section.intro }}</p>{% endif %}
-{% if accountView %}
-    </header>
-{% else %}
-    </div>
-{% endif %}
-    {% for renderedBlock in renderedBlocks %}
-        {{ renderedBlock.html|raw }}
-        {% if accountView and feedbackEnabled|default(false) %}
-            {{ include('account/_travel_plan_feedback_form.html.twig', {
-                travelPlan: travelPlan,
-                blockPath: renderedBlock.blockPath,
-                feedback: renderedBlock.feedback,
-                feedbackLabel: 'Feedback op dit dagonderdeel',
-                feedbackContext: 'block'
-            }) }}
+    {# Inline styling in PDF-modus: mPDF's klasse-cascade is onbetrouwbaar
+       in gesplitste chunks; inline styles winnen altijd. #}
+    <div class="travel-plan-day__header"{% if not accountView %} style="background-color: #12213d; color: #f7f4ee;"{% endif %}>
+        {% set dayMeta = [] %}
+        {% if section.dayNumber|default('') is not empty %}
+            {% set dayMeta = dayMeta|merge(['Dag ' ~ section.dayNumber]) %}
         {% endif %}
-    {% endfor %}
+        {% if section.dateLabel|default('') is not empty %}
+            {% set dayMeta = dayMeta|merge([section.dateLabel]) %}
+        {% endif %}
+                {% if dayMeta is not empty %}
+            <p class="travel-plan-day__meta"{% if not accountView %} style="color: #d4af62;"{% endif %}>{{ dayMeta|join(' · ') }}</p>
+        {% endif %}
+        {% if section.title|default %}<h2{% if not accountView %} style="color: #ffffff;"{% endif %}>{{ section.title }}</h2>{% endif %}
+        {% if section.intro|default %}
+            {% set introHtml = accountView ? section.intro : section.intro|replace({
+                '<p>': '<p style="color: #f7f4ee;">',
+                '<li>': '<li style="color: #f7f4ee;">'
+            }) %}
+            <div class="travel-plan-section__content travel-plan-day__intro"{% if not accountView %} style="color: #f7f4ee;"{% endif %}>{{ introHtml|raw }}</div>
+        {% endif %}
+    </div>
+
+    {% if renderedBlocks is not empty %}
+        <div class="travel-plan-day__blocks">
+            {% for renderedBlock in renderedBlocks %}
+                {{ renderedBlock.html|raw }}
+                {% if accountView and feedbackEnabled|default(false) %}
+                    {{ include('account/_travel_plan_feedback_form.html.twig', {
+                        travelPlan: travelPlan,
+                        blockPath: renderedBlock.blockPath,
+                        feedback: renderedBlock.feedback,
+                        feedbackLabel: 'Feedback op dit dagonderdeel',
+                        feedbackContext: 'block'
+                    }) }}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
 {% if accountView %}
 </section>
 {% else %}

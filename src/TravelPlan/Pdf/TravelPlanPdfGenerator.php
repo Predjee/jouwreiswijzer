@@ -69,6 +69,10 @@ final readonly class TravelPlanPdfGenerator
                 ],
             ]),
             'default_font' => 'jost',
+            // Verbied het verkleinen van tabellen die nét niet in de
+            // resterende paginaruimte passen (mini-tekst in kaarten);
+            // met waarde 1 schuiven ze gewoon door naar de volgende pagina.
+            'shrink_tables_to_fit' => 1,
             'margin_top' => 0,
             'margin_right' => 0,
             'margin_bottom' => 0,
@@ -85,8 +89,42 @@ final readonly class TravelPlanPdfGenerator
         }
 
         $mpdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
-        $mpdf->WriteHTML($this->renderer->render($travelPlan), HTMLParserMode::HTML_BODY);
+
+        // NB: géén extra wrapper-div per chunk toevoegen: een div om elke
+        // chunk laat mPDF na de eerste automatische paginaovergang de
+        // achtergrondkleuren van latere blokken "vergeten" (verbleekte
+        // hero's). Basisstijlen worden daarom via sectieklassen
+        // geselecteerd (.travel-plan-section h2, ...) i.p.v. .travel-plan.
+        foreach ($this->splitHtmlBody($this->renderer->render($travelPlan)) as $htmlChunk) {
+            if ('<!--PDF-CHUNK-->' === $htmlChunk) {
+                continue;
+            }
+
+            $mpdf->WriteHTML($htmlChunk, HTMLParserMode::HTML_BODY);
+        }
 
         return $mpdf->Output('', Destination::STRING_RETURN);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function splitHtmlBody(string $html): array
+    {
+        $parts = \preg_split(
+            '/(<(?:pagebreak|tocpagebreak|tocentry)\b[^>]*\/>|<!--PDF-CHUNK-->)/i',
+            $html,
+            -1,
+            \PREG_SPLIT_DELIM_CAPTURE | \PREG_SPLIT_NO_EMPTY,
+        );
+
+        if (false === $parts) {
+            return [$html];
+        }
+
+        return \array_values(\array_filter(
+            $parts,
+            static fn (string $part): bool => '' !== \trim($part),
+        ));
     }
 }

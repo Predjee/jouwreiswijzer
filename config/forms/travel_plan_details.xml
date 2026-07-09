@@ -112,6 +112,19 @@
                         <title>Pakkettype</title>
                     </meta>
                 </property>
+                <property name="showTableOfContents" type="single_select" colspan="6">
+                    <meta>
+                        <title>Inhoudsopgave</title>
+                    </meta>
+                    <params>
+                        <param name="default_value" value="none"/>
+                        <param name="values" type="collection">
+                            <param name="Geen" value="none"/>
+                            <param name="Een laag" value="one"/>
+                            <param name="Twee lagen" value="two"/>
+                        </param>
+                    </params>
+                </property>
             </properties>
         </section>
 
@@ -223,7 +236,7 @@
                                                                 <title>Locatie</title>
                                                             </meta>
                                                         </property>
-                                                        <property name="text" type="text_area">
+                                                        <property name="text" type="text_editor">
                                                             <meta>
                                                                 <title>Tekst</title>
                                                             </meta>
@@ -290,7 +303,7 @@
                                                 <title>Titel</title>
                                             </meta>
                                         </property>
-                                        <property name="intro" type="text_area">
+                                        <property name="intro" type="text_editor">
                                             <meta>
                                                 <title>Introductie</title>
                                             </meta>
@@ -322,7 +335,7 @@
                                                                 <title>Titel</title>
                                                             </meta>
                                                         </property>
-                                                        <property name="text" type="text_area">
+                                                        <property name="text" type="text_editor">
                                                             <meta>
                                                                 <title>Tekst</title>
                                                             </meta>
@@ -384,7 +397,7 @@
                                                                 <title>Titel</title>
                                                             </meta>
                                                         </property>
-                                                        <property name="text" type="text_area">
+                                                        <property name="text" type="text_editor">
                                                             <meta>
                                                                 <title>Tekst</title>
                                                             </meta>
@@ -446,7 +459,7 @@
                                                                 <title>Titel</title>
                                                             </meta>
                                                         </property>
-                                                        <property name="text" type="text_area">
+                                                        <property name="text" type="text_editor">
                                                             <meta>
                                                                 <title>Tekst</title>
                                                             </meta>
@@ -508,7 +521,7 @@
                                                                 <title>Titel</title>
                                                             </meta>
                                                         </property>
-                                                        <property name="text" type="text_area">
+                                                        <property name="text" type="text_editor">
                                                             <meta>
                                                                 <title>Tekst</title>
                                                             </meta>
@@ -570,7 +583,7 @@
                                                                 <title>Titel</title>
                                                             </meta>
                                                         </property>
-                                                        <property name="text" type="text_area">
+                                                        <property name="text" type="text_editor">
                                                             <meta>
                                                                 <title>Tekst</title>
                                                             </meta>
@@ -627,7 +640,7 @@
                                                                 <title>Titel</title>
                                                             </meta>
                                                         </property>
-                                                        <property name="text" type="text_area">
+                                                        <property name="text" type="text_editor">
                                                             <meta>
                                                                 <title>Tekst</title>
                                                             </meta>
@@ -684,7 +697,7 @@
                                                                 <title>Titel</title>
                                                             </meta>
                                                         </property>
-                                                        <property name="text" type="text_area">
+                                                        <property name="text" type="text_editor">
                                                             <meta>
                                                                 <title>Tekst</title>
                                                             </meta>
@@ -783,7 +796,7 @@
                                                 <title>Titel</title>
                                             </meta>
                                         </property>
-                                        <property name="text" type="text_area">
+                                        <property name="text" type="text_editor">
                                             <meta>
                                                 <title>Checklistregels</title>
                                             </meta>
@@ -812,7 +825,7 @@
                                                 <title>Titel</title>
                                             </meta>
                                         </property>
-                                        <property name="text" type="text_area">
+                                        <property name="text" type="text_editor">
                                             <meta>
                                                 <title>Tekst</title>
                                             </meta>
@@ -849,7 +862,7 @@
                                                 <title>Titel</title>
                                             </meta>
                                         </property>
-                                        <property name="text" type="text_area">
+                                        <property name="text" type="text_editor">
                                             <meta>
                                                 <title>Tekst</title>
                                             </meta>
@@ -913,6 +926,43 @@
                                 </type>
                             </types>
                         </block>
+                    </properties>
+                </type>
+                <type name="image">
+                    <meta>
+                        <title>Afbeelding</title>
+                    </meta>
+                    <properties>
+                        <property name="_feedback"
+                                  visibleCondition="__parent._feedback != null and __parent._feedback != ''"
+                                  type="app_travel_plan_feedback">
+                            <meta>
+                                <title>Klantfeedback</title>
+                            </meta>
+                        </property>
+                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                            <meta>
+                                <title>Nieuwe pagina</title>
+                            </meta>
+                        </property>
+                        <property name="title" type="text_line">
+                            <meta>
+                                <title>Titel</title>
+                            </meta>
+                        </property>
+                        <property name="image" type="single_media_selection">
+                            <meta>
+                                <title>Afbeelding</title>
+                            </meta>
+                            <params>
+                                <param name="types" value="image"/>
+                            </params>
+                        </property>
+                        <property name="caption" type="text_editor">
+                            <meta>
+                                <title>Bijschrift</title>
+                            </meta>
+                        </property>
                     </properties>
                 </type>
             </types>

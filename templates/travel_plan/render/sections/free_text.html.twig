@@ -1,18 +1,20 @@
 {% if accountView %}
-    <section class="travel-plan-section travel-plan-section--free-text">
-        {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
-        {% if section.text|default %}<div class="travel-plan-section__content">{{ section.text|raw }}</div>{% endif %}
-    </section>
+<section class="travel-plan-section travel-plan-section--free-text">
+    {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
+    {% if section.text|default %}<div class="travel-plan-section__content">{{ section.text|raw }}</div>{% endif %}
+</section>
 {% else %}
-    <table class="travel-plan-section travel-plan-section-frame travel-plan-section-frame--free-text">
-        <tr>
-            <td class="travel-plan-section-frame__cell">
+<div class="travel-plan-frame-card">
+<table class="travel-plan-section travel-plan-section-frame travel-plan-section-frame--free-text">
+    <tr>
+        <td class="travel-plan-section-frame__cell">
             {% if section.title|default %}
                 <div class="travel-plan-section-frame__title">{{ section.title }}</div>
                 <div class="travel-plan-section-frame__title-spacer">&nbsp;</div>
             {% endif %}
-                {% if section.text|default %}<div class="travel-plan-section__content">{{ section.text|raw }}</div>{% endif %}
-            </td>
-        </tr>
-    </table>
+            {% if section.text|default %}<div class="travel-plan-section__content">{{ section.text|raw }}</div>{% endif %}
+        </td>
+    </tr>
+</table>
+</div>
 {% endif %}

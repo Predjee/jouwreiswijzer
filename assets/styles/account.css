@@ -708,29 +708,29 @@
 }
 
 .account-travel-plan-content {
-    width: min(100%, 60rem);
+    width: min(100%, 54rem);
     margin-inline: auto;
-    padding: clamp(2rem, 6vw, 5rem);
+    padding: clamp(1.25rem, 4vw, 2.5rem);
     background: #fff;
-    box-shadow: 0 1.5rem 4rem rgb(18 33 61 / 12%);
+    box-shadow: 0 1rem 2.5rem rgb(18 33 61 / 10%);
 }
 
 .account-travel-plan-content .travel-plan {
     color: #17233b;
-    font-size: 1rem;
-    line-height: 1.7;
+    font-size: 0.98rem;
+    line-height: 1.62;
 }
 
 .account-travel-plan-content .travel-plan__header {
-    margin-bottom: clamp(3rem, 7vw, 5rem);
+    margin-bottom: clamp(1.75rem, 5vw, 3rem);
     text-align: center;
 }
 
 .account-travel-plan-content .travel-plan__header h1 {
-    max-width: 16ch;
-    margin: 0.75rem auto 1rem;
-    font-size: clamp(2.75rem, 7vw, 5.25rem);
-    line-height: 0.98;
+    max-width: 22ch;
+    margin: 0.5rem auto 0.85rem;
+    font-size: clamp(2rem, 4.5vw, 3.25rem);
+    line-height: 1.05;
 }
 
 .account-travel-plan-content .travel-plan-cover__eyebrow {
@@ -743,8 +743,8 @@
 
 .account-travel-plan-content .travel-plan__intro {
     max-width: 44rem;
-    margin: 2rem auto;
-    font-size: 1.1rem;
+    margin: 1.25rem auto;
+    font-size: 1rem;
 }
 
 .account-travel-plan-content .travel-plan__profile {
@@ -752,13 +752,327 @@
 }
 
 .account-travel-plan-content .travel-plan-section {
-    margin-bottom: 3.5rem;
+    margin-bottom: 2rem;
 }
 
 .account-travel-plan-content .travel-plan-section--day,
 .account-travel-plan-content .travel-plan-section--checklist {
     page-break-before: auto;
     page-break-after: auto;
+}
+
+.account-travel-plan-content .travel-plan h2 {
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid rgb(185 149 80 / 45%);
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    line-height: 1.12;
+}
+
+.account-travel-plan-content .travel-plan h3 {
+    margin: 0 0 0.3rem;
+    font-size: clamp(1.15rem, 2.3vw, 1.45rem);
+    line-height: 1.18;
+}
+
+.account-travel-plan-content .travel-plan__profile {
+    width: min(100%, 44rem);
+    overflow: hidden;
+    border: 1px solid rgb(185 149 80 / 22%);
+    border-radius: 0.45rem;
+    background: #fbfaf7;
+}
+
+.account-travel-plan-content .travel-plan__profile th,
+.account-travel-plan-content .travel-plan__profile td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid rgb(18 33 61 / 10%);
+}
+
+.account-travel-plan-content .travel-plan-section--destination,
+.account-travel-plan-content .travel-plan-section--practical-info,
+.account-travel-plan-content .travel-plan-section--free-text,
+.account-travel-plan-content .travel-plan-section--budget-note,
+.account-travel-plan-content .travel-plan-section--personal-note {
+    padding: clamp(1rem, 3vw, 1.45rem);
+    border: 1px solid rgb(185 149 80 / 22%);
+    border-left: 0.35rem solid #b99550;
+    border-radius: 0.45rem;
+    background: #fbfaf7;
+}
+
+.account-travel-plan-content .travel-plan-section--day > header {
+    margin-bottom: 1rem;
+    padding: clamp(1rem, 3vw, 1.45rem);
+    border-left: 0.35rem solid #b99550;
+    border-radius: 0.45rem;
+    background: #f4efe6;
+}
+
+.account-travel-plan-content .travel-plan-block,
+.account-travel-plan-content .travel-plan-route li {
+    margin-bottom: 0.8rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid rgb(18 33 61 / 10%);
+    border-left: 0.25rem solid rgb(185 149 80 / 55%);
+    border-radius: 0.4rem;
+    background: #fff;
+}
+
+.account-travel-plan-content .travel-plan-block > p:first-child,
+.account-travel-plan-content .travel-plan-section--day header > p:first-child,
+.account-travel-plan-content .travel-plan-section__location {
+    margin-bottom: 0.55rem;
+    color: #8d6d31;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.account-travel-plan-content .travel-plan-block--tip {
+    border-color: rgb(18 33 61 / 20%);
+    border-left-color: #b99550;
+    background: #12213d;
+    color: #f7f4ee;
+}
+
+.account-travel-plan-content .travel-plan-block--tip h3,
+.account-travel-plan-content .travel-plan-block--tip a {
+    color: #fff;
+}
+
+.account-travel-plan-content .travel-plan-route {
+    display: grid;
+    gap: 0.85rem;
+    margin: 1.1rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.account-travel-plan-content .travel-plan-route li {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 0.85rem;
+    align-items: start;
+}
+
+.account-travel-plan-content .travel-plan-route__icon {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border: 1px solid rgb(185 149 80 / 45%);
+    border-radius: 999px;
+    color: #8d6d31;
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.account-travel-plan-content .travel-plan-route__icon .travel-plan-icon,
+.account-travel-plan-content .travel-plan-route__icon img,
+.account-travel-plan-content .travel-plan-route__icon svg {
+    display: block;
+    float: none;
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+}
+
+.account-travel-plan-content .travel-plan-route__content {
+    min-width: 0;
+}
+
+.account-travel-plan-content .travel-plan-checklist {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.account-travel-plan-content .travel-plan-checklist td {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgb(18 33 61 / 10%);
+}
+
+.account-travel-plan-content .travel-plan-image-block {
+    margin: 0;
+}
+
+.account-travel-plan-content .travel-plan-image-block img {
+    display: block;
+    width: 100%;
+    max-height: 34rem;
+    object-fit: contain;
+    border-radius: 0.45rem;
+}
+
+.account-travel-plan-content .travel-plan-section {
+    position: relative;
+}
+
+.account-travel-plan-content .travel-plan-icon-slot {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border: 1px solid rgb(185 149 80 / 35%);
+    border-radius: 999px;
+    background: #fff;
+    color: #8d6d31;
+}
+
+.account-travel-plan-content .travel-plan-icon-slot .travel-plan-icon,
+.account-travel-plan-content .travel-plan-icon-slot img,
+.account-travel-plan-content .travel-plan-icon-slot svg {
+    display: block;
+    float: none;
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+}
+
+.account-travel-plan-content .travel-plan-section > .travel-plan-icon-slot {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.account-travel-plan-content .travel-plan-section--destination {
+    border: 0;
+    background: #12213d;
+    color: #f7f4ee;
+}
+
+.account-travel-plan-content .travel-plan-section--destination h2 {
+    color: #fff;
+    border-color: rgb(185 149 80 / 55%);
+}
+
+.account-travel-plan-content .travel-plan-section--destination .travel-plan-section__location,
+.account-travel-plan-content .travel-plan-section--destination a {
+    color: #d4af62;
+}
+
+.account-travel-plan-content .travel-plan-section--destination .travel-plan-section__content {
+    color: #eef1f6;
+}
+
+.account-travel-plan-content .travel-plan-section--day {
+    overflow: hidden;
+    border: 1px solid rgb(18 33 61 / 12%);
+    border-radius: 0.45rem;
+    background: #fff;
+}
+
+.account-travel-plan-content .travel-plan-section--day > .travel-plan-icon-slot {
+    top: 1.1rem;
+    right: 1.1rem;
+    border-color: rgb(255 255 255 / 24%);
+    background: rgb(255 255 255 / 10%);
+    color: #d4af62;
+}
+
+.account-travel-plan-content .travel-plan-section--day > .travel-plan-icon-slot svg {
+    color: #d4af62;
+}
+
+.account-travel-plan-content .travel-plan-section--day > .travel-plan-icon-slot svg * {
+    stroke: currentColor;
+}
+
+.account-travel-plan-content .travel-plan-section--day > .travel-plan-day__header {
+    margin: 0;
+    padding: 1.35rem 4.25rem 1.25rem 1.5rem;
+    border: 0;
+    border-radius: 0;
+    background: #12213d;
+    color: #f7f4ee;
+}
+
+.account-travel-plan-content .travel-plan-day__header h2 {
+    margin-bottom: 0.5rem;
+    border: 0;
+    color: #fff;
+}
+
+.account-travel-plan-content .travel-plan-day__meta {
+    margin-bottom: 0.4rem;
+    color: #d4af62;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.account-travel-plan-content .travel-plan-day__intro {
+    max-width: 42rem;
+    color: #e7e0d3;
+}
+
+.account-travel-plan-content .travel-plan-day__blocks {
+    display: grid;
+    gap: 0.85rem;
+    padding: 1rem;
+    background: #f8f5ef;
+}
+
+.account-travel-plan-content .travel-plan-section--day .travel-plan-block {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 0.85rem;
+    align-items: start;
+    margin: 0;
+    padding: 0.95rem;
+    border: 1px solid rgb(18 33 61 / 10%);
+    border-radius: 0.35rem;
+    background: #fff;
+}
+
+.account-travel-plan-content .travel-plan-section--day .travel-plan-block > .travel-plan-icon-slot {
+    grid-column: 1;
+    grid-row: 1;
+    position: static;
+}
+
+.account-travel-plan-content .travel-plan-block__main {
+    grid-column: 2;
+    min-width: 0;
+}
+
+.account-travel-plan-content .travel-plan-block__time,
+.account-travel-plan-content .travel-plan-block__location,
+.account-travel-plan-content .travel-plan-route__location {
+    margin: 0 0 0.35rem;
+    color: #8d6d31;
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.account-travel-plan-content .travel-plan-block__content > *:last-child {
+    margin-bottom: 0;
+}
+
+.account-travel-plan-content .travel-plan-block__action {
+    margin: 0.7rem 0 0;
+}
+
+.account-travel-plan-content .travel-plan-block--tip,
+.account-travel-plan-content .travel-plan-block--note {
+    background: #fbfaf7;
+}
+
+.account-travel-plan-content .travel-plan-section--day .travel-plan-block--tip {
+    border-color: rgb(185 149 80 / 30%);
+    background: #12213d;
+    color: #f7f4ee;
+}
+
+.account-travel-plan-content .travel-plan-section--day .travel-plan-block--tip .travel-plan-icon-slot {
+    border-color: rgb(255 255 255 / 24%);
+    background: rgb(255 255 255 / 10%);
+    color: #d4af62;
 }
 
 .account-feedback-card,

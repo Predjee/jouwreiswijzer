@@ -23,6 +23,7 @@ final class TravelPlanContentFactory
     public const TYPE_MEAL = 'meal';
     public const TYPE_TIP = 'tip';
     public const TYPE_NOTE = 'note';
+    public const TYPE_IMAGE = 'image';
 
     /** @var string[] */
     private const DESTINATION_SECTION_TYPES = [
@@ -69,6 +70,7 @@ final class TravelPlanContentFactory
                 'travelParty' => '',
                 'travelStyle' => '',
                 'packageType' => '',
+                'showTableOfContents' => false,
             ],
             self::TYPE_DESTINATION => [
                 'type' => $type,
@@ -80,6 +82,13 @@ final class TravelPlanContentFactory
                 'text' => '',
                 'icon' => 'map',
                 'sections' => [],
+            ],
+            self::TYPE_IMAGE => [
+                'type' => $type,
+                'startOnNewPage' => false,
+                'title' => '',
+                'image' => null,
+                'caption' => '',
             ],
             self::TYPE_ROUTE_OVERVIEW => [
                 'type' => $type,
@@ -98,7 +107,7 @@ final class TravelPlanContentFactory
             self::TYPE_DAY => [
                 'type' => $type,
                 'startOnNewPage' => false,
-                'dayNumber' => 1,
+                'dayNumber' => '',
                 'title' => '',
                 'dateLabel' => '',
                 'destinationTimezone' => '',
@@ -168,6 +177,7 @@ final class TravelPlanContentFactory
             self::TYPE_TRAVEL_PLAN_INTRO,
             self::TYPE_TRIP_PROFILE,
             self::TYPE_DESTINATION,
+            self::TYPE_IMAGE,
             self::TYPE_ROUTE_OVERVIEW,
             self::TYPE_ROUTE_STOP,
             self::TYPE_DAY,
@@ -204,6 +214,7 @@ final class TravelPlanContentFactory
             'travelParty' => $this->stringValue($tripProfile, 'travelParty'),
             'travelStyle' => $this->stringValue($tripProfile, 'travelStyle'),
             'packageType' => $this->stringValue($tripProfile, 'packageType'),
+            'showTableOfContents' => $this->normalizeDateValue($tripProfile, 'showTableOfContents'),
             'destinations' => $this->normalizeDestinations($content['destinations'] ?? []),
         ];
     }
@@ -240,6 +251,7 @@ final class TravelPlanContentFactory
                 'travelParty' => $this->stringValue($formData, 'travelParty'),
                 'travelStyle' => $this->stringValue($formData, 'travelStyle'),
                 'packageType' => $this->stringValue($formData, 'packageType'),
+                'showTableOfContents' => $this->stringValue($formData, 'showTableOfContents'),
             ]),
             'destinations' => $this->normalizeDestinations($formData['destinations'] ?? []),
         ];
@@ -262,6 +274,17 @@ final class TravelPlanContentFactory
             }
 
             $type = $destination['type'] ?? self::TYPE_DESTINATION;
+
+            if (self::TYPE_IMAGE === $type) {
+                $normalized[] = $this->createBlock(self::TYPE_IMAGE, [
+                    'startOnNewPage' => $this->boolValue($destination, 'startOnNewPage'),
+                    'title' => $this->stringValue($destination, 'title'),
+                    'image' => $this->mediaValue($destination['image'] ?? null),
+                    'caption' => $this->stringValue($destination, 'caption'),
+                ]);
+
+                continue;
+            }
 
             if (self::TYPE_DESTINATION !== $type) {
                 continue;
@@ -306,7 +329,7 @@ final class TravelPlanContentFactory
             if (self::TYPE_DAY === $type) {
                 $normalized[] = $this->createBlock($type, [
                     'startOnNewPage' => $this->boolValue($section, 'startOnNewPage'),
-                    'dayNumber' => \max(1, (int) ($section['dayNumber'] ?? 1)),
+                    'dayNumber' => $this->normalizeOptionalPositiveInt($section['dayNumber'] ?? null),
                     'title' => $this->stringValue($section, 'title'),
                     'dateLabel' => $this->stringValue($section, 'dateLabel'),
                     'destinationTimezone' => $this->stringValue($section, 'destinationTimezone'),
@@ -436,6 +459,19 @@ final class TravelPlanContentFactory
         return $normalized;
     }
 
+    private function mediaValue(mixed $value): mixed
+    {
+        if (\is_array($value)) {
+            return $value;
+        }
+
+        if (\is_scalar($value) && '' !== \trim((string)$value)) {
+            return $value;
+        }
+
+        return null;
+    }
+
     /**
      * @param array<string, mixed> $data
      */
@@ -443,7 +479,7 @@ final class TravelPlanContentFactory
     {
         $value = $data[$key] ?? '';
 
-        return \is_scalar($value) ? (string) $value : '';
+        return \is_scalar($value) ? (string)$value : '';
     }
 
     /**
@@ -468,6 +504,23 @@ final class TravelPlanContentFactory
         return false;
     }
 
+    private function normalizeOptionalPositiveInt(mixed $value): int|string
+    {
+        if (!\is_scalar($value)) {
+            return '';
+        }
+
+        $value = \trim((string)$value);
+
+        if ('' === $value || 1 !== \preg_match('/^\d+$/D', $value)) {
+            return '';
+        }
+
+        $number = (int)$value;
+
+        return $number > 0 ? $number : '';
+    }
+
     private function normalizeTimeValue(mixed $value): string
     {
         if ($value instanceof \DateTimeInterface) {
@@ -478,14 +531,14 @@ final class TravelPlanContentFactory
             return '';
         }
 
-        $value = \trim((string) $value);
+        $value = \trim((string)$value);
 
         if ('' === $value) {
             return '';
         }
 
         if (1 === \preg_match('/^([01]?\d|2[0-3]):([0-5]\d)$/D', $value, $matches)) {
-            return \sprintf('%02d:%s', (int) $matches[1], $matches[2]);
+            return \sprintf('%02d:%s', (int)$matches[1], $matches[2]);
         }
 
         try {
@@ -505,7 +558,7 @@ final class TravelPlanContentFactory
             return '';
         }
 
-        $value = \trim((string) $value);
+        $value = \trim((string)$value);
 
         if ('' === $value) {
             return '';
@@ -585,7 +638,7 @@ final class TravelPlanContentFactory
         ];
         $date = $this->createDate($date);
 
-        return \sprintf('%d %s', (int) $date->format('j'), $months[(int) $date->format('n')]);
+        return \sprintf('%d %s', (int)$date->format('j'), $months[(int)$date->format('n')]);
     }
 
     private function createDate(string $date): \DateTimeImmutable

@@ -1,12 +1,24 @@
 {% if accountView %}
 <section class="travel-plan-section travel-plan-section--destination">
 {% else %}
-<div class="travel-plan-section travel-plan-section--destination">
+{# Inline styles in PDF-modus: mPDF's klasse-cascade is onbetrouwbaar in
+   gesplitste chunks; inline styles winnen altijd. #}
+<div class="travel-plan-section travel-plan-section--destination" style="padding: 6mm 7mm 5mm; background-color: #12213d; border-radius: 2mm; color: #f7f4ee;">
 {% endif %}
-    {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
+        {% if section.title|default %}<h2{% if not accountView %} style="color: #ffffff; padding-bottom: 2mm; border-bottom: 0.25mm solid #b99550;"{% endif %}>{{ section.title }}</h2>{% endif %}
     {% set location = [section.city|default, section.region|default, section.country|default]|filter(value => value)|join(', ') %}
-    {% if location %}<p class="travel-plan-section__location">{{ location }}</p>{% endif %}
-    {% if section.text|default %}<div>{{ section.text|raw }}</div>{% endif %}
+    {% if location %}<p class="travel-plan-section__location"{% if not accountView %} style="color: #d4af62;"{% endif %}>{{ location }}</p>{% endif %}
+    {% if section.text|default %}
+        {% if accountView %}
+            <div class="travel-plan-section__content">{{ section.text|raw }}</div>
+        {% else %}
+            {% set textHtml = section.text|replace({
+                '<p>': '<p style="color: #eef1f6;">',
+                '<li>': '<li style="color: #eef1f6;">'
+            }) %}
+            <div class="travel-plan-section__content" style="color: #eef1f6;">{{ textHtml|raw }}</div>
+        {% endif %}
+    {% endif %}
 {% if accountView %}
 </section>
 {% else %}

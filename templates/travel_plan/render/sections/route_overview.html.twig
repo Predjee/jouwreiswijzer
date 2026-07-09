@@ -4,18 +4,20 @@
 <div class="travel-plan-section travel-plan-section--route">
 {% endif %}
     {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
-    {% if section.text|default %}<div>{{ section.text|raw }}</div>{% endif %}
+    {% if section.text|default %}<div class="travel-plan-section__content">{{ section.text|raw }}</div>{% endif %}
     {% if section.routeStops|default %}
         {% if accountView %}
-            <ol class="travel-plan-route">
+            <ol class="travel-plan-route travel-plan-route--account">
                 {% for stop in section.routeStops %}
                     <li>
-                        {% if stop._iconMarkup|default %}
-                            {{ stop._iconMarkup|raw }}
-                        {% endif %}
-                        {% if stop.title|default %}<h3>{{ stop.title }}</h3>{% endif %}
-                        {% if stop.location|default %}<p>{{ stop.location }}</p>{% endif %}
-                        {% if stop.text|default %}<div>{{ stop.text|raw }}</div>{% endif %}
+                        <span class="travel-plan-route__icon" aria-hidden="true">
+                            {% if stop._iconMarkup|default %}{{ stop._iconMarkup|raw }}{% else %}{{ loop.index }}{% endif %}
+                        </span>
+                        <div class="travel-plan-route__content">
+                            {% if stop.title|default %}<h3>{{ stop.title }}</h3>{% endif %}
+                            {% if stop.location|default %}<p class="travel-plan-route__location">{{ stop.location }}</p>{% endif %}
+                            {% if stop.text|default %}<div class="travel-plan-section__content">{{ stop.text|raw }}</div>{% endif %}
+                        </div>
                     </li>
                 {% endfor %}
             </ol>
@@ -23,11 +25,13 @@
             <table class="travel-plan-route">
                 {% for stop in section.routeStops %}
                     <tr>
-                        <td class="travel-plan-route__marker">{{ loop.index }}</td>
+                        <td class="travel-plan-route__marker">
+                            {% if stop._iconMarkup|default %}{{ stop._iconMarkup|raw }}{% else %}{{ loop.index }}{% endif %}
+                        </td>
                         <td class="travel-plan-route__content">
                             {% if stop.title|default %}<h3>{{ stop.title }}</h3>{% endif %}
                             {% if stop.location|default %}<p class="travel-plan-route__location">{{ stop.location }}</p>{% endif %}
-                            {% if stop.text|default %}<div>{{ stop.text|raw }}</div>{% endif %}
+                            {% if stop.text|default %}<div class="travel-plan-section__content">{{ stop.text|raw }}</div>{% endif %}
                         </td>
                     </tr>
                 {% endfor %}

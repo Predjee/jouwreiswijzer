@@ -1,15 +1,23 @@
 {% if accountView %}
 <aside class="travel-plan-block travel-plan-block--tip">
-{% else %}
-<div class="travel-plan-block travel-plan-block--tip">
-{% endif %}
-    {% if block.timeRangeLabel|default or block.timeLabel|default %}
-        <p>{% if block.timeRangeLabel|default %}<strong>{{ block.timeRangeLabel }}</strong>{% endif %}{% if block.timeRangeLabel|default and block.timeLabel|default %} - {% endif %}{{ block.timeLabel|default('') }}</p>
-    {% endif %}
-    {% if block.title|default %}<h3>{{ block.title }}</h3>{% endif %}
-    {% if block.text|default %}<p>{{ block.text }}</p>{% endif %}
-{% if accountView %}
+    <div class="travel-plan-block__main">
+        <div class="travel-plan-block__header">
+            {% if block.timeRangeLabel|default or block.timeLabel|default %}
+                <p class="travel-plan-block__time">{% if block.timeRangeLabel|default %}<strong>{{ block.timeRangeLabel }}</strong>{% endif %}{% if block.timeRangeLabel|default and block.timeLabel|default %} - {% endif %}{{ block.timeLabel|default('') }}</p>
+            {% endif %}
+            {% if block.title|default %}<h3>{{ block.title }}</h3>{% endif %}
+            {% if block.location|default %}<p class="travel-plan-block__location">{{ block.location }}</p>{% endif %}
+        </div>
+        {% if block.text|default %}<div class="travel-plan-section__content travel-plan-block__content">{{ block.text|raw }}</div>{% endif %}
+    </div>
 </aside>
 {% else %}
+<div class="travel-plan-block travel-plan-block--tip">
+    {% if block.timeRangeLabel|default or block.timeLabel|default %}
+        <p class="travel-plan-block__time">{% if block.timeRangeLabel|default %}<strong>{{ block.timeRangeLabel }}</strong>{% endif %}{% if block.timeRangeLabel|default and block.timeLabel|default %} - {% endif %}{{ block.timeLabel|default('') }}</p>
+    {% endif %}
+    {% if block.title|default %}<h3 style="color: #ffffff;">{{ block.title }}</h3>{% endif %}
+    {% if block.location|default %}<p class="travel-plan-block__location" style="color: #d4af62;">{{ block.location }}</p>{% endif %}
+    {% if block.text|default %}<div class="travel-plan-section__content travel-plan-block__content" style="color: #f7f4ee;">{{ block.text|raw }}</div>{% endif %}
 </div>
 {% endif %}

@@ -601,28 +601,8 @@ final readonly class TravelPlanRenderer
         // Zijranden op de cellen (geen tabelrand): de afgeronde boven- en
         // onderkant komen van cap-afbeeldingen die er naadloos op aansluiten.
         $sideBorders = 'border-left: 0.2mm solid #e3ddcd; border-right: 0.2mm solid #e3ddcd;';
-        $groupOpen = '<table class="travel-plan-day-group" style="width: 100%; background-color: #f8f5ef; page-break-inside: auto;">';
+        $groupOpen = '<table class="travel-plan-day-group" style="width: 100%; border-collapse: collapse; page-break-inside: auto;">';
         $creamCell = '<tr><td style="padding: 3mm 4mm 0; background-color: #f8f5ef; vertical-align: top; ' . $sideBorders . '">';
-        $cap = function (string $position, string $fill): string {
-            $dataUri = $this->iconResolver->getPdfGroupCapDataUri($position, $fill);
-
-            if ('' === $dataUri) {
-                return '';
-            }
-
-            return '<div style="line-height: 0; font-size: 0; margin: 0; padding: 0;">'
-                . '<img src="' . $dataUri . '" style="display: block; width: 100%; height: 2.5mm; margin: 0;" alt="">'
-                . '</div>';
-        };
-        $capTopNavy = $cap('top', '#12213d');
-        $capTopCream = $cap('top', '#f8f5ef');
-        $capBottom = $cap('bottom', '#f8f5ef');
-        // Afsluiting: cream spacer-rij + witte rij met de onder-cap erin
-        // (in een rij, zodat de cap nooit los achterblijft).
-        $closingRows = '<tr><td style="padding: 3mm 0 0; background-color: #f8f5ef; ' . $sideBorders . '"></td></tr>'
-            . '<tr><td style="padding: 0; background-color: #ffffff;">' . $capBottom . '</td></tr>';
-        $reopenRow = '<tr><td style="padding: 0; background-color: #ffffff;">' . $capTopCream . '</td></tr>';
-
         // Header (navy) als geneste tabel in de eerste groepsrij.
         $meta = \array_filter([
             '' !== \trim((string) ($section['dayNumber'] ?? '')) ? 'Dag ' . $section['dayNumber'] : null,
@@ -659,7 +639,7 @@ final readonly class TravelPlanRenderer
                 'class="travel-plan-icon" style="float: none; display: block; width: 7.5mm; height: 7.5mm; margin: 0;"',
                 $icon,
             );
-            $iconCell = '<td style="width: 15mm; padding: 5mm 6mm 0 0; vertical-align: top;">' . $icon . '</td>';
+            $iconCell = '<td style="width: 15mm; padding: 5mm 6mm 0 0; vertical-align: top; background-color: #12213d;">' . $icon . '</td>';
         }
 
         $blocks = \array_values($renderedBlocks);
@@ -669,78 +649,125 @@ final readonly class TravelPlanRenderer
         // zijn achtergrond mét ronding betrouwbaar (destination-patroon).
         if ([] === $blocks) {
             return '<div class="travel-plan-section travel-plan-section--day" style="background-color: #12213d; border-radius: 2mm; padding: 0; color: #f7f4ee;">'
-                . '<table style="width: 100%; page-break-inside: avoid;"><tr>'
+                . '<table style="width: 100%; border-collapse: collapse; page-break-inside: avoid;"><tr>'
                 . '<td style="padding: 5mm 2.5mm 4.5mm 6mm; vertical-align: top; color: #f7f4ee;">' . $headerInner . '</td>'
                 . $iconCell
                 . '</tr></table>'
                 . '</div>';
         }
 
-        $header = '<table style="width: 100%; background-color: #12213d; page-break-inside: avoid;"><tr>'
-            . '<td style="padding: 5mm 2.5mm 4.5mm 6mm; vertical-align: top; color: #f7f4ee;">' . $headerInner . '</td>'
+        // Navy op de cellen (niet op de tabel): de cap-hoeken zijn
+        // transparant en tonen zo het wit van de rij eronder.
+        $header = '<table style="width: 100%; border-collapse: collapse; page-break-inside: avoid;">'
+            . '<tr>'
+            . '<td style="padding: 5mm 2.5mm 4.5mm 6mm; vertical-align: top; color: #f7f4ee; background-color: #12213d;">' . $headerInner . '</td>'
             . $iconCell
             . '</tr></table>';
 
-        $index = 0;
-        // Witte cel: de transparante hoeken van de cap-afbeelding tonen zo
-        // paginawit (echte ronding). De cap zit ÍN de rij zodat hij met de
-        // header meeverhuist bij een paginaovergang (geen losse slivers).
-        $firstCell = '<tr><td style="padding: 0; background-color: #ffffff; vertical-align: top;">'
-            . $capTopNavy
-            . $header;
+        // Verdeel de kaarten in groepssegmenten en losstaande blokken (een
+        // kaart met "toon op nieuwe pagina" of langer dan een pagina staat
+        // los tussen de segmenten).
+        $items = [];
 
-        // Bind de eerste (korte, niet-brekende) kaart aan de header.
-        if (
-            isset($blocks[0]['html'])
-            && !\str_contains($blocks[0]['html'], 'travel-plan-page-break-before')
-            && !\str_contains($blocks[0]['html'], 'travel-plan-block__main--flow')
-        ) {
-            $firstCell .= '<table style="width: 100%; background-color: #f8f5ef;"><tr>'
-                . '<td style="padding: 3mm 4mm 0; vertical-align: top; ' . $sideBorders . '">'
-                . $blocks[0]['html']
-                . '</td></tr></table>';
-            $index = 1;
-        }
-
-        $html = '<div class="travel-plan-section travel-plan-section--day">'
-            . $groupOpen
-            . $firstCell
-            . '</td></tr>';
-        $groupIsOpen = true;
-
-        for ($count = \count($blocks); $index < $count; ++$index) {
-            $blockHtml = $blocks[$index]['html'] ?? '';
+        foreach ($blocks as $block) {
+            $blockHtml = $block['html'] ?? '';
 
             if ('' === $blockHtml) {
                 continue;
             }
 
-            $needsStandalone = \str_contains($blockHtml, 'travel-plan-page-break-before')
-                || \str_contains($blockHtml, 'travel-plan-block__main--flow');
+            $items[] = [
+                'solo' => \str_contains($blockHtml, 'travel-plan-page-break-before')
+                    || \str_contains($blockHtml, 'travel-plan-block__main--flow'),
+                'html' => $blockHtml,
+            ];
+        }
 
-            if ($needsStandalone) {
-                // Groep sluiten; het blok komt er los tussen (kan dan wél
-                // over pagina's splitsen of op een nieuwe pagina beginnen).
-                if ($groupIsOpen) {
-                    $html .= $closingRows . '</table>';
-                    $groupIsOpen = false;
-                }
+        // Witte cellen: de transparante hoeken van de cap-afbeeldingen tonen
+        // paginawit (echte ronding). Caps zitten ÍN de eerste/laatste rij van
+        // elk segment, zodat ze met de content meeverhuizen en nooit als
+        // losse ronding op een volgende pagina achterblijven.
+        // Geen zijranden op de buitenste rij-td: zo loopt de navy header van
+        // buitenrand tot buitenrand. De gouden zijranden (en optioneel de
+        // onderafsluiting na het laatste blok) zitten op de creamWrap-cel.
+        $whiteCell = '<tr><td style="padding: 0; background-color: #f8f5ef; vertical-align: top;">';
+        $creamWrap = static fn (string $inner, string $padding, bool $closeBottom = false): string => '<table style="width: 100%; border-collapse: collapse;"><tr>'
+            . '<td style="padding: ' . $padding . '; vertical-align: top; background-color: #f8f5ef; ' . $sideBorders . ($closeBottom ? ' border-bottom: 0.2mm solid #e3ddcd;' : '') . '">'
+            . $inner
+            . '</td></tr></table>';
 
-                $html .= $blockHtml;
+        // Rij 1: navy top-cap + header, met de eerste (korte) kaart eraan
+        // gebonden zodat de header nooit los onderaan een pagina staat.
+        $boundCard = null;
+
+        if (isset($items[0]) && !$items[0]['solo']) {
+            $boundCard = $items[0]['html'];
+            \array_shift($items);
+        }
+
+        $firstSegmentContinues = isset($items[0]) && !$items[0]['solo'];
+        // Celinhoud in één neutrale div: mPDF berekent "100%" voor een
+        // afbeelding (cap) en een tabel (header) anders wanneer ze los in
+        // een cel staan; binnen dezelfde div krijgen ze dezelfde breedte.
+        $rowInner = $header;
+
+        if (null !== $boundCard) {
+            $rowInner .= $creamWrap($boundCard, $firstSegmentContinues ? '3mm 4mm 0' : '3mm 4mm 3mm', !$firstSegmentContinues);
+        }
+
+        // NB: de groep is bewust hoekloos (navy header + gele container):
+        // dit is in mPDF de enige artefactvrije vorm — cap-strips en
+        // border-radius op tabellen renderen niet betrouwbaar. Ronding zit
+        // in de kaarten, hero's, frames en badges (div-radius/PNG: bewezen).
+        $html = '<div class="travel-plan-section travel-plan-section--day">'
+            . $groupOpen
+            . $whiteCell . '<div style="margin: 0; padding: 0;">' . $rowInner . '</div>'
+            . '</td></tr>';
+        $tableOpen = true;
+
+        if (!$firstSegmentContinues) {
+            $html .= '</table>';
+            $tableOpen = false;
+        }
+
+        $count = \count($items);
+
+        for ($i = 0; $i < $count; ++$i) {
+            $item = $items[$i];
+
+            if ($item['solo']) {
+                // Losstaand blok tussen de segmenten (mag splitsen of op een
+                // nieuwe pagina beginnen).
+                $html .= $item['html'];
 
                 continue;
             }
 
-            if (!$groupIsOpen) {
-                $html .= $groupOpen . $reopenRow;
-                $groupIsOpen = true;
+            $isFirstOfSegment = !$tableOpen;
+            $isLastOfSegment = !isset($items[$i + 1]) || $items[$i + 1]['solo'];
+
+            if ($isFirstOfSegment) {
+                $html .= $groupOpen;
+                $tableOpen = true;
             }
 
-            $html .= $creamCell . $blockHtml . '</td></tr>';
+            if ($isFirstOfSegment || $isLastOfSegment) {
+                $html .= $whiteCell
+                    . '<div style="margin: 0; padding: 0;">'
+                    . $creamWrap($item['html'], '3mm 4mm ' . ($isLastOfSegment ? '3mm' : '0'), $isLastOfSegment)
+                    . '</div></td></tr>';
+            } else {
+                $html .= $creamCell . $item['html'] . '</td></tr>';
+            }
+
+            if ($isLastOfSegment) {
+                $html .= '</table>';
+                $tableOpen = false;
+            }
         }
 
-        if ($groupIsOpen) {
-            $html .= $closingRows . '</table>';
+        if ($tableOpen) {
+            $html .= '</table>';
         }
 
         return $html . '</div>';
@@ -937,6 +964,7 @@ final readonly class TravelPlanRenderer
         // keep-together-tabel: mPDF kan een tabelrij nooit splitsen en gooit
         // dan een exception. Die blokken behouden de oude div-opbouw.
         if (\mb_strlen(\strip_tags($body)) > 3200) {
+            $openingTag = \str_replace('class="', 'class="travel-plan-block--flow ', $openingTag);
             $main = '' !== $header
                 ? '<div class="travel-plan-block__main travel-plan-block__main--flow"><div class="travel-plan-block__header">' . $iconMarkup . $header . '</div>' . $content . '</div>'
                 : '<div class="travel-plan-block__main travel-plan-block__main--flow"><div class="travel-plan-block__header">' . $iconMarkup . '</div>' . $content . '</div>';
@@ -953,16 +981,23 @@ final readonly class TravelPlanRenderer
         // kwt-buffer-bug, en een splitsende bg-div laat mPDF daarna alle
         // achtergronden "vergeten"). Icoon in eigen kolom: floats werken
         // niet in tabelcellen.
-        // Achtergrond inline op de tabel: mPDF schildert div-achtergronden
-        // onbetrouwbaar (wash-bug), tabelachtergronden altijd.
-        $background = \str_contains($openingTag, 'travel-plan-block--tip')
-            ? '#12213d'
-            : '#ffffff';
-
+        // Kaartstijl volledig inline op de div: ronde rand (border-radius
+        // werkt op divs) en een fractie padding zodat de vierkante
+        // tabelvulling BINNEN de curve blijft (geen rechthoek-overshoot).
+        // Hoek-PNG-strips zijn bewust verwijderd: mPDF rendert geneste
+        // strip-tabellen nooit op volledige breedte ("pukkeltjes").
+        $isTip = \str_contains($openingTag, 'travel-plan-block--tip');
+        $background = $isTip ? '#12213d' : '#ffffff';
+        $edge = $isTip ? '#12213d' : '#e1e4ea';
+        // Rand op de layout-tabel (divranden in tabelcellen rendert mPDF
+        // niet). Tabellen kunnen geen border-radius hebben; de kaartronding
+        // is daarmee binnen mPDF niet haalbaar — de account-radius (0.35rem)
+        // is dermate subtiel dat strak-recht het dichtstbijzijnde stabiele
+        // equivalent is.
         return $openingTag
-            . '<table class="travel-plan-block__layout" style="background-color: ' . $background . ';"><tr>'
-            . '<td class="travel-plan-block__icon-cell" style="width: 13mm; padding: 4.5mm 2.5mm 4.2mm 5mm; vertical-align: top;">' . $iconMarkup . '</td>'
-            . '<td class="travel-plan-block__body-cell" style="padding: 4.5mm 5mm 4.2mm 0; vertical-align: top;">' . $main . '</td>'
+            . '<table class="travel-plan-block__layout" style="background-color: ' . $background . '; border: 0.25mm solid ' . $edge . ';"><tr>'
+            . '<td class="travel-plan-block__icon-cell" style="width: 13mm; padding: 3.6mm 2.5mm 3.4mm 5mm; vertical-align: top;">' . $iconMarkup . '</td>'
+            . '<td class="travel-plan-block__body-cell" style="padding: 3.6mm 5mm 3.4mm 0; vertical-align: top;">' . $main . '</td>'
             . '</tr></table>'
             . $closingTag;
     }

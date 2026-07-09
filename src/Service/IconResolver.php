@@ -127,7 +127,52 @@ final readonly class IconResolver
      * rendert wél overal betrouwbaar. De cap sluit naadloos aan op de
      * groepstabel eronder/erboven (zelfde vulkleur, zijranden in de arc).
      */
-    public function getPdfGroupCapDataUri(string $position, string $fillHex, string $borderHex = '#e3ddcd'): string
+    /**
+     * Als bestand in de cache (voor background-image: een data-URI kan niet
+     * in een inline style — de puntkomma in "image/png;base64" beëindigt de
+     * CSS-declaratie). Retourneert het absolute pad, of '' bij falen.
+     */
+    public function getPdfGroupCapFile(string $position, string $fillHex, string $borderHex = '#e3ddcd', int $width = 2640): string
+    {
+        /** @var array<string, string> $fileCache */
+        static $fileCache = [];
+        $key = $position.'|'.$fillHex.'|'.$borderHex.'|'.$width;
+
+        if (isset($fileCache[$key])) {
+            return $fileCache[$key];
+        }
+
+        $dataUri = $this->getPdfGroupCapDataUri($position, $fillHex, $borderHex, $width);
+
+        if ('' === $dataUri) {
+            return $fileCache[$key] = '';
+        }
+
+        $dir = $this->projectDir.'/var/cache/pdf_caps';
+
+        if (!\is_dir($dir) && !@\mkdir($dir, 0775, true) && !\is_dir($dir)) {
+            return $fileCache[$key] = '';
+        }
+
+        $path = $dir.'/cap-'.\md5($key).'.png';
+
+        if (!\is_file($path)) {
+            $png = \base64_decode(\substr($dataUri, \strlen('data:image/png;base64,')), true);
+
+            if (false === $png || false === @\file_put_contents($path, $png)) {
+                return $fileCache[$key] = '';
+            }
+        }
+
+        return $fileCache[$key] = $path;
+    }
+
+    /**
+     * Klein hoekje (kwartcirkel met rand) als PNG-bestand, voor afgeronde
+     * hoeken op tabellen: vaste kleine maat, dus geen schaalafwijkingen.
+     * $corner: tl, tr, bl of br.
+     */
+    public function getPdfCornerFile(string $corner, string $fillHex, string $borderHex): string
     {
         if (!\function_exists('imagecreatetruecolor')) {
             return '';
@@ -135,13 +180,77 @@ final readonly class IconResolver
 
         /** @var array<string, string> $cache */
         static $cache = [];
-        $key = $position.'|'.$fillHex.'|'.$borderHex;
+        $key = $corner.'|'.$fillHex.'|'.$borderHex;
 
         if (isset($cache[$key])) {
             return $cache[$key];
         }
 
-        $width = 1600;
+        $size = 80;
+        $borderWidth = 6;
+        $img = \imagecreatetruecolor($size, $size);
+        \imagealphablending($img, false);
+        \imagesavealpha($img, true);
+        $transparent = \imagecolorallocatealpha($img, 0, 0, 0, 127);
+        \imagefill($img, 0, 0, $transparent);
+        \imagealphablending($img, true);
+
+        $rgb = static function (string $hex): array {
+            $parsed = \sscanf($hex, '#%02x%02x%02x');
+
+            return \is_array($parsed) ? $parsed : [0, 0, 0];
+        };
+        [$r, $g, $b] = $rgb($borderHex);
+        $border = \imagecolorallocate($img, (int) $r, (int) $g, (int) $b);
+        [$r, $g, $b] = $rgb($fillHex);
+        $fill = \imagecolorallocate($img, (int) $r, (int) $g, (int) $b);
+
+        // Kwartcirkel linksboven: middelpunt rechtsonder in het canvas.
+        \imagefilledellipse($img, $size, $size, 2 * $size, 2 * $size, $border);
+        \imagefilledellipse($img, $size, $size, 2 * ($size - $borderWidth), 2 * ($size - $borderWidth), $fill);
+
+        if ('tr' === $corner || 'br' === $corner) {
+            \imageflip($img, \IMG_FLIP_HORIZONTAL);
+        }
+
+        if ('bl' === $corner || 'br' === $corner) {
+            \imageflip($img, \IMG_FLIP_VERTICAL);
+        }
+
+        \ob_start();
+        \imagepng($img);
+        $png = (string) \ob_get_clean();
+        \imagedestroy($img);
+
+        $dir = $this->projectDir.'/var/cache/pdf_caps';
+
+        if ('' === $png || (!\is_dir($dir) && !@\mkdir($dir, 0775, true) && !\is_dir($dir))) {
+            return $cache[$key] = '';
+        }
+
+        $path = $dir.'/corner-'.\md5($key).'.png';
+
+        if (!\is_file($path) && false === @\file_put_contents($path, $png)) {
+            return $cache[$key] = '';
+        }
+
+        return $cache[$key] = $path;
+    }
+
+    public function getPdfGroupCapDataUri(string $position, string $fillHex, string $borderHex = '#e3ddcd', int $width = 2640): string
+    {
+        if (!\function_exists('imagecreatetruecolor')) {
+            return '';
+        }
+
+        /** @var array<string, string> $cache */
+        static $cache = [];
+        $key = $position.'|'.$fillHex.'|'.$borderHex.'|'.$width;
+
+        if (isset($cache[$key])) {
+            return $cache[$key];
+        }
+
         $height = 40;
         $radius = 40;
         $borderWidth = 3;

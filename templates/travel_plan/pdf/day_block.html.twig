@@ -7,9 +7,11 @@
    elementen. Kleuren komen uit de tokens (t). #}
 {% set background = block.isTip ? t.navy : t.white %}
 {% set edge = block.isTip ? t.navy : t.edgeCard %}
+{% set cardStyle = 'background-color: ' ~ background ~ '; border: 0.25mm solid ' ~ edge ~ '; border-radius: ' ~ t.cardRadius ~ '; overflow: hidden;' %}
+{% set flowStyle = 'background-color: ' ~ background ~ '; border-left: 0.25mm solid ' ~ edge ~ '; border-right: 0.25mm solid ' ~ edge ~ '; border-top: 0.25mm solid ' ~ edge ~ '; border-bottom: 0; border-radius: ' ~ t.cardRadius ~ ' ' ~ t.cardRadius ~ ' 0 0; overflow: visible;' %}
 {% if block.flow %}
-<div class="travel-plan-block travel-plan-block--flow travel-plan-block--{{ block.type }}{% if block.startOnNewPage %} travel-plan-page-break-before{% endif %}">
-    <div class="travel-plan-block__main travel-plan-block__main--flow">
+<div class="travel-plan-block travel-plan-block--flow travel-plan-block--{{ block.type }}{% if block.startOnNewPage %} travel-plan-page-break-before{% endif %}" style="{{ flowStyle }}">
+    <div class="travel-plan-block__main travel-plan-block__main--flow" style="border-radius: {{ t.cardRadius }} {{ t.cardRadius }} 0 0;">
         <div class="travel-plan-block__header">
             {% if block.iconSrc %}<img class="travel-plan-icon" src="{{ block.iconSrc }}" alt="">{% endif %}
             {{ _self.header(block, t) }}
@@ -18,13 +20,13 @@
     </div>
 </div>
 {% else %}
-<div class="travel-plan-block travel-plan-block--{{ block.type }}">
-    <table class="travel-plan-block__layout" style="background-color: {{ background }}; border: 0.25mm solid {{ edge }};"><tr>
-        <td class="travel-plan-block__icon-cell" style="width: 13mm; padding: 3.6mm 2.5mm 3.4mm 5mm; vertical-align: top;">
+<div class="travel-plan-block travel-plan-block--{{ block.type }}{% if block.startOnNewPage %} travel-plan-page-break-before{% endif %}" style="{{ cardStyle }}">
+    <table class="travel-plan-block__layout" style="background-color: {{ background }}; border: 0; border-radius: {{ t.cardRadius }}; border-collapse: separate; border-spacing: 0;"><tr>
+        <td class="travel-plan-block__icon-cell" style="width: 13mm; padding: 3.6mm 2.5mm 3.4mm 5mm; vertical-align: top; border-radius: {{ t.cardRadius }} 0 0 {{ t.cardRadius }};">
             {%- if block.iconSrc %}<img class="travel-plan-icon" src="{{ block.iconSrc }}" style="float: none; display: block; width: 7mm; height: 7mm; margin: 0;" alt="">{% endif -%}
         </td>
-        <td class="travel-plan-block__body-cell" style="padding: 3.6mm 5mm 3.4mm 0; vertical-align: top;">
-            <div class="travel-plan-block__main">
+        <td class="travel-plan-block__body-cell" style="padding: 3.6mm 5mm 3.4mm 0; vertical-align: top; border-radius: 0 {{ t.cardRadius }} {{ t.cardRadius }} 0;">
+            <div class="travel-plan-block__main" style="border-radius: {{ t.cardRadius }};">
                 <div class="travel-plan-block__header">{{ _self.header(block, t) }}</div>
                 {{ _self.content(block, t) }}
             </div>

@@ -22,6 +22,8 @@ final class TravelPlanPdfStyle
     public const TEXT_SOFT = '#e7e0d3';
     public const TEXT_CONTENT_LIGHT = '#eef1f6';
     public const WHITE = '#ffffff';
+    public const CARD_RADIUS = '1.8mm';
+    public const SECTION_RADIUS = '2mm';
 
     /**
      * mPDF kan een tabelrij niet splitsen. Blokken boven deze grens mogen
@@ -45,6 +47,8 @@ final class TravelPlanPdfStyle
             'textSoft' => self::TEXT_SOFT,
             'textContentLight' => self::TEXT_CONTENT_LIGHT,
             'white' => self::WHITE,
+            'cardRadius' => self::CARD_RADIUS,
+            'sectionRadius' => self::SECTION_RADIUS,
         ];
     }
 }

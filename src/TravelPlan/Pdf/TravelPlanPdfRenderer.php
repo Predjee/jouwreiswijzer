@@ -224,11 +224,10 @@ final readonly class TravelPlanPdfRenderer
                 $this->iconOrDefault($block['icon'] ?? null, $this->defaultDayBlockIcon($type)),
             );
             $block['startOnNewPage'] = $this->contentHelper->isTruthy($block['startOnNewPage'] ?? false);
-            $block['flow'] = $block['startOnNewPage']
-                || \mb_strlen(\strip_tags($block['textHtml'])) > TravelPlanPdfStyle::KEEP_TOGETHER_MAX_CHARS;
+            $block['flow'] = \mb_strlen(\strip_tags($block['textHtml'])) > TravelPlanPdfStyle::KEEP_TOGETHER_MAX_CHARS;
 
             $prepared[] = [
-                'solo' => $block['flow'],
+                'solo' => $block['flow'] || $block['startOnNewPage'],
                 'block' => $block,
             ];
         }

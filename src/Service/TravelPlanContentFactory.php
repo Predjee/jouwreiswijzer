@@ -214,7 +214,7 @@ final class TravelPlanContentFactory
             'travelParty' => $this->stringValue($tripProfile, 'travelParty'),
             'travelStyle' => $this->stringValue($tripProfile, 'travelStyle'),
             'packageType' => $this->stringValue($tripProfile, 'packageType'),
-            'showTableOfContents' => $this->normalizeDateValue($tripProfile, 'showTableOfContents'),
+            'showTableOfContents' => $this->tableOfContentsValue($tripProfile['showTableOfContents'] ?? null),
             'destinations' => $this->normalizeDestinations($content['destinations'] ?? []),
         ];
     }
@@ -251,7 +251,7 @@ final class TravelPlanContentFactory
                 'travelParty' => $this->stringValue($formData, 'travelParty'),
                 'travelStyle' => $this->stringValue($formData, 'travelStyle'),
                 'packageType' => $this->stringValue($formData, 'packageType'),
-                'showTableOfContents' => $this->stringValue($formData, 'showTableOfContents'),
+                'showTableOfContents' => $this->tableOfContentsValue($formData['showTableOfContents'] ?? null),
             ]),
             'destinations' => $this->normalizeDestinations($formData['destinations'] ?? []),
         ];
@@ -480,6 +480,20 @@ final class TravelPlanContentFactory
         $value = $data[$key] ?? '';
 
         return \is_scalar($value) ? (string)$value : '';
+    }
+
+    private function tableOfContentsValue(mixed $value): string
+    {
+        if (!\is_scalar($value)) {
+            return 'none';
+        }
+
+        return match (\trim((string)$value)) {
+            'one', 'Een laag' => 'one',
+            'two', 'Twee lagen' => 'two',
+            'none', '', 'Geen' => 'none',
+            default => 'none',
+        };
     }
 
     /**

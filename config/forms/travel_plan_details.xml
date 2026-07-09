@@ -119,9 +119,21 @@
                     <params>
                         <param name="default_value" value="none"/>
                         <param name="values" type="collection">
-                            <param name="Geen" value="none"/>
-                            <param name="Een laag" value="one"/>
-                            <param name="Twee lagen" value="two"/>
+                            <param name="none">
+                                <meta>
+                                    <title>Geen</title>
+                                </meta>
+                            </param>
+                            <param name="one">
+                                <meta>
+                                    <title>Een laag</title>
+                                </meta>
+                            </param>
+                            <param name="two">
+                                <meta>
+                                    <title>Twee lagen</title>
+                                </meta>
+                            </param>
                         </param>
                     </params>
                 </property>

@@ -1,0 +1,83 @@
+{# Dag-sectie als aaneengesloten groep: één tabel met de navy header in de
+   eerste rij (gebonden aan de eerste kaart zodat de header nooit los
+   onderaan een pagina staat), daarna per kaart een rij op de gele
+   groepsachtergrond. Tabellen zijn mPDF's enige betrouwbare pad: ze
+   pagineren tussen rijen, schilderen achtergronden ook op vervolgpagina's
+   en laten geen lege hulzen achter. Solo-items (lang of "toon op nieuwe
+   pagina") staan los tussen de segmenten.
+   group = { meta, title, introHtml, iconSrc, headerOnly, boundCard,
+             boundCloses, rows: [{solo, block, isFirstOfSegment,
+             isLastOfSegment}] } #}
+{% set sideBorders = 'border-left: 0.2mm solid ' ~ t.edge ~ '; border-right: 0.2mm solid ' ~ t.edge ~ ';' %}
+{% set groupOpen -%}
+    <table class="travel-plan-day-group" style="width: 100%; border-collapse: collapse; page-break-inside: auto;">
+{%- endset %}
+
+{% if group.headerOnly %}
+{# Geen vervolg: los, afgerond navy blok (top-level div schildert zijn
+   achtergrond mét border-radius betrouwbaar — het destination-patroon). #}
+<div class="travel-plan-section travel-plan-section--day" style="padding: 0; color: {{ t.textLight }};">
+    {{ _self.headerTable(group, t, false) }}
+</div>
+{% else %}
+<div class="travel-plan-section travel-plan-section--day">
+{{ groupOpen }}
+    <tr><td style="padding: 0; background-color: {{ t.cream }}; vertical-align: top;">
+        <div style="margin: 0; padding: 0;">
+            {{ _self.headerTable(group, t, false) }}
+            {% if group.boundCard %}
+                {{ _self.creamWrap(group, t, sideBorders, group.boundCard, group.boundCloses ? '3mm 4mm 3mm' : '3mm 4mm 0', group.boundCloses) }}
+            {% endif %}
+        </div>
+    </td></tr>
+    {%- set tableOpen = true -%}
+    {% for row in group.rows %}
+        {% if row.solo %}
+            {% if tableOpen %}</table>{% set tableOpen = false %}{% endif %}
+            {{ include('travel_plan/pdf/day_block.html.twig', { block: row.block, t: t }) }}
+        {% else %}
+            {% if not tableOpen %}{{ groupOpen }}{% set tableOpen = true %}{% endif %}
+            {% if row.isFirstOfSegment or row.isLastOfSegment %}
+                <tr><td style="padding: 0; background-color: {{ t.cream }}; vertical-align: top;">
+                    <div style="margin: 0; padding: 0;">
+                        {{ _self.creamWrap(group, t, sideBorders, row.block, '3mm 4mm ' ~ (row.isLastOfSegment ? '3mm' : '0'), row.isLastOfSegment) }}
+                    </div>
+                </td></tr>
+            {% else %}
+                <tr><td style="padding: 3mm 4mm 0; background-color: {{ t.cream }}; vertical-align: top; {{ sideBorders }}">
+                    {{ include('travel_plan/pdf/day_block.html.twig', { block: row.block, t: t }) }}
+                </td></tr>
+            {% endif %}
+            {% if row.isLastOfSegment %}</table>{% set tableOpen = false %}{% endif %}
+        {% endif %}
+    {% endfor %}
+    {% if tableOpen %}</table>{% endif %}
+</div>
+{% endif %}
+
+{% macro headerTable(group, t, standalone) %}
+    {# Navy op de cellen (niet op de tabel): mPDF houdt celachtergronden
+       bij geneste tabellen betrouwbaarder bij de inhoud dan div-achtergronden. #}
+    <table style="width: 100%; border-collapse: collapse; page-break-inside: avoid;"><tr>
+        <td style="padding: 5mm 2.5mm 4.5mm 6mm; vertical-align: top; color: {{ t.textLight }};{% if not standalone %} background-color: {{ t.navy }};{% endif %}">
+            {% if group.meta %}<p class="travel-plan-day__meta" style="color: {{ t.goldLight }};">{{ group.meta }}</p>{% endif %}
+            {% if group.title %}<h2 style="margin: 0 0 2mm; padding: 0; border: 0; color: {{ t.white }}; font-size: 17.5pt;">{{ group.title }}</h2>{% endif %}
+            {% if group.introHtml %}<div class="travel-plan-section__content travel-plan-day__intro" style="color: {{ t.textSoft }};">{{ group.introHtml|raw }}</div>{% endif %}
+        </td>
+        {% if group.iconSrc %}
+        <td style="width: 15mm; padding: 5mm 6mm 0 0; vertical-align: top;{% if not standalone %} background-color: {{ t.navy }};{% endif %}">
+            <img class="travel-plan-icon" src="{{ group.iconSrc }}" style="float: none; display: block; width: 7.5mm; height: 7.5mm; margin: 0;" alt="">
+        </td>
+        {% endif %}
+    </tr></table>
+{% endmacro %}
+
+{% macro creamWrap(group, t, sideBorders, block, padding, closeBottom) %}
+    {# Gele kaartzone met gouden zijranden; sluit onderaan het segment af
+       met een gouden onderrand ("bodem" van de groep). #}
+    <table style="width: 100%; border-collapse: collapse;"><tr>
+        <td style="padding: {{ padding }}; vertical-align: top; background-color: {{ t.cream }}; {{ sideBorders }}{% if closeBottom %} border-bottom: 0.2mm solid {{ t.edge }};{% endif %}">
+            {{ include('travel_plan/pdf/day_block.html.twig', { block: block, t: t }) }}
+        </td>
+    </tr></table>
+{% endmacro %}

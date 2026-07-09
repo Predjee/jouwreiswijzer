@@ -1,0 +1,47 @@
+{# Eén kaart (dagblok) in de PDF.
+   - Normale kaarten: keep-together via de layout-tabel (mPDF houdt
+     tabellen heel; divs met avoid triggeren de kwt-buffer-bug).
+   - Lange of hard-brekende kaarten (block.flow): gewone div die over
+     pagina's mag splitsen.
+   Styling inline: mPDF's cascade is onbetrouwbaar voor tabellen/geneste
+   elementen. Kleuren komen uit de tokens (t). #}
+{% set background = block.isTip ? t.navy : t.white %}
+{% set edge = block.isTip ? t.navy : t.edgeCard %}
+{% if block.flow %}
+<div class="travel-plan-block travel-plan-block--flow travel-plan-block--{{ block.type }}{% if block.startOnNewPage %} travel-plan-page-break-before{% endif %}">
+    <div class="travel-plan-block__main travel-plan-block__main--flow">
+        <div class="travel-plan-block__header">
+            {% if block.iconSrc %}<img class="travel-plan-icon" src="{{ block.iconSrc }}" alt="">{% endif %}
+            {{ _self.header(block, t) }}
+        </div>
+        {{ _self.content(block, t) }}
+    </div>
+</div>
+{% else %}
+<div class="travel-plan-block travel-plan-block--{{ block.type }}">
+    <table class="travel-plan-block__layout" style="background-color: {{ background }}; border: 0.25mm solid {{ edge }};"><tr>
+        <td class="travel-plan-block__icon-cell" style="width: 13mm; padding: 3.6mm 2.5mm 3.4mm 5mm; vertical-align: top;">
+            {%- if block.iconSrc %}<img class="travel-plan-icon" src="{{ block.iconSrc }}" style="float: none; display: block; width: 7mm; height: 7mm; margin: 0;" alt="">{% endif -%}
+        </td>
+        <td class="travel-plan-block__body-cell" style="padding: 3.6mm 5mm 3.4mm 0; vertical-align: top;">
+            <div class="travel-plan-block__main">
+                <div class="travel-plan-block__header">{{ _self.header(block, t) }}</div>
+                {{ _self.content(block, t) }}
+            </div>
+        </td>
+    </tr></table>
+</div>
+{% endif %}
+
+{% macro header(block, t) %}
+    {% if block.timeRangeLabel|default or block.timeLabel|default %}
+        <p class="travel-plan-block__time"{% if block.isTip %} style="color: {{ t.goldLight }};"{% endif %}>{% if block.timeRangeLabel|default %}<strong>{{ block.timeRangeLabel }}</strong>{% endif %}{% if block.timeRangeLabel|default and block.timeLabel|default %} - {% endif %}{{ block.timeLabel|default('') }}</p>
+    {% endif %}
+    {% if block.title|default %}<h3{% if block.isTip %} style="color: {{ t.white }};"{% endif %}>{{ block.title }}</h3>{% endif %}
+    {% if block.location|default %}<p class="travel-plan-block__location"{% if block.isTip %} style="color: {{ t.goldLight }};"{% endif %}>{{ block.location }}</p>{% endif %}
+{% endmacro %}
+
+{% macro content(block, t) %}
+    {% if block.textHtml|default %}<div class="travel-plan-section__content travel-plan-block__content"{% if block.isTip %} style="color: {{ t.textLight }};"{% endif %}>{{ block.textHtml|raw }}</div>{% endif %}
+    {% if block.bookingUrl|default %}<p class="travel-plan-block__action"><a href="{{ block.bookingUrl }}"{% if block.isTip %} style="color: {{ t.goldLight }};"{% endif %}>{{ block.actionLabel }}</a></p>{% endif %}
+{% endmacro %}

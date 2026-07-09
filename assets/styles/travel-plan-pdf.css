@@ -1,7 +1,27 @@
+/*
+ * PDF-stylesheet voor reisplannen (alleen gebruikt door TravelPlanPdfGenerator).
+ *
+ * BELANGRIJKE mPDF-LESSEN — lees dit vóór je hier iets wijzigt:
+ * 1. GEEN page-break-inside/after: avoid op divs: mPDF's keep-buffer
+ *    "verbleekt" daarna achtergronden. Bijeenhouden = altijd via tabellen.
+ * 2. Div-achtergronden en -randen binnen tabelcellen renderen NIET.
+ *    Kaart-/groepsstyling staat daarom inline op tabellen/cellen in
+ *    TravelPlanRenderer (inline wint bovendien altijd van deze cascade).
+ * 3. border-radius werkt alleen op top-level divs (bestemmings-hero's,
+ *    frames); nooit op tabellen. Hoek-PNG-strips en background-image
+ *    zijn bewezen doodlopende routes.
+ * 4. mPDF merget dubbele selectors per property (laatste wint) en laat
+ *    kale tag-selectors (h2, p) winnen van geklasseerde regels — gebruik
+ *    dus altijd klasse-selectors en definieer elke selector maar één keer.
+ * 5. De HTML gaat in chunks naar mPDF (per sectie); descendant-selectors
+ *    via .travel-plan werken alleen in de eerste chunk. Daarom staan de
+ *    basisregels ook op .travel-plan-section/.travel-plan-frame-card.
+ */
+
 body {
     margin: 0;
     padding: 0;
-    background-color: #f4f0e8;
+    background-color: #f8f5ef;
     color: #17233b;
     font-family: "Jost", sans-serif;
     font-size: 10.2pt;
@@ -9,72 +29,101 @@ body {
     line-height: 1.58;
 }
 
-/*
- * NB: de PDF-HTML wordt in stukken (per <tocentry>/<pagebreak>) aan mPDF
- * gevoerd; TravelPlanPdfGenerator wikkelt daarom elke chunk in een eigen
- * <div class="travel-plan"> zodat onderstaande descendant-selectors in
- * elke chunk blijven werken. Gebruik hier geen kale tag-selectors (h2, p):
- * die winnen in mPDF onterecht van geklasseerde regels.
- */
-/*
- * De PDF-HTML gaat in losse chunks (per <tocentry>/<pagebreak>) naar mPDF;
- * de .travel-plan-wrapper uit de eerste chunk geldt daar niet meer. De
- * basisregels staan daarom óók op de sectie-/kaartklassen die in elke
- * chunk aanwezig zijn. Kleur bewust NIET in deze generieke regels: mPDF
- * laat ze winnen van specifiekere sectieregels (witte koppen in hero's).
- */
 .travel-plan {
     font-family: "Jost", sans-serif;
+    font-size: 10.2pt;
+    line-height: 1.58;
+    background-color: #f8f5ef;
 }
 
-.travel-plan h1,
-.travel-plan h2,
-.travel-plan h3,
-.travel-plan-section h1,
-.travel-plan-section h2,
-.travel-plan-section h3,
-.travel-plan-frame-card h2,
+.travel-plan h1 {
+    margin: 0;
+    font-family: "Cormorant", serif;
+    font-weight: normal;
+    font-size: 34pt;
+    line-height: 1.05;
+}
+
+.travel-plan h2 {
+    margin: 0;
+    font-family: "Cormorant", serif;
+    font-weight: normal;
+    margin-bottom: 4mm;
+    padding-bottom: 2mm;
+    border-bottom: 0.25mm solid #b99550;
+    font-size: 16.5pt;
+    line-height: 1.12;
+}
+
+.travel-plan h3 {
+    margin: 0;
+    font-family: "Cormorant", serif;
+    font-weight: normal;
+    margin-bottom: 1.2mm;
+    font-size: 12pt;
+    line-height: 1.18;
+}
+
+.travel-plan-section h1 {
+    margin: 0;
+    font-family: "Cormorant", serif;
+    font-weight: normal;
+}
+
+.travel-plan-section h2 {
+    margin: 0;
+    font-family: "Cormorant", serif;
+    font-weight: normal;
+    margin-bottom: 4mm;
+    padding-bottom: 2mm;
+    border-bottom: 0.25mm solid #b99550;
+    font-size: 16.5pt;
+    line-height: 1.12;
+}
+
+.travel-plan-section h3 {
+    margin: 0;
+    font-family: "Cormorant", serif;
+    font-weight: normal;
+    margin-bottom: 1.2mm;
+    font-size: 12pt;
+    line-height: 1.18;
+}
+
+.travel-plan-frame-card h2 {
+    margin: 0;
+    font-family: "Cormorant", serif;
+    font-weight: normal;
+}
+
 .travel-plan-frame-card h3 {
     margin: 0;
     font-family: "Cormorant", serif;
     font-weight: normal;
 }
 
-.travel-plan h1 {
-    font-size: 34pt;
-    line-height: 1.05;
+.travel-plan p {
+    margin: 0 0 3mm;
 }
 
-.travel-plan h2,
-.travel-plan-section h2 {
-    margin-bottom: 4mm;
-    padding-bottom: 2.5mm;
-    border-bottom: 0.45mm solid #b99550;
-    font-size: 16.5pt;
-    line-height: 1.12;
+.travel-plan-section p {
+    margin: 0 0 3mm;
 }
 
-.travel-plan h3,
-.travel-plan-section h3 {
-    margin-bottom: 1.5mm;
-    font-size: 12.5pt;
-    line-height: 1.15;
-}
-
-/*
- * Geen page-break-after: avoid op koppen: mPDF's keep-with-next-buffer
- * rendert content direct na de inhoudsopgave "verbleekt" (achtergronden
- * en kleuren gaan verloren bij het herschrijven van de buffer).
- */
-
-.travel-plan p,
-.travel-plan-section p,
 .travel-plan-frame-card p {
     margin: 0 0 3mm;
 }
 
-.travel-plan a,
-.travel-plan-section a,
+.travel-plan a {
+    color: #86672f;
+    text-decoration: none;
+}
+
+.travel-plan-section a {
+    color: #86672f;
+    text-decoration: none;
+}
+
 .travel-plan-frame-card a {
     color: #86672f;
     text-decoration: none;
@@ -171,17 +220,14 @@ body {
     border-collapse: collapse;
     background-color: #fbfaf7;
     font-family: "JostRegular", "Jost", sans-serif;
+    border: 0.2mm solid #e7e1d4;
 }
 
-.travel-plan__profile th,
-.travel-plan__profile td {
+.travel-plan__profile th {
     padding: 3.2mm 4mm;
     border-bottom: 0.2mm solid #ddd5c7;
     text-align: left;
     vertical-align: top;
-}
-
-.travel-plan__profile th {
     width: 31%;
     color: #8a6a31;
     font-size: 8pt;
@@ -190,8 +236,15 @@ body {
     text-transform: uppercase;
 }
 
+.travel-plan__profile td {
+    padding: 3.2mm 4mm;
+    border-bottom: 0.2mm solid #ddd5c7;
+    text-align: left;
+    vertical-align: top;
+}
+
 .travel-plan-section {
-    margin-bottom: 9mm;
+    margin-bottom: 6mm;
 }
 
 .travel-plan-icon {
@@ -210,14 +263,10 @@ body {
     page-break-inside: auto;
 }
 
-.travel-plan-editor-table th,
-.travel-plan-editor-table td {
+.travel-plan-editor-table th {
     padding: 4mm 4.5mm;
     border: 0.2mm solid #ddd5c7;
     vertical-align: top;
-}
-
-.travel-plan-editor-table th {
     background-color: #f4efe6;
     color: #12213d;
     font-family: "JostRegular", "Jost", sans-serif;
@@ -227,6 +276,9 @@ body {
 }
 
 .travel-plan-editor-table td {
+    padding: 4mm 4.5mm;
+    border: 0.2mm solid #ddd5c7;
+    vertical-align: top;
     background-color: #ffffff;
 }
 
@@ -239,18 +291,28 @@ body {
 }
 
 .travel-plan-section--destination {
-    padding: 6mm 7mm 5mm;
-    border-left: 1.2mm solid #b99550;
-    background-color: #f4efe6;
-    /* Geen page-break-inside: avoid: mPDF's keep-together-buffer verliest
-       de kleuren van descendant-regels (witte kop wordt donker). */
+    padding: 0;
+    background-color: transparent;
+    border: 0;
+    border-top: 1mm solid #b99550;
+    color: #17233b;
+    page-break-inside: auto;
+    border-radius: 0;
+    margin-bottom: 11mm;
 }
 
 .travel-plan-section--destination h2 {
-    margin-bottom: 1mm;
-    padding-bottom: 0;
-    border-bottom: 0;
-    font-size: 17.5pt;
+    margin-bottom: 2mm;
+    padding-bottom: 2mm;
+    border-bottom: 0.35mm solid #b99550;
+    font-size: 18pt;
+    color: #12213d;
+    margin: 0 0 3.6mm;
+    padding: 0 0 3mm;
+    border: 0;
+    font-style: normal;
+    line-height: 1.16;
+    margin-left: 9.6mm;
 }
 
 .travel-plan-section__location {
@@ -264,14 +326,22 @@ body {
 
 .travel-plan-section--route {
     page-break-inside: auto;
+    padding: 7mm 8mm;
+    border: 0.2mm solid #e5d9bf;
+    border-top: 0.8mm solid #b99550;
+    background-color: #fbfaf7;
+    border-radius: 2mm;
+    border-color: #e3dccd;
+    border-top-color: #b99550;
+    border-left: 1.5mm solid #b99550;
 }
 
 .travel-plan-route {
     width: 100%;
-    margin: 7mm 0 0;
+    margin: 5mm 0 0;
     border-collapse: collapse;
-    border-top: 0.7mm solid #b99550;
-    background-color: #fbfaf7;
+    border-top: 0;
+    background-color: #ffffff;
 }
 
 .travel-plan-route tr {
@@ -279,19 +349,20 @@ body {
 }
 
 .travel-plan-route td {
-    padding: 4.5mm 5mm;
+    padding: 4mm 4.5mm;
     border-bottom: 0.2mm solid #ddd5c7;
     vertical-align: top;
 }
 
 .travel-plan-route__marker {
     width: 9mm;
-    border-right: 0.45mm solid #b99550;
-    color: #b99550;
-    font-family: "Cormorant", serif;
-    font-size: 17pt;
+    border-right: 0.2mm solid #ddd5c7;
+    color: #8a6a31;
+    font-family: "JostRegular", "Jost", sans-serif;
+    font-size: 9pt;
     line-height: 1;
     text-align: center;
+    font-weight: bold;
 }
 
 .travel-plan-route__content h3 {
@@ -303,8 +374,10 @@ body {
     color: #8a6a31;
     font-family: "JostRegular", "Jost", sans-serif;
     font-size: 8pt;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.45px;
     text-transform: uppercase;
+    margin: 0 0 1.4mm;
+    font-weight: bold;
 }
 
 .travel-plan-page-break-before {
@@ -318,59 +391,30 @@ body {
 
 .travel-plan-toc h2 {
     margin-bottom: 8mm;
+    margin: 0 0 8mm;
+    padding-bottom: 2.5mm;
+    border-bottom: 0.45mm solid #b99550;
+    color: #12213d;
+    font-family: "Cormorant", serif;
+    font-size: 21pt;
+    font-weight: normal;
+    line-height: 1.12;
 }
 
 .travel-plan-toc a {
     color: #17233b;
 }
 
-.travel-plan-section--day > .travel-plan-icon {
-    float: right;
-    width: 8mm;
-    height: 8mm;
-    margin: 7mm 7mm 0 4mm;
-}
-
-.travel-plan-section--day > header {
-    margin-bottom: 8mm;
-    padding: 5.5mm 7mm 4.5mm;
-    border-left: 0;
-    border-top: 1mm solid #b99550;
-    background-color: #12213d;
-    color: #ffffff;
-}
-
-.travel-plan-section--day > header > p:first-child {
-    margin-bottom: 2mm;
-    color: #d4af62;
-    font-family: "JostRegular", "Jost", sans-serif;
-    font-size: 8.5pt;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-.travel-plan-section--day > header h2 {
-    margin-bottom: 2mm;
-    padding: 0;
-    border: 0;
-    color: #ffffff;
-    font-size: 17.5pt;
-}
-
-.travel-plan-section--day > header p:last-child {
-    color: #e7e0d3;
-}
-
 .travel-plan-block {
     margin-bottom: 4mm;
-    padding: 5mm 6mm 4.5mm;
-    border: 0.2mm solid #ddd5c7;
-    background-color: #ffffff;
-    page-break-inside: auto; /* avoid op divs triggert mPDF kwt-buffer-bug */
-}
-
-.travel-plan-day__blocks {
-    padding-top: 1mm;
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+    page-break-inside: auto;
+    clear: both;
+    border-color: #e7e1d4;
+    border-radius: 0;
+    margin: 0;
 }
 
 .travel-plan-section--image {
@@ -395,19 +439,29 @@ body {
     font-size: 9pt;
 }
 
-.travel-plan-block__time,
-.travel-plan-block__location,
-.travel-plan-route__location {
-    margin: 0 0 1.5mm;
+.travel-plan-block__time {
+    margin: 0 0 1.4mm;
     color: #8a6a31;
     font-family: "JostRegular", "Jost", sans-serif;
-    font-size: 8.5pt;
-    letter-spacing: 0.5px;
+    font-size: 8pt;
+    letter-spacing: 0.45px;
     text-transform: uppercase;
+    font-weight: bold;
+}
+
+.travel-plan-block__location {
+    margin: 0 0 1.4mm;
+    color: #8a6a31;
+    font-family: "JostRegular", "Jost", sans-serif;
+    font-size: 8pt;
+    letter-spacing: 0.45px;
+    text-transform: uppercase;
+    font-weight: bold;
 }
 
 .travel-plan-block__header h3 {
-    margin-bottom: 1.5mm;
+    margin-bottom: 1.4mm;
+    padding-top: 1.2mm;
 }
 
 .travel-plan-block__content > *:last-child {
@@ -416,9 +470,13 @@ body {
 
 .travel-plan-block__action {
     margin-top: 2.5mm;
+    margin: 2.5mm 0 0;
 }
 
-.travel-plan-block--activity,
+.travel-plan-block--activity {
+    background-color: #fbfaf7;
+}
+
 .travel-plan-block--accommodation {
     background-color: #fbfaf7;
 }
@@ -433,8 +491,14 @@ body {
     color: #ffffff;
 }
 
-.travel-plan-block--tip .travel-plan-block__time,
-.travel-plan-block--tip .travel-plan-block__location,
+.travel-plan-block--tip .travel-plan-block__time {
+    color: #d4af62;
+}
+
+.travel-plan-block--tip .travel-plan-block__location {
+    color: #d4af62;
+}
+
 .travel-plan-block--tip a {
     color: #d4af62;
 }
@@ -443,30 +507,53 @@ body {
     background-color: #f1f3f5;
 }
 
-.travel-plan-section--practical-info,
-.travel-plan-section--free-text {
-    padding: 7mm 8mm;
-    border-top: 0.6mm solid #b99550;
+.travel-plan-section--practical-info {
+    padding: 6mm 7mm;
+    border-top: 0.8mm solid #b99550;
     border-bottom: 0.2mm solid #ddd5c7;
-    background-color: #ffffff;
+    background-color: #fbfaf7;
     page-break-inside: auto;
+    border: 0.2mm solid #ddd5c7;
+    border-left: 1.2mm solid #b99550;
+    border-radius: 3mm;
+    color: #17233b;
+}
+
+.travel-plan-section--free-text {
+    padding: 6mm 7mm;
+    border-top: 0.8mm solid #b99550;
+    border-bottom: 0.2mm solid #ddd5c7;
+    background-color: #fbfaf7;
+    page-break-inside: auto;
+    border: 0.2mm solid #ddd5c7;
+    border-left: 1.2mm solid #b99550;
+    border-radius: 3mm;
+    color: #17233b;
 }
 
 .travel-plan-section-frame {
     width: 100%;
     margin-bottom: 8mm;
     border-collapse: collapse;
+    background-color: #fbfaf7;
 }
 
 .travel-plan-section-frame__cell {
     padding: 7mm 8mm;
     border-top: 0.6mm solid #b99550;
     border-bottom: 0.2mm solid #ddd5c7;
-    background-color: #ffffff;
+    background-color: #fbfaf7;
     vertical-align: top;
 }
 
-.travel-plan-section-frame h2,
+.travel-plan-section-frame h2 {
+    margin: 0 0 5mm;
+    padding-bottom: 0;
+    border-bottom: none;
+    line-height: 1.2;
+    text-decoration: none;
+}
+
 .travel-plan table.travel-plan-section-frame td.travel-plan-section-frame__cell h2 {
     margin: 0 0 5mm;
     padding-bottom: 0;
@@ -500,11 +587,21 @@ body {
     font-size: 1pt;
 }
 
-.travel-plan-section-frame p,
-.travel-plan-section-frame ul,
+.travel-plan-section-frame p {
+    margin: 0 0 3mm;
+    line-height: 1.58;
+}
+
+.travel-plan-section-frame ul {
+    margin: 0 0 3mm;
+    line-height: 1.58;
+    padding-left: 5.5mm;
+}
+
 .travel-plan-section-frame ol {
     margin: 0 0 3mm;
     line-height: 1.58;
+    padding-left: 5.5mm;
 }
 
 .travel-plan-section-frame p + p {
@@ -512,23 +609,32 @@ body {
 }
 
 .travel-plan-section-frame .travel-plan-section__content h3 {
-    margin: 6mm 0 2mm;
-    line-height: 1.2;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    display: block;
+    padding: 6mm 0 2.2mm 0 !important;
+    color: #12213d;
+    font-family: "Cormorant", serif;
+    font-size: 15pt;
+    font-weight: normal;
 }
 
 .travel-plan-section-frame .travel-plan-section__content h3:first-child {
     margin-top: 0;
+    padding-top: 1mm !important;
 }
 
-.travel-plan-section-frame .travel-plan-section__content p + h3,
-.travel-plan-section-frame .travel-plan-section__content ul + h3,
-.travel-plan-section-frame .travel-plan-section__content ol + h3 {
+.travel-plan-section-frame .travel-plan-section__content p + h3 {
+    margin-top: 6mm;
+    padding-top: 7mm !important;
+}
+
+.travel-plan-section-frame .travel-plan-section__content ul + h3 {
     margin-top: 6mm;
 }
 
-.travel-plan-section-frame ul,
-.travel-plan-section-frame ol {
-    padding-left: 5.5mm;
+.travel-plan-section-frame .travel-plan-section__content ol + h3 {
+    margin-top: 6mm;
 }
 
 .travel-plan-section-frame li {
@@ -557,13 +663,13 @@ body {
 
 .travel-plan-checklist {
     width: 100%;
-    margin: 0;
+    margin: 5mm 0 0;
     border-collapse: collapse;
-    background-color: #fbfaf7;
+    background-color: #ffffff;
 }
 
 .travel-plan-checklist td {
-    padding: 3.6mm 4mm;
+    padding: 3.4mm 4mm;
     border-bottom: 0.2mm solid #ddd5c7;
     page-break-inside: avoid;
     vertical-align: middle;
@@ -580,32 +686,44 @@ body {
     border: 0.45mm solid #b99550;
 }
 
-.travel-plan-section--budget-note,
-.travel-plan-section--personal-note {
-    padding: 6mm 7mm 5.5mm;
+.travel-plan-section--budget-note {
+    padding: 6mm 7mm;
     page-break-inside: auto;
+    background-color: #fbfaf7;
+    color: #17233b;
+    border: 0.2mm solid #e3dccd;
+    border-top: 0.8mm solid #b99550;
+    border-left: 1.5mm solid #b99550;
+    border-radius: 2mm;
 }
 
-.travel-plan-section--budget-note {
-    border-left: 1.2mm solid #b99550;
-    border-top: 0.35mm solid #b99550;
-    border-bottom: 0.2mm solid #d8cfbf;
-    background-color: #f4efe6;
+.travel-plan-section--personal-note {
+    padding: 6mm 7mm;
+    page-break-inside: auto;
+    background-color: #fbfaf7;
+    border: 0.2mm solid #e3dccd;
+    border-top: 0.8mm solid #b99550;
+    border-left: 1.5mm solid #b99550;
+    border-radius: 2mm;
     color: #17233b;
 }
 
 .travel-plan-section--budget-note h2 {
     border-color: #b99550;
     color: #12213d;
+    margin-bottom: 4mm;
+    padding-bottom: 2mm;
+    border-bottom: 0.25mm solid #b99550;
 }
 
-.travel-plan-section--personal-note {
-    border-top: 0.7mm solid #b99550;
-    border-bottom: 0.2mm solid #d8cfbf;
-    background-color: #f4efe6;
+.travel-plan-section--personal-note p {
+    color: #445064;
+    font-family: "Cormorant", serif;
+    font-size: 14pt;
+    font-style: italic;
+    line-height: 1.45;
 }
 
-.travel-plan-section--personal-note p,
 .travel-plan-section--personal-note .travel-plan-section__content {
     color: #445064;
     font-family: "Cormorant", serif;
@@ -624,21 +742,6 @@ body {
     text-align: center;
 }
 
-.travel-plan-section-frame .travel-plan-section__content h3 {
-    display: block;
-    margin: 0 !important;
-    padding: 6mm 0 2.2mm 0 !important;
-    color: #12213d;
-    font-family: "Cormorant", serif;
-    font-size: 15pt;
-    font-weight: normal;
-    line-height: 1.2 !important;
-}
-
-.travel-plan-section-frame .travel-plan-section__content h3:first-child {
-    padding-top: 1mm !important;
-}
-
 .travel-plan-section-frame .travel-plan-section__content p {
     display: block;
     margin: 0 0 4.2mm 0 !important;
@@ -647,86 +750,56 @@ body {
     line-height: 1.65 !important;
 }
 
-.travel-plan-section-frame .travel-plan-section__content p + h3 {
-    padding-top: 7mm !important;
-}
-
 .travel-plan-section-frame .travel-plan-section__content strong {
     font-family: "JostRegular", "Jost", sans-serif;
     font-weight: bold;
 }
 
-/* Account-aligned PDF theme */
-.travel-plan {
-    font-size: 10.2pt;
-    line-height: 1.58;
-}
-
-.travel-plan h2,
-.travel-plan-section h2 {
-    margin-bottom: 4mm;
-    padding-bottom: 2mm;
-    border-bottom: 0.25mm solid #b99550;
-    font-size: 16.5pt;
-    line-height: 1.12;
-}
-
-.travel-plan h3,
-.travel-plan-section h3 {
-    margin-bottom: 1.2mm;
-    font-size: 12pt;
-    line-height: 1.18;
-}
-
-.travel-plan-section {
-    margin-bottom: 8mm;
-}
-
-.travel-plan-section--destination {
-    padding: 6mm 7mm 5mm;
-    border: 0;
-    border-top: 1mm solid #b99550;
-    background-color: #12213d;
-    color: #f7f4ee;
-    page-break-inside: auto;
-}
-
-.travel-plan-section--destination h2 {
-    margin-bottom: 2mm;
-    padding-bottom: 2mm;
-    border-bottom: 0.25mm solid #b99550;
-    color: #ffffff;
-    font-size: 17.5pt;
-}
-
 .travel-plan-section--destination .travel-plan-section__location {
     margin-bottom: 4mm;
-    color: #d4af62;
+    color: #8a6a31;
+    margin: 0 0 4mm;
+    font-family: "JostRegular", "Jost", sans-serif;
+    font-size: 7.8pt;
+    font-weight: normal;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+    clear: both;
 }
 
-.travel-plan-section--destination .travel-plan-section__content,
-.travel-plan-section--destination p,
+.travel-plan-section--destination .travel-plan-section__content {
+    color: #17233b;
+}
+
+.travel-plan-section--destination p {
+    color: #17233b;
+}
+
 .travel-plan-section--destination li {
-    color: #eef1f6;
+    color: #17233b;
 }
 
 .travel-plan-section--day {
-    border: 0.2mm solid #ddd5c7;
-    background-color: #f8f5ef;
-    page-break-inside: auto;
-}
-
-.travel-plan-section--day > .travel-plan-day__header {
-    margin: 0;
-    padding: 5.5mm 7mm 4.5mm;
     border: 0;
-    border-top: 1mm solid #b99550;
-    background-color: #12213d;
-    color: #f7f4ee;
+    background-color: transparent;
     page-break-inside: auto;
+    margin-bottom: 6mm;
+    padding: 0;
+    border-radius: 0;
+    color: #17233b;
 }
 
-.travel-plan-day__meta,
+.travel-plan-day__meta {
+    margin-bottom: 2mm;
+    color: #d4af62;
+    font-family: "JostRegular", "Jost", sans-serif;
+    font-size: 7.8pt;
+    font-weight: normal;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+    margin: 0 0 2mm;
+}
+
 .travel-plan-section--day header > p:first-child {
     margin-bottom: 2mm;
     color: #d4af62;
@@ -737,191 +810,149 @@ body {
     text-transform: uppercase;
 }
 
-.travel-plan-section--day > .travel-plan-day__header h2 {
-    margin-bottom: 2mm;
-    padding: 0;
-    border: 0;
-    color: #ffffff;
-    font-size: 17.5pt;
-}
-
-.travel-plan-day__intro,
-.travel-plan-section--day > .travel-plan-day__header .travel-plan-section__content {
-    color: #e7e0d3;
-}
-
-.travel-plan-day__blocks {
-    padding: 5mm;
+.travel-plan-day__intro {
+    color: #e9dfcf;
 }
 
 .travel-plan-section--day .travel-plan-block {
-    margin: 0 0 4mm;
-    padding: 4.5mm 5mm;
-    border: 0.2mm solid #ddd5c7;
-    background-color: #ffffff;
-    page-break-inside: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    overflow: visible;
+    border-radius: 0;
+    color: #17233b;
 }
 
 .travel-plan-section--day .travel-plan-block:last-child {
     margin-bottom: 0;
 }
 
-.travel-plan-block__time,
-.travel-plan-block__location,
-.travel-plan-route__location {
-    margin: 0 0 1.4mm;
-    color: #8a6a31;
-    font-family: "JostRegular", "Jost", sans-serif;
-    font-size: 8pt;
-    font-weight: bold;
-    letter-spacing: 0.45px;
-    text-transform: uppercase;
-}
-
-.travel-plan-block__header h3 {
-    margin-bottom: 1.4mm;
-}
-
-.travel-plan-block__content > *:last-child {
-    margin-bottom: 0;
-}
-
-.travel-plan-block__action {
-    margin: 2.5mm 0 0;
-}
-
 .travel-plan-section--day .travel-plan-block--tip {
-    border-color: #12213d;
-    background-color: #12213d;
     color: #f7f4ee;
+    background-color: transparent;
 }
 
 .travel-plan-section--day .travel-plan-block--tip h3 {
-    color: #ffffff;
-}
-
-.travel-plan-section--day .travel-plan-block--tip p,
-.travel-plan-section--day .travel-plan-block--tip li {
     color: #f7f4ee;
 }
 
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__time,
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__location,
-.travel-plan-section--day .travel-plan-block--tip a {
-    color: #d4af62;
+.travel-plan-section--day .travel-plan-block--tip p {
+    color: #f7f4ee;
+    margin-left: 0;
+    margin-right: 0;
 }
 
-/* Final mPDF cascade/page-break guards for dark account cards. */
-.travel-plan-section--day .travel-plan-block {
-    page-break-inside: auto;
-    break-inside: auto;
+.travel-plan-section--day .travel-plan-block--tip li {
+    color: #f7f4ee;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__time {
+    color: #d4af62;
+    margin: 0 0 1mm 10.5mm;
+}
+
+.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__location {
+    color: #d4af62;
+    margin: 0 0 1mm 10.5mm;
+}
+
+.travel-plan-section--day .travel-plan-block--tip a {
+    color: #d4af62;
+    margin: 0 0 1mm 10.5mm;
 }
 
 .travel-plan-section--day .travel-plan-block__main {
-    page-break-inside: auto;
+    page-break-inside: avoid;
     break-inside: auto;
+    overflow: visible;
+    margin-left: 0;
+    padding: 0 1.2mm 0 0;
 }
 
-.travel-plan-section--day > .travel-plan-day__header,
-.travel-plan-section--day > .travel-plan-day__header h2,
-.travel-plan-section--day > .travel-plan-day__header .travel-plan-section__content,
-.travel-plan-section--day > .travel-plan-day__header .travel-plan-section__content p,
-.travel-plan-section--day > .travel-plan-day__header p,
-.travel-plan-section--day > .travel-plan-day__header li,
-.travel-plan-section--day .travel-plan-block--tip,
-.travel-plan-section--day .travel-plan-block--tip h3,
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__content,
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__content p,
+.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__content {
+    color: #f7f4ee;
+}
+
+.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__content p {
+    color: #f7f4ee;
+}
+
 .travel-plan-section--day .travel-plan-block--tip .travel-plan-block__content li {
-    color: #f7f4ee !important;
+    color: #f7f4ee;
 }
 
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-icon,
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__time,
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__location,
-.travel-plan-section--day .travel-plan-block--tip a {
+.travel-plan-section--day .travel-plan-block--tip .travel-plan-icon {
     color: #d4af62 !important;
 }
 
-/*
- * mPDF cannot split long nested bordered cards reliably. Keep the account
- * hierarchy with dark section cards and dark tips, but render regular children
- * as nested rows so page breaks stay clean.
- */
-.travel-plan-section--day .travel-plan-block {
-    margin: 0;
-    padding: 4mm 0 4.2mm;
-    border: 0;
-    border-top: 0;
-    border-right: 0;
-    border-left: 0;
-    border-bottom: 0.2mm solid #ddd5c7;
+.travel-plan-section--day .travel-plan-block--note {
     background-color: transparent;
-    page-break-inside: auto;
-    break-inside: auto;
+    border-color: #ddd5c7;
+    color: #17233b;
 }
 
-.travel-plan-section--day .travel-plan-block--tip {
-    margin: 2.5mm 0;
-    padding: 4mm 4.5mm;
-    border: 0;
-    background-color: #12213d;
-    page-break-inside: avoid;
+.travel-plan-section--day .travel-plan-block--meal {
+    background-color: transparent;
+    border-color: #ddd5c7;
+    color: #17233b;
 }
 
-.travel-plan-section--day .travel-plan-block--note,
-.travel-plan-section--day .travel-plan-block--meal,
 .travel-plan-section--day .travel-plan-block--free-text {
-    background-color: #fbfaf7;
+    background-color: transparent;
+    border-color: #ddd5c7;
+    color: #17233b;
 }
 
-.travel-plan-section--route,
-.travel-plan-section--practical-info,
-.travel-plan-section--free-text,
-.travel-plan-section--budget-note,
-.travel-plan-section--personal-note,
 .travel-plan-section--checklist {
     padding: 7mm 8mm;
-    border: 0.2mm solid #ddd5c7;
+    border: 0.2mm solid #e5d9bf;
     border-top: 0.8mm solid #b99550;
     background-color: #fbfaf7;
     page-break-inside: auto;
+    border-radius: 2mm;
+    border-color: #e3dccd;
+    border-top-color: #b99550;
+    border-left: 1.5mm solid #b99550;
 }
 
-.travel-plan-section--route h2,
-.travel-plan-section--practical-info h2,
-.travel-plan-section--free-text h2,
-.travel-plan-section--budget-note h2,
-.travel-plan-section--personal-note h2,
-.travel-plan-section--checklist h2 {
+.travel-plan-section--route h2 {
     margin-bottom: 4mm;
     padding-bottom: 2mm;
     border-bottom: 0.25mm solid #b99550;
     color: #12213d;
 }
 
-.travel-plan-route {
-    width: 100%;
-    margin: 5mm 0 0;
-    border-collapse: collapse;
-    border-top: 0;
-    background-color: #ffffff;
+.travel-plan-section--practical-info h2 {
+    margin-bottom: 4mm;
+    padding-bottom: 2mm;
+    border-bottom: 0.25mm solid #b99550;
+    color: #12213d;
 }
 
-.travel-plan-route td {
-    padding: 4mm 4.5mm;
-    border-bottom: 0.2mm solid #ddd5c7;
-    vertical-align: top;
+.travel-plan-section--free-text h2 {
+    margin-bottom: 4mm;
+    padding-bottom: 2mm;
+    border-bottom: 0.25mm solid #b99550;
+    color: #12213d;
 }
 
-.travel-plan-route__marker {
-    width: 9mm;
-    border-right: 0.2mm solid #ddd5c7;
-    color: #8a6a31;
-    font-family: "JostRegular", "Jost", sans-serif;
-    font-size: 9pt;
-    font-weight: bold;
-    text-align: center;
+.travel-plan-section--personal-note h2 {
+    margin-bottom: 4mm;
+    padding-bottom: 2mm;
+    border-bottom: 0.25mm solid #b99550;
+    color: #12213d;
+}
+
+.travel-plan-section--checklist h2 {
+    margin-bottom: 4mm;
+    padding-bottom: 2mm;
+    border-bottom: 0.25mm solid #b99550;
+    color: #12213d;
 }
 
 .travel-plan-route__marker .travel-plan-icon {
@@ -931,20 +962,6 @@ body {
     margin: 0 auto;
 }
 
-.travel-plan-checklist {
-    margin: 5mm 0 0;
-    background-color: #ffffff;
-}
-
-.travel-plan-checklist td {
-    padding: 3.4mm 4mm;
-}
-
-.travel-plan-section-frame,
-.travel-plan-section-frame__cell {
-    background-color: #fbfaf7;
-}
-
 .travel-plan-section > .travel-plan-icon {
     float: right;
     width: 7mm;
@@ -952,70 +969,51 @@ body {
     margin: 0 0 3mm 5mm;
 }
 
-.travel-plan-section--destination > .travel-plan-icon,
-.travel-plan-section--day > .travel-plan-icon {
-    width: 8mm;
-    height: 8mm;
-    margin: 0 0 3mm 5mm;
+.travel-plan-section--destination > .travel-plan-icon {
+    width: 5.8mm;
+    height: 5.8mm;
+    margin: 1.4mm 3.8mm 1.5mm 0;
+    float: left;
 }
 
 .travel-plan-section--day .travel-plan-block > .travel-plan-icon {
     float: left;
-    width: 5.5mm;
-    height: 5.5mm;
-    margin: 0.6mm 4mm 2mm 0;
-}
-
-.travel-plan-section--day .travel-plan-block__main {
-    overflow: hidden;
+    width: 5.2mm;
+    height: 5.2mm;
+    margin: 0.4mm 3.2mm 2mm 0;
 }
 
 .travel-plan-section--day .travel-plan-block--tip > .travel-plan-icon {
     opacity: 0.95;
+    margin-top: 0.45mm;
 }
 
-/* mPDF-safe flow fixes: avoid HTML5/layout wrappers and child-selector reliance. */
-.travel-plan-day__header {
-    margin: 0 0 1mm;
-    padding: 5.5mm 7mm 4.5mm;
-    border-top: 1mm solid #b99550;
-    border-radius: 3mm;
-    background-color: #12213d;
-    color: #f7f4ee;
-    page-break-inside: auto;
-}
-
-.travel-plan-day__header h2 {
-    margin-bottom: 2mm;
-    padding: 0;
-    border: 0;
-    color: #ffffff;
-    font-size: 17.5pt;
-}
-
-.travel-plan-day__intro,
 .travel-plan-day__intro p {
-    color: #e7e0d3;
-}
-
-.travel-plan-block {
-    clear: both;
+    color: #17233b;
 }
 
 .travel-plan-block__main {
     overflow: visible;
 }
 
-.travel-plan-section--day .travel-plan-block__content,
-.travel-plan-section--day .travel-plan-block__content p,
-.travel-plan-section--day .travel-plan-block__content li {
+.travel-plan-section--day .travel-plan-block__content {
     color: #17233b;
+    margin-left: 10.5mm;
+    padding-left: 0;
+    padding-right: 0;
+    margin-right: 3mm;
 }
 
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__content,
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__content p,
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__content li {
-    color: #f7f4ee;
+.travel-plan-section--day .travel-plan-block__content p {
+    color: #17233b;
+    margin-left: 0;
+    padding-left: 0;
+    padding-right: 0;
+    margin-right: 0;
+}
+
+.travel-plan-section--day .travel-plan-block__content li {
+    color: #17233b;
 }
 
 .travel-plan-section--content-blocks {
@@ -1026,7 +1024,15 @@ body {
     margin-bottom: 5mm;
 }
 
-.travel-plan-section__content h4,
+.travel-plan-section__content h4 {
+    margin: 4.5mm 0 1mm;
+    color: #12213d;
+    font-family: "JostRegular", "Jost", sans-serif;
+    font-size: 10.2pt;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
 .travel-plan-section-frame .travel-plan-section__content h4 {
     margin: 4.5mm 0 1mm;
     color: #12213d;
@@ -1036,7 +1042,10 @@ body {
     line-height: 1.25;
 }
 
-.travel-plan-section__content h4:first-child,
+.travel-plan-section__content h4:first-child {
+    margin-top: 0;
+}
+
 .travel-plan-section-frame .travel-plan-section__content h4:first-child {
     margin-top: 0;
 }
@@ -1045,100 +1054,51 @@ body {
     background-color: #fbfaf7;
 }
 
-/* Keep long day sections from leaving empty bordered shells at page breaks. */
-.travel-plan-section--day {
-    border: 0;
-    background-color: transparent;
-}
-
-/* Kaarten los op de pagina-achtergrond: lichter en luxer dan een kaderpaneel. */
-.travel-plan-section--day .travel-plan-day__blocks {
-    padding: 5mm 0 0;
-    border: 0;
-    background-color: transparent;
-}
-
-.travel-plan-section--day .travel-plan-block > .travel-plan-icon {
-    width: 5.4mm;
-    height: 5.4mm;
-    margin: 0.7mm 4mm 2mm 0;
-}
-
-.travel-plan-section--day .travel-plan-block--tip > .travel-plan-icon {
-    margin-top: 0.9mm;
-}
-
-/* Final PDF spacing: fixed icon column with comfortable text gutters. */
-.travel-plan-section--day .travel-plan-day__blocks {
-    padding: 5mm 0 0;
-}
-
-.travel-plan-section--day .travel-plan-block {
-    padding: 5.5mm 7mm 5mm;
-    overflow: visible;
-    page-break-inside: auto;
-    break-inside: avoid;
-}
-
-.travel-plan-section--day .travel-plan-block > .travel-plan-icon {
-    float: left;
-    width: 5.2mm;
-    height: 5.2mm;
-    margin: 0.25mm 3.4mm 2mm 0;
-}
-
-.travel-plan-section--day .travel-plan-block > h3,
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__time,
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__location,
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__content,
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__action {
-    margin-left: 8.8mm;
-}
-
 .travel-plan-section--day .travel-plan-block > h3 {
+    margin-left: 10.2mm;
     margin-top: 0;
 }
 
+.travel-plan-section--day .travel-plan-block > .travel-plan-block__time {
+    margin-left: 10.2mm;
+}
+
+.travel-plan-section--day .travel-plan-block > .travel-plan-block__location {
+    margin-left: 10.2mm;
+}
+
 .travel-plan-section--day .travel-plan-block > .travel-plan-block__content {
+    margin-left: 0;
     padding-right: 1.5mm;
 }
 
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__content p,
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__content ul,
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__content ol {
-    margin-left: 0;
-    margin-right: 0;
-}
-
-.travel-plan-section--day .travel-plan-block--tip > .travel-plan-icon {
-    margin-top: 0.45mm;
-}
-
-.travel-plan-section--day .travel-plan-block > .travel-plan-icon {
-    margin: 0.25mm 3.4mm 2mm 1mm;
-}
-
-.travel-plan-section--day .travel-plan-block > h3,
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__time,
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__location,
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__content,
 .travel-plan-section--day .travel-plan-block > .travel-plan-block__action {
     margin-left: 10.2mm;
 }
 
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__content p,
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__content ul,
+.travel-plan-section--day .travel-plan-block > .travel-plan-block__content p {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 10.2mm;
+    padding-right: 2mm;
+}
+
+.travel-plan-section--day .travel-plan-block > .travel-plan-block__content ul {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 10.2mm;
+    padding-right: 2mm;
+}
+
 .travel-plan-section--day .travel-plan-block > .travel-plan-block__content ol {
+    margin-left: 0;
+    margin-right: 0;
     padding-left: 10.2mm;
     padding-right: 2mm;
 }
 
 .travel-plan-section--day .travel-plan-block > .travel-plan-block__content li {
     padding-left: 0;
-}
-
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__content {
-    margin-left: 0;
 }
 
 .travel-plan-section--day .travel-plan-block > .travel-plan-block__main {
@@ -1148,41 +1108,39 @@ body {
     overflow: visible;
 }
 
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__main > h3,
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__main > .travel-plan-block__time,
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__main > .travel-plan-block__location,
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__main > .travel-plan-block__content,
+.travel-plan-section--day .travel-plan-block > .travel-plan-block__main > h3 {
+    margin-left: 0;
+}
+
+.travel-plan-section--day .travel-plan-block > .travel-plan-block__main > .travel-plan-block__time {
+    margin-left: 0;
+}
+
+.travel-plan-section--day .travel-plan-block > .travel-plan-block__main > .travel-plan-block__location {
+    margin-left: 0;
+}
+
+.travel-plan-section--day .travel-plan-block > .travel-plan-block__main > .travel-plan-block__content {
+    margin-left: 0;
+}
+
 .travel-plan-section--day .travel-plan-block > .travel-plan-block__main > .travel-plan-block__action {
     margin-left: 0;
 }
 
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__main > .travel-plan-block__content p,
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__main > .travel-plan-block__content ul,
-.travel-plan-section--day .travel-plan-block > .travel-plan-block__main > .travel-plan-block__content ol {
+.travel-plan-section--day .travel-plan-block > .travel-plan-block__main > .travel-plan-block__content p {
     padding-left: 0;
     padding-right: 0;
 }
 
-/*
- * Kaarten: afgeronde div (border-radius werkt in mPDF alleen op divs) met
- * daarin een layout-tabel voor de icoonkolom en het bijeenhouden van de
- * kaart. Geen page-break-inside: avoid op de <tr>: een kaart hoger dan een
- * pagina laat mPDF anders crashen; de avoid op div en tabel volstaat.
- */
-/*
- * Inhoudsopgave: mPDF genereert de TOC-regels zelf met eigen klassen
- * (div.mpdf_toc, a.mpdf_toc_a, .mpdf_toc_level_N). Zonder deze regels
- * vallen de entries terug op mPDF-defaults (DejaVu, bold/italic).
- */
-.travel-plan-toc h2 {
-    margin: 0 0 8mm;
-    padding-bottom: 2.5mm;
-    border-bottom: 0.45mm solid #b99550;
-    color: #12213d;
-    font-family: "Cormorant", serif;
-    font-size: 21pt;
-    font-weight: normal;
-    line-height: 1.12;
+.travel-plan-section--day .travel-plan-block > .travel-plan-block__main > .travel-plan-block__content ul {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.travel-plan-section--day .travel-plan-block > .travel-plan-block__main > .travel-plan-block__content ol {
+    padding-left: 0;
+    padding-right: 0;
 }
 
 div.mpdf_toc {
@@ -1214,113 +1172,17 @@ div.mpdf_toc_level_1 {
     font-style: normal;
 }
 
-/*
- * Luxe afwerking: afgeronde frames en secties. De radius staat op divs
- * (mPDF ondersteunt geen border-radius op tabellen); de frame-tabel erin
- * wordt transparant en randloos gemaakt.
- */
 .travel-plan-frame-card {
-    margin-bottom: 8mm;
-    border: 0.2mm solid #e3dccd;
+    margin-bottom: 6mm;
+    border: 0.2mm solid #e5d9bf;
     border-top: 0.8mm solid #b99550;
-    border-radius: 3mm;
+    border-radius: 2mm;
     background-color: #fbfaf7;
-}
-
-/* Account-view aligned PDF overrides: keep the same visual language as Mijn omgeving. */
-.travel-plan-section--destination,
-.travel-plan-section--practical-info,
-.travel-plan-section--free-text,
-.travel-plan-section--budget-note,
-.travel-plan-section--personal-note {
-    padding: 6mm 7mm;
-    border: 0.2mm solid #ddd5c7;
-    border-left: 1.2mm solid #b99550;
-    border-radius: 3mm;
-    background-color: #fbfaf7;
-    color: #17233b;
-}
-
-.travel-plan-section--destination h2,
-.travel-plan-section--practical-info h2,
-.travel-plan-section--free-text h2,
-.travel-plan-section--budget-note h2,
-.travel-plan-section--personal-note h2 {
-    color: #12213d;
-}
-
-.travel-plan-section--destination .travel-plan-section__content,
-.travel-plan-section--destination p,
-.travel-plan-section--destination li,
-.travel-plan-day__intro,
-.travel-plan-day__intro p {
-    color: #17233b;
-}
-
-.travel-plan-day__header {
-    margin: 0 0 4mm;
-    padding: 6mm 7mm;
-    border: 0.2mm solid #ddd5c7;
-    border-left: 1.2mm solid #b99550;
-    border-radius: 3mm;
-    background-color: #f4efe6;
-    color: #17233b;
-}
-
-.travel-plan-day__header h2 {
-    color: #12213d;
-}
-
-.travel-plan-day__blocks {
-    padding: 0;
-}
-
-.travel-plan-section--day .travel-plan-block {
-    margin: 0 0 4mm;
-    padding: 4.5mm 5mm;
-    border: 0.2mm solid #ddd5c7;
-    border-left: 0.9mm solid #b99550;
-    border-radius: 2.5mm;
-    background-color: #ffffff;
-    color: #17233b;
-    overflow: visible;
-    page-break-inside: avoid;
-}
-
-.travel-plan-section--day .travel-plan-block__main {
-    margin-left: 0;
-    padding-left: 8.5mm;
-    padding-right: 1.5mm;
-    overflow: visible;
-}
-
-.travel-plan-section--day .travel-plan-block > .travel-plan-icon {
-    float: left;
-    width: 5.2mm;
-    height: 5.2mm;
-    margin: 0.4mm 3.2mm 2mm 0;
+    border-left: 1.5mm solid #b99550;
 }
 
 .travel-plan-section--day .travel-plan-block h3 {
     color: #12213d;
-}
-
-.travel-plan-section--day .travel-plan-block--tip {
-    border-color: #12213d;
-    border-left-color: #b99550;
-    background-color: #12213d;
-    color: #f7f4ee;
-}
-
-.travel-plan-section--day .travel-plan-block--tip h3,
-.travel-plan-section--day .travel-plan-block--tip p,
-.travel-plan-section--day .travel-plan-block--tip li,
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__content {
-    color: #f7f4ee;
-}
-
-.travel-plan-section--day .travel-plan-block--tip a {
-    color: #ffffff;
 }
 
 .travel-plan-frame-card .travel-plan-section-frame {
@@ -1335,169 +1197,12 @@ div.mpdf_toc_level_1 {
     padding: 7mm 8mm 6.5mm;
 }
 
-.travel-plan-section--route,
-.travel-plan-section--budget-note,
-.travel-plan-section--personal-note,
-.travel-plan-section--checklist {
-    border-radius: 3mm;
-    border-color: #e3dccd;
-    border-top-color: #b99550;
-}
-
-/* Match account card nesting: icon column, main column, header inside main. */
-.travel-plan-section--day .travel-plan-block {
-    padding: 4.8mm 5.5mm;
-}
-
 .travel-plan-section--day .travel-plan-block__header .travel-plan-icon {
     float: left;
-    width: 5.4mm;
-    height: 5.4mm;
-    margin: 0.15mm 3.8mm 2mm 0;
-}
-
-.travel-plan-section--day .travel-plan-block__main {
+    width: 5.1mm;
+    height: 5.1mm;
+    margin: 0.5mm 3.5mm 2mm 1.8mm;
     margin-left: 0;
-    padding: 0 1.2mm 0 0;
-    overflow: visible;
-}
-
-.travel-plan-section--day .travel-plan-block__header {
-    margin: 0 0 2.3mm;
-    padding: 0;
-}
-
-.travel-plan-section--day .travel-plan-block__header h3 {
-    margin: 0 0 1.2mm 9.2mm;
-    padding: 0;
-    color: #12213d;
-    line-height: 1.18;
-}
-
-.travel-plan-section--day .travel-plan-block__time,
-.travel-plan-section--day .travel-plan-block__location {
-    margin: 0 0 1.2mm 9.2mm;
-}
-
-.travel-plan-section--day .travel-plan-block__content,
-.travel-plan-section--day .travel-plan-block__content p,
-.travel-plan-section--day .travel-plan-block__content ul,
-.travel-plan-section--day .travel-plan-block__content ol {
-    margin-left: 9.2mm;
-    padding-left: 0;
-    padding-right: 0;
-}
-
-.travel-plan-section--day .travel-plan-block__content > *:last-child {
-    margin-bottom: 0;
-}
-
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__header h3 {
-    color: #ffffff;
-}
-
-/*
- * Account-aligned PDF view.
- *
- * The account page renders travel days as headings with a gold rule and nested
- * list rows. Keep the PDF in that same simple block flow; mPDF handles this
- * more reliably than nested card tables or flex-like constructs.
- */
-.travel-plan-section--destination,
-.travel-plan-section--day {
-    margin-bottom: 11mm;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    background-color: transparent;
-    color: #17233b;
-    page-break-inside: auto;
-}
-
-.travel-plan-section--destination > .travel-plan-icon,
-.travel-plan-section--day > .travel-plan-icon {
-    float: left;
-    width: 5.8mm;
-    height: 5.8mm;
-    margin: 1.4mm 3.8mm 1.5mm 0;
-}
-
-.travel-plan-section--destination h2,
-.travel-plan-day__header h2,
-.travel-plan-section--day > .travel-plan-day__header h2 {
-    margin: 0 0 3.6mm;
-    padding: 0 0 3mm;
-    border: 0;
-    border-bottom: 0.35mm solid #b99550;
-    color: #12213d;
-    font-size: 18pt;
-    font-style: normal;
-    line-height: 1.16;
-}
-
-.travel-plan-section--destination h2 {
-    margin-left: 9.6mm;
-}
-
-.travel-plan-section--destination .travel-plan-section__location,
-.travel-plan-day__meta {
-    margin: 0 0 4mm;
-    color: #8a6a31;
-    font-family: "JostRegular", "Jost", sans-serif;
-    font-size: 7.8pt;
-    font-weight: normal;
-    letter-spacing: 0.55px;
-    text-transform: uppercase;
-}
-
-.travel-plan-section--destination .travel-plan-section__location {
-    clear: both;
-}
-
-.travel-plan-section--destination .travel-plan-section__content,
-.travel-plan-section--destination p,
-.travel-plan-section--destination li,
-.travel-plan-day__intro,
-.travel-plan-section--day > .travel-plan-day__header .travel-plan-section__content {
-    color: #17233b;
-}
-
-.travel-plan-day__header,
-.travel-plan-section--day > .travel-plan-day__header {
-    margin: 0 0 5.5mm;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    background-color: transparent;
-    color: #17233b;
-    page-break-inside: avoid;
-}
-
-.travel-plan-section--day .travel-plan-day__blocks,
-.travel-plan-day__blocks {
-    padding: 0;
-}
-
-.travel-plan-section--day .travel-plan-block {
-    margin: 0;
-    padding: 3.5mm 0 3.7mm;
-    border: 0;
-    border-bottom: 0.2mm solid #ddd5c7;
-    border-radius: 0;
-    background-color: transparent;
-    color: #17233b;
-    overflow: visible;
-    page-break-inside: avoid;
-    break-inside: avoid;
-}
-
-.travel-plan-section--day .travel-plan-block--tip,
-.travel-plan-section--day .travel-plan-block--note,
-.travel-plan-section--day .travel-plan-block--meal,
-.travel-plan-section--day .travel-plan-block--free-text {
-    border-color: #ddd5c7;
-    background-color: transparent;
-    color: #17233b;
 }
 
 .travel-plan-section--day .travel-plan-block__header {
@@ -1506,144 +1211,61 @@ div.mpdf_toc_level_1 {
     page-break-inside: avoid;
 }
 
-.travel-plan-section--day .travel-plan-block__main {
-    page-break-inside: avoid;
-}
-
-/*
- * Real account detail nesting:
- * - section intro/header is the dark-blue card
- * - child blocks sit as white cards inside a light nested panel
- * - tip blocks are dark-blue cards inside that nested list
- */
-.travel-plan-section--day {
-    margin-bottom: 8mm;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    background-color: transparent;
-}
-
-.travel-plan-day__header,
-.travel-plan-section--day > .travel-plan-day__header {
-    margin: 0;
-    padding: 5.5mm 6mm 5mm;
-    border: 0;
-    border-radius: 0;
-    background-color: #12213d;
-    color: #f7f4ee;
-    page-break-inside: avoid;
-}
-
-.travel-plan-section--day > .travel-plan-day__header h2,
-.travel-plan-day__header h2 {
-    margin: 0 0 3mm;
-    padding: 0;
-    border: 0;
-    color: #ffffff;
-    font-size: 18pt;
-    line-height: 1.16;
-}
-
-.travel-plan-day__meta {
-    margin: 0 0 2mm;
-    color: #d4af62;
-}
-
-.travel-plan-day__intro,
-.travel-plan-section--day > .travel-plan-day__header .travel-plan-section__content,
-.travel-plan-section--day > .travel-plan-day__header p,
-.travel-plan-section--day > .travel-plan-day__header li {
-    color: #e9dfcf;
-}
-
-.travel-plan-section--day .travel-plan-day__blocks,
-.travel-plan-day__blocks {
-    margin: 0;
-    padding: 4.5mm 0 0;
-    border: 0;
-    border-top: 0;
-    border-radius: 0;
-    background-color: transparent;
-}
-
-.travel-plan-section--day .travel-plan-block {
-    margin: 0 0 3mm;
-    padding: 4mm 4.5mm 4mm;
-    border: 0.2mm solid #ddd5c7;
-    border-radius: 0;
-    background-color: #ffffff;
-    color: #17233b;
-    page-break-inside: avoid;
-}
-
-.travel-plan-section--day .travel-plan-block:last-child {
-    margin-bottom: 0;
-}
-
-.travel-plan-section--day .travel-plan-block__header .travel-plan-icon {
-    margin-left: 0;
-}
-
 .travel-plan-section--day .travel-plan-block__header h3 {
-    margin-left: 8.8mm;
-}
-
-.travel-plan-section--day .travel-plan-block__time,
-.travel-plan-section--day .travel-plan-block__location,
-.travel-plan-section--day .travel-plan-block__content,
-.travel-plan-section--day .travel-plan-block__action {
-    margin-left: 8.8mm;
-    margin-right: 1mm;
-}
-
-.travel-plan-section--day .travel-plan-block--tip {
-    border-color: #12213d;
-    background-color: #12213d;
-    color: #f7f4ee;
-}
-
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__header h3,
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__content,
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__content p,
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__content li {
-    color: #f7f4ee;
-}
-
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__time,
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__location,
-.travel-plan-section--day .travel-plan-block--tip a {
-    color: #d4af62;
-}
-
-.travel-plan-section--day .travel-plan-block__header .travel-plan-icon {
-    float: left;
-    width: 5.1mm;
-    height: 5.1mm;
-    margin: 0.5mm 3.5mm 2mm 1.8mm;
-}
-
-.travel-plan-section--day .travel-plan-block__header h3,
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__header h3 {
     margin: 0 0 1mm 10.5mm;
     padding: 0;
     color: #12213d;
+    line-height: 1.2;
+    margin-left: 8.8mm;
+    font-family: "Cormorant", serif;
+    font-size: 12.5pt;
+    font-weight: normal;
+}
+
+.travel-plan-section--day .travel-plan-block__time {
+    margin: 0 0 1mm 10.5mm;
+    margin-left: 8.8mm;
+    margin-right: 1mm;
+    color: #8a6a31;
+}
+
+.travel-plan-section--day .travel-plan-block__location {
+    margin: 0 0 1mm 10.5mm;
+    margin-left: 8.8mm;
+    margin-right: 1mm;
+    color: #8a6a31;
+}
+
+.travel-plan-section--day .travel-plan-block__content ul {
+    margin-left: 0;
+    padding-left: 0;
+    padding-right: 0;
+    margin-right: 0;
+    color: #17233b;
+}
+
+.travel-plan-section--day .travel-plan-block__content ol {
+    margin-left: 0;
+    padding-left: 0;
+    padding-right: 0;
+    margin-right: 0;
+    color: #17233b;
+}
+
+.travel-plan-section--day .travel-plan-block__content > *:last-child {
+    margin-bottom: 0;
+}
+
+.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__header h3 {
+    color: #12213d;
+    margin: 0 0 1mm 10.5mm;
+    padding: 0;
     font-family: "Cormorant", serif;
     font-size: 12.5pt;
     font-weight: normal;
     line-height: 1.2;
 }
 
-.travel-plan-section--day .travel-plan-block__time,
-.travel-plan-section--day .travel-plan-block__location,
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__time,
-.travel-plan-section--day .travel-plan-block--tip .travel-plan-block__location,
-.travel-plan-section--day .travel-plan-block--tip a {
-    margin: 0 0 1mm 10.5mm;
-    color: #8a6a31;
-}
-
-.travel-plan-section--day .travel-plan-block__content,
 .travel-plan-section--day .travel-plan-block__action {
     margin-left: 10.5mm;
     margin-right: 3mm;
@@ -1651,40 +1273,10 @@ div.mpdf_toc_level_1 {
     padding-right: 0;
 }
 
-.travel-plan-section--day .travel-plan-block__content p,
-.travel-plan-section--day .travel-plan-block__content ul,
-.travel-plan-section--day .travel-plan-block__content ol,
-.travel-plan-section--day .travel-plan-block--tip p,
-.travel-plan-section--day .travel-plan-block--tip li {
-    margin-left: 0;
-    margin-right: 0;
-    color: #17233b;
-}
-
-.travel-plan-section--day .travel-plan-block__content > *:last-child,
 .travel-plan-section--day .travel-plan-block__action:last-child {
     margin-bottom: 0;
 }
 
-/*
- * Account-view parity: afgeronde kaarten en ronde icon-badges.
- * NB: geen page-break-inside: avoid op divs (mPDF kwt-buffer-bug) en
- * border-radius alleen op divs (werkt niet op tabellen).
- */
-.travel-plan-block {
-    border-color: #e3dccd;
-    border-radius: 2.5mm;
-}
-
-.travel-plan-section--day .travel-plan-block {
-    border-color: #e3dccd;
-    border-radius: 2.5mm;
-}
-
-/*
- * Iconen: de ronde badge zit in de PNG zelf gebakken (IconResolver), want
- * afgeronde divs/floats in kaartkoppen rendert mPDF niet betrouwbaar.
- */
 .travel-plan-block__header .travel-plan-icon {
     float: left;
     width: 7mm;
@@ -1699,11 +1291,6 @@ div.mpdf_toc_level_1 {
     margin: 0 0 2mm 4mm;
 }
 
-.travel-plan-block__header h3 {
-    padding-top: 1.2mm;
-}
-
-/* Keep-together-layout binnen kaarten (zie TravelPlanRenderer). */
 table.travel-plan-block__layout {
     width: 100%;
     margin: 0;
@@ -1720,23 +1307,6 @@ table.travel-plan-block__layout td {
     vertical-align: top;
 }
 
-td.travel-plan-block__icon-cell {
-    width: 10mm;
-}
-
-td.travel-plan-block__icon-cell .travel-plan-icon {
-    float: none;
-    display: block;
-    width: 7mm;
-    height: 7mm;
-    margin: 0;
-}
-
-td.travel-plan-block__body-cell .travel-plan-block__header h3 {
-    padding-top: 1mm;
-}
-
-/* Keep-together voor hero-koppen (zie TravelPlanRenderer::wrapPdfHeroKeep). */
 table.travel-plan-hero__keep {
     width: 100%;
     margin: 0;
@@ -1753,211 +1323,10 @@ table.travel-plan-hero__keep td {
     vertical-align: top;
 }
 
-td.travel-plan-hero__icon-cell {
-    width: 9mm;
-}
-
-td.travel-plan-hero__icon-cell .travel-plan-icon {
-    float: none;
-    display: block;
-    width: 7.5mm;
-    height: 7.5mm;
-    margin: 0;
-}
-
-/*
- * Kaart-padding op de tabelcellen i.p.v. de kaart-div: als de keep-tabel
- * naar de volgende pagina verhuist, blijft er zo geen hoge lege kaarthuls
- * achter op de vorige pagina (alleen een haardunne rand).
- */
-.travel-plan-block,
-.travel-plan-section--day .travel-plan-block {
-    padding: 0;
-}
-
-td.travel-plan-block__icon-cell {
-    width: 13mm;
-    padding: 4.5mm 2.5mm 4.2mm 5mm;
-}
-
-td.travel-plan-block__body-cell {
-    padding: 4.5mm 5mm 4.2mm 0;
-}
-
-/* Lange blokken zonder keep-tabel (oude div-opbouw) houden hun padding. */
 .travel-plan-block__main--flow {
     padding: 4.5mm 5mm 4.2mm;
 }
 
-/* Hero-padding op de cellen van de keep-tabel (zie wrapPdfHeroKeep). */
-td.travel-plan-hero__body {
-    padding: 5.5mm 2.5mm 4.5mm 7mm;
-}
-
-td.travel-plan-hero__icon-cell {
-    width: 16mm;
-    padding: 5.5mm 7mm 0 0;
-}
-
-/*
- * Account-view parity, ronde 2: witte basis zoals het documentpaneel in
- * de mijn-omgeving, kaarten licht ingesprongen onder hun navy header
- * (genest effect) en strakkere sectiemarges.
- */
-body {
-    background-color: #ffffff;
-}
-
-.travel-plan-section {
-    margin-bottom: 6mm;
-}
-
-.travel-plan-section--day .travel-plan-day__blocks {
-    padding: 2.5mm 2mm 0;
-    border: 0;
-    background-color: transparent;
-}
-
-.travel-plan-day__header {
-    margin: 0;
-}
-
-.travel-plan-block,
-.travel-plan-section--day .travel-plan-block {
-    margin: 0 0 3mm;
-    border-color: #e7e1d4;
-}
-
-.travel-plan-frame-card {
-    margin-bottom: 6mm;
-    background-color: #fbfaf7;
-}
-
-.travel-plan__profile {
-    border: 0.2mm solid #e7e1d4;
-}
-
-/*
- * Dag-secties als aaneengesloten groep, zoals in de mijn-omgeving: een
- * warm (goud/geel getint) panel als container met daarin de navy header
- * en de witte kaarten. Het panel mag over pagina's doorlopen (geen
- * avoid op divs — kwt-bug); de header en kaarten zelf blijven heel via
- * hun keep-tabellen.
- */
-.travel-plan-section--day {
-    margin-bottom: 6mm;
-    padding: 3mm 3mm 0;
-    border: 0.2mm solid #e3d9c3;
-    border-radius: 3mm;
-    background-color: #f7f2e6;
-}
-
-.travel-plan-section--day .travel-plan-day__header {
-    margin: 0;
-    border-radius: 2mm;
-}
-
-.travel-plan-section--day .travel-plan-day__blocks {
-    padding: 3mm 0 0;
-    border: 0;
-    background-color: transparent;
-}
-
-.travel-plan-section--day .travel-plan-block {
-    margin: 0 0 3mm;
-    border-color: #e3d9c3;
-    background-color: #ffffff;
-}
-
-/*
- * Account-view parity, ronde 3 — exact volgens account.css:
- * - dag-groep: één afgeronde container; navy header (hoekloos, zoals in de
- *   account-view) strak erin, alléén het kaartengebied heeft de gele
- *   (#f8f5ef) achtergrond;
- * - frames/notities: gouden LINKERrand i.p.v. bovenrand;
- * - kaarten: subtiel blauwgrijs randje, radius 1.6mm (0.35rem).
- * De container-achtergrond staat op de top-level sectie-div (betrouwbaar);
- * geneste divs met tabel-kinderen schilderen hun achtergrond niet.
- */
-.travel-plan-section--day {
-    margin-bottom: 6mm;
-    padding: 0 0 1mm;
-    border: 0.2mm solid #dfe2e9;
-    border-radius: 2mm;
-    background-color: #f8f5ef;
-}
-
-.travel-plan-section--day .travel-plan-day__header {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-}
-
-.travel-plan-section--day .travel-plan-day__blocks {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    background-color: transparent;
-}
-
-.travel-plan-block,
-.travel-plan-section--day .travel-plan-block {
-    margin: 0 4mm 3mm;
-    border: 0.2mm solid #e1e4ea;
-    border-radius: 1.6mm;
-    background-color: transparent;
-}
-
-.travel-plan-frame-card {
-    margin-bottom: 6mm;
-    border: 0.2mm solid #e5d9bf;
-    border-left: 1.5mm solid #b99550;
-    border-radius: 2mm;
-    background-color: #fbfaf7;
-}
-
-.travel-plan-section--route,
-.travel-plan-section--budget-note,
-.travel-plan-section--personal-note,
-.travel-plan-section--checklist {
-    border: 0.2mm solid #e5d9bf;
-    border-left: 1.5mm solid #b99550;
-    border-radius: 2mm;
-}
-
-/*
- * Dag-groepen zijn nu tabellen (zie TravelPlanRenderer::buildPdfDayGroup);
- * de sectie-div eromheen is puur structureel. Kaartafstand binnen de groep
- * komt uit de rij-paddings, dus geen extra kaartmarges.
- */
-.travel-plan-section--day {
-    margin-bottom: 6mm;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    background-color: transparent;
-}
-
-.travel-plan-section--day .travel-plan-block {
-    margin: 0;
-}
-
-/*
- * Kaarten dragen hun ronding via cap-afbeeldingen en zijranden op de
- * tabelcellen; de kaart-div is puur structureel (een div-rand zou als
- * rechthoek om de ronde vulling heen zichtbaar zijn).
- */
-.travel-plan-block,
-.travel-plan-section--day .travel-plan-block {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    background-color: transparent;
-}
-
-/* Lange doorloop-blokken (zonder keep-tabel) houden een gewone rand. */
 .travel-plan-block--flow {
     margin: 0 0 3mm;
     border: 0.2mm solid #e1e4ea;

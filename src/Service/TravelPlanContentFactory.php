@@ -75,6 +75,7 @@ final class TravelPlanContentFactory
             self::TYPE_DESTINATION => [
                 'type' => $type,
                 'startOnNewPage' => false,
+                'colorVariant' => 'auto',
                 'title' => '',
                 'country' => '',
                 'region' => '',
@@ -93,6 +94,7 @@ final class TravelPlanContentFactory
             self::TYPE_ROUTE_OVERVIEW => [
                 'type' => $type,
                 'startOnNewPage' => false,
+                'colorVariant' => 'auto',
                 'title' => '',
                 'text' => '',
                 'routeStops' => [],
@@ -107,6 +109,7 @@ final class TravelPlanContentFactory
             self::TYPE_DAY => [
                 'type' => $type,
                 'startOnNewPage' => false,
+                'colorVariant' => 'auto',
                 'dayNumber' => '',
                 'title' => '',
                 'dateLabel' => '',
@@ -120,6 +123,7 @@ final class TravelPlanContentFactory
             self::TYPE_MEAL => [
                 'type' => $type,
                 'startOnNewPage' => false,
+                'colorVariant' => 'auto',
                 'title' => '',
                 'text' => '',
                 'icon' => $this->defaultIcon($type),
@@ -135,6 +139,7 @@ final class TravelPlanContentFactory
             self::TYPE_FREE_TEXT => [
                 'type' => $type,
                 'startOnNewPage' => false,
+                'colorVariant' => 'auto',
                 'title' => '',
                 'text' => '',
                 'icon' => $this->defaultIcon($type),
@@ -149,6 +154,7 @@ final class TravelPlanContentFactory
             self::TYPE_PERSONAL_NOTE => [
                 'type' => $type,
                 'startOnNewPage' => false,
+                'colorVariant' => 'auto',
                 'title' => '',
                 'text' => '',
                 'icon' => $this->defaultIcon($type),
@@ -156,6 +162,7 @@ final class TravelPlanContentFactory
             self::TYPE_CHECKLIST => [
                 'type' => $type,
                 'startOnNewPage' => false,
+                'colorVariant' => 'auto',
                 'title' => '',
                 'text' => '',
             ],
@@ -292,6 +299,7 @@ final class TravelPlanContentFactory
 
             $normalized[] = $this->createBlock(self::TYPE_DESTINATION, [
                 'startOnNewPage' => $this->boolValue($destination, 'startOnNewPage'),
+                'colorVariant' => $this->colorVariantValue($destination['colorVariant'] ?? null),
                 'title' => $this->stringValue($destination, 'title'),
                 'country' => $this->stringValue($destination, 'country'),
                 'region' => $this->stringValue($destination, 'region'),
@@ -329,6 +337,7 @@ final class TravelPlanContentFactory
             if (self::TYPE_DAY === $type) {
                 $normalized[] = $this->createBlock($type, [
                     'startOnNewPage' => $this->boolValue($section, 'startOnNewPage'),
+                    'colorVariant' => $this->colorVariantValue($section['colorVariant'] ?? null),
                     'dayNumber' => $this->normalizeOptionalPositiveInt($section['dayNumber'] ?? null),
                     'title' => $this->stringValue($section, 'title'),
                     'dateLabel' => $this->stringValue($section, 'dateLabel'),
@@ -343,6 +352,7 @@ final class TravelPlanContentFactory
             if (self::TYPE_ROUTE_OVERVIEW === $type) {
                 $normalized[] = $this->createBlock($type, [
                     'startOnNewPage' => $this->boolValue($section, 'startOnNewPage'),
+                    'colorVariant' => $this->colorVariantValue($section['colorVariant'] ?? null),
                     'title' => $this->stringValue($section, 'title'),
                     'text' => $this->stringValue($section, 'text'),
                     'routeStops' => $this->normalizeRouteStops($section['routeStops'] ?? []),
@@ -356,9 +366,11 @@ final class TravelPlanContentFactory
 
             foreach (\array_keys($defaults) as $field) {
                 if ('type' !== $field) {
-                    $values[$field] = 'startOnNewPage' === $field
-                        ? $this->boolValue($section, $field)
-                        : $this->stringValue($section, $field);
+                    $values[$field] = match ($field) {
+                        'startOnNewPage' => $this->boolValue($section, $field),
+                        'colorVariant' => $this->colorVariantValue($section[$field] ?? null),
+                        default => $this->stringValue($section, $field),
+                    };
                 }
             }
 
@@ -439,6 +451,7 @@ final class TravelPlanContentFactory
                 if ('type' !== $field) {
                     $values[$field] = match (true) {
                         'startOnNewPage' === $field => $this->boolValue($block, $field),
+                        'colorVariant' === $field => $this->colorVariantValue($block[$field] ?? null),
                         \in_array($field, ['time', 'startTime', 'endTime'], true) => $this->normalizeTimeValue($block[$field] ?? null),
                         default => $this->stringValue($block, $field),
                     };
@@ -493,6 +506,20 @@ final class TravelPlanContentFactory
             'two', 'Twee lagen' => 'two',
             'none', '', 'Geen' => 'none',
             default => 'none',
+        };
+    }
+
+    private function colorVariantValue(mixed $value): string
+    {
+        if (!\is_scalar($value)) {
+            return 'auto';
+        }
+
+        return match (\trim((string)$value)) {
+            'primary', 'Primair', 'Blauw' => 'primary',
+            'secondary', 'Secundair', 'Geel' => 'secondary',
+            'auto', '', 'Standaard' => 'auto',
+            default => 'auto',
         };
     }
 

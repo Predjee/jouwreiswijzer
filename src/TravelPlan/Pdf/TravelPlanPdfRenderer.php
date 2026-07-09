@@ -25,13 +25,15 @@ final readonly class TravelPlanPdfRenderer
      */
     public function prepareRichText(array $block, bool $accountView): array
     {
-        if ($accountView || !\is_string($block['text'] ?? null)) {
+        if ($accountView) {
             return $block;
         }
 
-        $block['text'] = $this->richTextNormalizer->normalize($block['text']);
+        if (\is_string($block['text'] ?? null)) {
+            $block['text'] = $this->richTextNormalizer->normalize($block['text']);
+        }
 
-        return $block;
+        return $this->withColorVariant($block);
     }
 
     /**
@@ -67,9 +69,9 @@ final readonly class TravelPlanPdfRenderer
                 return $html;
             }
 
-            $openingTag = \str_replace('padding: 6mm 7mm 5mm;', 'padding: 0;', $openingTag);
+            $openingTag = \str_replace('padding: 8.5mm 9mm 7.5mm 12mm;', 'padding: 0;', $openingTag);
 
-            return $prefix . $openingTag . $this->heroKeepTable($inner, $icon, '') . $closingTag;
+            return $prefix . $openingTag . $this->heroKeepTable($inner, '', '') . $closingTag;
         }
 
         if (1 === \preg_match(
@@ -185,6 +187,8 @@ final readonly class TravelPlanPdfRenderer
             'title' => \is_scalar($section['title'] ?? null) ? (string) $section['title'] : '',
             'introHtml' => \is_string($section['intro'] ?? null) ? $this->prepareHeaderIntroHtml($section['intro']) : '',
             'iconSrc' => $this->iconPngDataUri($icon),
+            'isPrimary' => true === ($section['isPrimary'] ?? false),
+            'isSecondary' => true === ($section['isSecondary'] ?? false),
             'headerOnly' => null === $boundCard && [] === $rows,
             'boundCard' => $boundCard,
             'boundCloses' => $boundCloses,
@@ -218,7 +222,8 @@ final readonly class TravelPlanPdfRenderer
             $block = $this->prepareRichText($block, false);
             $block['type'] = $type;
             $block['textHtml'] = \is_string($block['text'] ?? null) ? $block['text'] : '';
-            $block['isTip'] = 'tip' === $type;
+            $block = $this->withColorVariant($block);
+            $block['isTip'] = $block['isPrimary'];
             $block['actionLabel'] = $this->actionLabel($type);
             $block['iconSrc'] = $this->iconPngDataUri(
                 $this->iconOrDefault($block['icon'] ?? null, $this->defaultDayBlockIcon($type)),
@@ -233,6 +238,37 @@ final readonly class TravelPlanPdfRenderer
         }
 
         return $prepared;
+    }
+
+    private function colorVariant(mixed $value): string
+    {
+        if (!\is_scalar($value)) {
+            return 'auto';
+        }
+
+        return match (\trim((string)$value)) {
+            'primary' => 'primary',
+            'secondary' => 'secondary',
+            default => 'auto',
+        };
+    }
+
+    /**
+     * @param string[] $autoPrimaryTypes
+     *
+     * @return array<string, mixed>
+     */
+    private function withColorVariant(array $block): array
+    {
+        $type = $block['type'] ?? null;
+        $variant = $this->colorVariant($block['colorVariant'] ?? null);
+
+        $block['colorVariant'] = $variant;
+        $block['isPrimary'] = 'primary' === $variant;
+        $block['isSecondary'] = 'secondary' === $variant;
+        $block['isGold'] = 'auto' === $variant && 'tip' === $type;
+
+        return $block;
     }
 
     /**

@@ -5,7 +5,7 @@
 {% endif %}
     {# Inline styling in PDF-modus: mPDF's klasse-cascade is onbetrouwbaar
        in gesplitste chunks; inline styles winnen altijd. #}
-    <div class="travel-plan-day__header"{% if not accountView %} style="background-color: #12213d; color: #f7f4ee;"{% endif %}>
+    <div class="travel-plan-day__header"{% if not accountView %} style="background-color: #071828; color: #f7f4ee;"{% endif %}>
         {% set dayMeta = [] %}
         {% if section.dayNumber|default('') is not empty %}
             {% set dayMeta = dayMeta|merge(['Dag ' ~ section.dayNumber]) %}
@@ -14,7 +14,7 @@
             {% set dayMeta = dayMeta|merge([section.dateLabel]) %}
         {% endif %}
                 {% if dayMeta is not empty %}
-            <p class="travel-plan-day__meta"{% if not accountView %} style="color: #d4af62;"{% endif %}>{{ dayMeta|join(' · ') }}</p>
+            <p class="travel-plan-day__meta"{% if not accountView %} style="color: #e1bd55;"{% endif %}>{{ dayMeta|join(' · ') }}</p>
         {% endif %}
         {% if section.title|default %}<h2{% if not accountView %} style="color: #ffffff;"{% endif %}>{{ section.title }}</h2>{% endif %}
         {% if section.intro|default %}

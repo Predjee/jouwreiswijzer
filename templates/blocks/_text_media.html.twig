@@ -16,8 +16,9 @@
                 <div class="text-media__grid
                             {{ images|length == 3 ? 'text-media__grid--three' : '' }}">
                     {% for image in images %}
+                        {% set grid_image = image.thumbnails['text-media-grid']|default(image.url|default('')) %}
                         <figure class="text-media__grid-item">
-                            <img src="{{ image.thumbnails['text-media-grid'] }}"
+                            <img src="{{ grid_image }}"
                                  alt="{{ image.title|default('') }}"
                                  width="640"
                                  height="480"
@@ -36,8 +37,9 @@
                     relative z-10">
 
             {% if has_image %}
+                {% set landscape_image = block.image.thumbnails['text-media-landscape']|default(block.image.url|default('')) %}
                 <figure class="text-media__media">
-                    <img src="{{ block.image.thumbnails['text-media-landscape'] }}"
+                    <img src="{{ landscape_image }}"
                          alt="{{ block.image.title|default('') }}"
                          width="960"
                          height="640"

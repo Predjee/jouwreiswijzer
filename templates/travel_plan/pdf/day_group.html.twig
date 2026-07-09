@@ -16,11 +16,11 @@
 {% if group.headerOnly %}
 {# Geen vervolg: los, afgerond navy blok (top-level div schildert zijn
    achtergrond mét border-radius betrouwbaar — het destination-patroon). #}
-<div class="travel-plan-section travel-plan-section--day" style="padding: 0; color: {{ t.textLight }}; border-radius: {{ t.sectionRadius }};">
+<div class="travel-plan-section travel-plan-section--day{% if group.isPrimary %} travel-plan-section--primary{% elseif group.isSecondary %} travel-plan-section--secondary{% endif %}" style="padding: 0; color: #17233b; border-radius: {{ t.sectionRadius }};">
     {{ _self.headerTable(group, t, false, true) }}
 </div>
 {% else %}
-<div class="travel-plan-section travel-plan-section--day" style="border-radius: {{ t.sectionRadius }};">
+<div class="travel-plan-section travel-plan-section--day{% if group.isPrimary %} travel-plan-section--primary{% elseif group.isSecondary %} travel-plan-section--secondary{% endif %}" style="border-radius: {{ t.sectionRadius }};">
 {{ groupOpen }}
     <tr><td style="padding: 0; background-color: {{ t.cream }}; vertical-align: top;">
         <div style="margin: 0; padding: 0;">
@@ -56,17 +56,31 @@
 {% endif %}
 
 {% macro headerTable(group, t, standalone, closed = false) %}
+{% set headerBackground = group.isPrimary ? t.navy : (group.isSecondary ? '#fff7df' : t.white) %}
+{% set headerEdge = group.isPrimary ? t.gold : (group.isSecondary ? t.gold : t.edge) %}
+{% set headerText = group.isPrimary ? '#eef1f6' : '#17233b' %}
+{% set headerTitle = group.isPrimary ? t.white : t.navy %}
+{% set headerMeta = group.isPrimary ? t.goldLight : '#8a6a31' %}
+{% set headerIntro = group.isPrimary ? '#eef1f6' : '#17233b' %}
     {# Navy op de cellen (niet op de tabel): mPDF houdt celachtergronden
        bij geneste tabellen betrouwbaarder bij de inhoud dan div-achtergronden. #}
 <table style="width: 100%; border-collapse: separate; border-spacing: 0; page-break-inside: avoid; border-radius: {{ t.sectionRadius }} {{ t.sectionRadius }}{% if closed %} {{ t.sectionRadius }} {{ t.sectionRadius }}{% else %} 0 0{% endif %};"><tr>
-        <td style="padding: 5mm 2.5mm 4.5mm 6mm; vertical-align: top; color: {{ t.textLight }}; border-radius: {{ t.sectionRadius }} {% if group.iconSrc %}0{% else %}{{ t.sectionRadius }}{% endif %} {% if closed and not group.iconSrc %}{{ t.sectionRadius }}{% else %}0{% endif %} {% if closed %}{{ t.sectionRadius }}{% else %}0{% endif %};{% if not standalone %} background-color: {{ t.navy }};{% endif %}">
-            {% if group.meta %}<p class="travel-plan-day__meta" style="color: {{ t.goldLight }};">{{ group.meta }}</p>{% endif %}
-            {% if group.title %}<h2 style="margin: 0 0 2mm; padding: 0; border: 0; color: {{ t.white }}; font-size: 17.5pt;">{{ group.title }}</h2>{% endif %}
-            {% if group.introHtml %}<div class="travel-plan-section__content travel-plan-day__intro" style="color: {{ t.textSoft }};">{{ group.introHtml|raw }}</div>{% endif %}
+        <td style="padding: 5mm 2.5mm 4.5mm 6mm; vertical-align: top; color: {{ headerText }}; border-top: 0.45mm solid {{ headerEdge }}; border-left: 0.2mm solid {{ headerEdge }}; border-bottom: 0.2mm solid {{ headerEdge }}; border-radius: {{ t.sectionRadius }} {% if group.iconSrc %}0{% else %}{{ t.sectionRadius }}{% endif %} {% if closed and not group.iconSrc %}{{ t.sectionRadius }}{% else %}0{% endif %} {% if closed %}{{ t.sectionRadius }}{% else %}0{% endif %};{% if not standalone %} background-color: {{ headerBackground }};{% endif %}">
+            {% if group.meta %}<p class="travel-plan-day__meta" style="color: {{ headerMeta }};">{{ group.meta }}</p>{% endif %}
+            {% if group.title %}<h2 style="margin: 0 0 2mm; padding: 0; border: 0; color: {{ headerTitle }}; font-size: 17.5pt;">{{ group.title }}</h2>{% endif %}
+            {% if group.introHtml %}
+                {% set introHtml = group.introHtml|replace({
+                    '#e7e0d3': headerIntro,
+                    '#d8dde2': headerIntro,
+                    '#eef1f6': headerIntro,
+                    '#f7f4ee': headerIntro
+                }) %}
+                <div class="travel-plan-section__content travel-plan-day__intro" style="color: {{ headerIntro }};">{{ introHtml|raw }}</div>
+            {% endif %}
         </td>
         {% if group.iconSrc %}
-        <td style="width: 15mm; padding: 5mm 6mm 0 0; vertical-align: top; border-radius: 0 {{ t.sectionRadius }} {% if closed %}{{ t.sectionRadius }}{% else %}0{% endif %} 0;{% if not standalone %} background-color: {{ t.navy }};{% endif %}">
-            <img class="travel-plan-icon" src="{{ group.iconSrc }}" style="float: none; display: block; width: 7.5mm; height: 7.5mm; margin: 0;" alt="">
+            <td style="width: 15mm; padding: 5mm 6mm 0 0; vertical-align: top; border-top: 0.45mm solid {{ headerEdge }}; border-right: 0.2mm solid {{ headerEdge }}; border-bottom: 0.2mm solid {{ headerEdge }}; border-radius: 0 {{ t.sectionRadius }} {% if closed %}{{ t.sectionRadius }}{% else %}0{% endif %} 0;{% if not standalone %} background-color: {{ headerBackground }};{% endif %}">
+            <img class="travel-plan-icon" src="{{ group.iconSrc }}" style="float: none; display: block; width: 7mm; height: 7mm; margin: 0;" alt="">
         </td>
         {% endif %}
     </tr></table>

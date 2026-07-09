@@ -12,14 +12,14 @@ namespace App\TravelPlan\Pdf;
  */
 final class TravelPlanPdfStyle
 {
-    public const NAVY = '#12213d';
-    public const GOLD = '#b99550';
-    public const GOLD_LIGHT = '#d4af62';
+    public const NAVY = '#071828';
+    public const GOLD = '#d4af37';
+    public const GOLD_LIGHT = '#e1bd55';
     public const CREAM = '#f8f5ef';
     public const EDGE = '#e3ddcd';
     public const EDGE_CARD = '#e1e4ea';
     public const TEXT_LIGHT = '#f7f4ee';
-    public const TEXT_SOFT = '#e7e0d3';
+    public const TEXT_SOFT = '#d8dde2';
     public const TEXT_CONTENT_LIGHT = '#eef1f6';
     public const WHITE = '#ffffff';
     public const CARD_RADIUS = '1.8mm';

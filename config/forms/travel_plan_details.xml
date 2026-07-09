@@ -162,6 +162,31 @@
                                 <title>Nieuwe pagina</title>
                             </meta>
                         </property>
+                        <property name="colorVariant" type="single_select" colspan="4">
+                            <meta>
+                                <title>PDF kleur</title>
+                            </meta>
+                            <params>
+                                <param name="default_value" value="auto"/>
+                                <param name="values" type="collection">
+                                    <param name="auto">
+                                        <meta>
+                                            <title>Standaard</title>
+                                        </meta>
+                                    </param>
+                                    <param name="primary">
+                                        <meta>
+                                            <title>Primair (blauw)</title>
+                                        </meta>
+                                    </param>
+                                    <param name="secondary">
+                                        <meta>
+                                            <title>Secundair (geel)</title>
+                                        </meta>
+                                    </param>
+                                </param>
+                            </params>
+                        </property>
                         <property name="title" type="text_line">
                             <meta>
                                 <title>Titel</title>
@@ -217,6 +242,31 @@
                                             <meta>
                                                 <title>Nieuwe pagina</title>
                                             </meta>
+                                        </property>
+                                        <property name="colorVariant" type="single_select" colspan="4">
+                                            <meta>
+                                                <title>PDF kleur</title>
+                                            </meta>
+                                            <params>
+                                                <param name="default_value" value="auto"/>
+                                                <param name="values" type="collection">
+                                                    <param name="auto">
+                                                        <meta>
+                                                            <title>Standaard</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="primary">
+                                                        <meta>
+                                                            <title>Primair (blauw)</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="secondary">
+                                                        <meta>
+                                                            <title>Secundair (geel)</title>
+                                                        </meta>
+                                                    </param>
+                                                </param>
+                                            </params>
                                         </property>
                                         <property name="title" type="text_line">
                                             <meta>
@@ -285,6 +335,31 @@
                                                 <title>Nieuwe pagina</title>
                                             </meta>
                                         </property>
+                                        <property name="colorVariant" type="single_select" colspan="4">
+                                            <meta>
+                                                <title>PDF kleur</title>
+                                            </meta>
+                                            <params>
+                                                <param name="default_value" value="auto"/>
+                                                <param name="values" type="collection">
+                                                    <param name="auto">
+                                                        <meta>
+                                                            <title>Standaard</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="primary">
+                                                        <meta>
+                                                            <title>Primair (blauw)</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="secondary">
+                                                        <meta>
+                                                            <title>Secundair (geel)</title>
+                                                        </meta>
+                                                    </param>
+                                                </param>
+                                            </params>
+                                        </property>
                                         <property name="dayNumber" type="number" colspan="3">
                                             <meta>
                                                 <title>Dagnummer</title>
@@ -341,6 +416,31 @@
                                                             <meta>
                                                                 <title>Nieuwe pagina</title>
                                                             </meta>
+                                                        </property>
+                                                        <property name="colorVariant" type="single_select" colspan="4">
+                                                            <meta>
+                                                                <title>PDF kleur</title>
+                                                            </meta>
+                                                            <params>
+                                                                <param name="default_value" value="auto"/>
+                                                                <param name="values" type="collection">
+                                                                    <param name="auto">
+                                                                        <meta>
+                                                                            <title>Standaard</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="primary">
+                                                                        <meta>
+                                                                            <title>Primair (blauw)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="secondary">
+                                                                        <meta>
+                                                                            <title>Secundair (geel)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                </param>
+                                                            </params>
                                                         </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
@@ -404,6 +504,31 @@
                                                                 <title>Nieuwe pagina</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="colorVariant" type="single_select" colspan="4">
+                                                            <meta>
+                                                                <title>PDF kleur</title>
+                                                            </meta>
+                                                            <params>
+                                                                <param name="default_value" value="auto"/>
+                                                                <param name="values" type="collection">
+                                                                    <param name="auto">
+                                                                        <meta>
+                                                                            <title>Standaard</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="primary">
+                                                                        <meta>
+                                                                            <title>Primair (blauw)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="secondary">
+                                                                        <meta>
+                                                                            <title>Secundair (geel)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                </param>
+                                                            </params>
+                                                        </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
                                                                 <title>Titel</title>
@@ -465,6 +590,31 @@
                                                             <meta>
                                                                 <title>Nieuwe pagina</title>
                                                             </meta>
+                                                        </property>
+                                                        <property name="colorVariant" type="single_select" colspan="4">
+                                                            <meta>
+                                                                <title>PDF kleur</title>
+                                                            </meta>
+                                                            <params>
+                                                                <param name="default_value" value="auto"/>
+                                                                <param name="values" type="collection">
+                                                                    <param name="auto">
+                                                                        <meta>
+                                                                            <title>Standaard</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="primary">
+                                                                        <meta>
+                                                                            <title>Primair (blauw)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="secondary">
+                                                                        <meta>
+                                                                            <title>Secundair (geel)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                </param>
+                                                            </params>
                                                         </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
@@ -528,6 +678,31 @@
                                                                 <title>Nieuwe pagina</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="colorVariant" type="single_select" colspan="4">
+                                                            <meta>
+                                                                <title>PDF kleur</title>
+                                                            </meta>
+                                                            <params>
+                                                                <param name="default_value" value="auto"/>
+                                                                <param name="values" type="collection">
+                                                                    <param name="auto">
+                                                                        <meta>
+                                                                            <title>Standaard</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="primary">
+                                                                        <meta>
+                                                                            <title>Primair (blauw)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="secondary">
+                                                                        <meta>
+                                                                            <title>Secundair (geel)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                </param>
+                                                            </params>
+                                                        </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
                                                                 <title>Titel</title>
@@ -590,6 +765,31 @@
                                                                 <title>Nieuwe pagina</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="colorVariant" type="single_select" colspan="4">
+                                                            <meta>
+                                                                <title>PDF kleur</title>
+                                                            </meta>
+                                                            <params>
+                                                                <param name="default_value" value="auto"/>
+                                                                <param name="values" type="collection">
+                                                                    <param name="auto">
+                                                                        <meta>
+                                                                            <title>Standaard</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="primary">
+                                                                        <meta>
+                                                                            <title>Primair (blauw)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="secondary">
+                                                                        <meta>
+                                                                            <title>Secundair (geel)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                </param>
+                                                            </params>
+                                                        </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
                                                                 <title>Titel</title>
@@ -647,6 +847,31 @@
                                                                 <title>Nieuwe pagina</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="colorVariant" type="single_select" colspan="4">
+                                                            <meta>
+                                                                <title>PDF kleur</title>
+                                                            </meta>
+                                                            <params>
+                                                                <param name="default_value" value="auto"/>
+                                                                <param name="values" type="collection">
+                                                                    <param name="auto">
+                                                                        <meta>
+                                                                            <title>Standaard</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="primary">
+                                                                        <meta>
+                                                                            <title>Primair (blauw)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="secondary">
+                                                                        <meta>
+                                                                            <title>Secundair (geel)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                </param>
+                                                            </params>
+                                                        </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
                                                                 <title>Titel</title>
@@ -703,6 +928,31 @@
                                                             <meta>
                                                                 <title>Nieuwe pagina</title>
                                                             </meta>
+                                                        </property>
+                                                        <property name="colorVariant" type="single_select" colspan="4">
+                                                            <meta>
+                                                                <title>PDF kleur</title>
+                                                            </meta>
+                                                            <params>
+                                                                <param name="default_value" value="auto"/>
+                                                                <param name="values" type="collection">
+                                                                    <param name="auto">
+                                                                        <meta>
+                                                                            <title>Standaard</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="primary">
+                                                                        <meta>
+                                                                            <title>Primair (blauw)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="secondary">
+                                                                        <meta>
+                                                                            <title>Secundair (geel)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                </param>
+                                                            </params>
                                                         </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
@@ -766,6 +1016,31 @@
                                                 <title>Nieuwe pagina</title>
                                             </meta>
                                         </property>
+                                        <property name="colorVariant" type="single_select" colspan="4">
+                                            <meta>
+                                                <title>PDF kleur</title>
+                                            </meta>
+                                            <params>
+                                                <param name="default_value" value="auto"/>
+                                                <param name="values" type="collection">
+                                                    <param name="auto">
+                                                        <meta>
+                                                            <title>Standaard</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="primary">
+                                                        <meta>
+                                                            <title>Primair (blauw)</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="secondary">
+                                                        <meta>
+                                                            <title>Secundair (geel)</title>
+                                                        </meta>
+                                                    </param>
+                                                </param>
+                                            </params>
+                                        </property>
                                         <property name="title" type="text_line">
                                             <meta>
                                                 <title>Titel</title>
@@ -803,6 +1078,31 @@
                                                 <title>Nieuwe pagina</title>
                                             </meta>
                                         </property>
+                                        <property name="colorVariant" type="single_select" colspan="4">
+                                            <meta>
+                                                <title>PDF kleur</title>
+                                            </meta>
+                                            <params>
+                                                <param name="default_value" value="auto"/>
+                                                <param name="values" type="collection">
+                                                    <param name="auto">
+                                                        <meta>
+                                                            <title>Standaard</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="primary">
+                                                        <meta>
+                                                            <title>Primair (blauw)</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="secondary">
+                                                        <meta>
+                                                            <title>Secundair (geel)</title>
+                                                        </meta>
+                                                    </param>
+                                                </param>
+                                            </params>
+                                        </property>
                                         <property name="title" type="text_line">
                                             <meta>
                                                 <title>Titel</title>
@@ -831,6 +1131,31 @@
                                             <meta>
                                                 <title>Nieuwe pagina</title>
                                             </meta>
+                                        </property>
+                                        <property name="colorVariant" type="single_select" colspan="4">
+                                            <meta>
+                                                <title>PDF kleur</title>
+                                            </meta>
+                                            <params>
+                                                <param name="default_value" value="auto"/>
+                                                <param name="values" type="collection">
+                                                    <param name="auto">
+                                                        <meta>
+                                                            <title>Standaard</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="primary">
+                                                        <meta>
+                                                            <title>Primair (blauw)</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="secondary">
+                                                        <meta>
+                                                            <title>Secundair (geel)</title>
+                                                        </meta>
+                                                    </param>
+                                                </param>
+                                            </params>
                                         </property>
                                         <property name="title" type="text_line">
                                             <meta>
@@ -869,6 +1194,31 @@
                                                 <title>Nieuwe pagina</title>
                                             </meta>
                                         </property>
+                                        <property name="colorVariant" type="single_select" colspan="4">
+                                            <meta>
+                                                <title>PDF kleur</title>
+                                            </meta>
+                                            <params>
+                                                <param name="default_value" value="auto"/>
+                                                <param name="values" type="collection">
+                                                    <param name="auto">
+                                                        <meta>
+                                                            <title>Standaard</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="primary">
+                                                        <meta>
+                                                            <title>Primair (blauw)</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="secondary">
+                                                        <meta>
+                                                            <title>Secundair (geel)</title>
+                                                        </meta>
+                                                    </param>
+                                                </param>
+                                            </params>
+                                        </property>
                                         <property name="title" type="text_line">
                                             <meta>
                                                 <title>Titel</title>
@@ -905,6 +1255,31 @@
                                             <meta>
                                                 <title>Nieuwe pagina</title>
                                             </meta>
+                                        </property>
+                                        <property name="colorVariant" type="single_select" colspan="4">
+                                            <meta>
+                                                <title>PDF kleur</title>
+                                            </meta>
+                                            <params>
+                                                <param name="default_value" value="auto"/>
+                                                <param name="values" type="collection">
+                                                    <param name="auto">
+                                                        <meta>
+                                                            <title>Standaard</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="primary">
+                                                        <meta>
+                                                            <title>Primair (blauw)</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="secondary">
+                                                        <meta>
+                                                            <title>Secundair (geel)</title>
+                                                        </meta>
+                                                    </param>
+                                                </param>
+                                            </params>
                                         </property>
                                         <property name="title" type="text_line">
                                             <meta>

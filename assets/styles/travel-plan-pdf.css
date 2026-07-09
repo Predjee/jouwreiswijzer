@@ -37,7 +37,7 @@ body {
 .travel-plan h1,
 .travel-plan-section h1 {
     margin: 0;
-    color: #12213d;
+    color: #071828;
     font-family: "Cormorant", serif;
     font-size: 34pt;
     font-weight: normal;
@@ -49,8 +49,8 @@ body {
 .travel-plan-frame-card h2 {
     margin: 0 0 4mm;
     padding: 0 0 2mm;
-    border-bottom: 0.25mm solid #b99550;
-    color: #12213d;
+    border-bottom: 0.25mm solid #d4af37;
+    color: #071828;
     font-family: "Cormorant", serif;
     font-size: 16.5pt;
     font-weight: normal;
@@ -61,7 +61,7 @@ body {
 .travel-plan-section h3,
 .travel-plan-frame-card h3 {
     margin: 0 0 1.2mm;
-    color: #12213d;
+    color: #071828;
     font-family: "Cormorant", serif;
     font-size: 12pt;
     font-weight: normal;
@@ -100,7 +100,7 @@ body {
 
 .travel-plan-cover__eyebrow {
     margin: 0 0 8mm;
-    color: #d4af62;
+    color: #e1bd55;
     font-family: "JostRegular", "Jost", sans-serif;
     font-size: 8.5pt;
     letter-spacing: 2.2px;
@@ -118,7 +118,7 @@ body {
 .travel-plan-cover__subtitle {
     max-width: 130mm;
     margin: 0 auto 7mm;
-    color: #e7e0d3;
+    color: #d8dde2;
     font-family: "Cormorant", serif;
     font-size: 17pt;
     font-style: italic;
@@ -127,7 +127,7 @@ body {
 
 .travel-plan-cover__customer {
     margin: 0;
-    color: #d4af62;
+    color: #e1bd55;
     font-family: "Cormorant", serif;
     font-size: 14pt;
     font-style: italic;
@@ -137,7 +137,7 @@ body {
     width: 24mm;
     height: 0;
     margin: 13mm auto 7mm;
-    border-top: 0.5mm solid #b99550;
+    border-top: 0.5mm solid #d4af37;
     font-size: 0;
     line-height: 0;
 }
@@ -153,34 +153,39 @@ body {
 
 /* Intro/profiel */
 .travel-plan__header {
-    margin-bottom: 15mm;
+    margin-bottom: 14mm;
 }
 
 .travel-plan__header > h2 {
     margin-bottom: 6mm;
-    font-size: 27pt;
+    padding-bottom: 2.4mm;
+    border-bottom: 0.45mm solid #d4af37;
+    color: #071828;
+    font-size: 29pt;
+    line-height: 1.05;
 }
 
 .travel-plan__intro {
-    margin-bottom: 9mm;
-    color: #445064;
-    font-size: 11.5pt;
+    margin-bottom: 10mm;
+    color: #344055;
+    font-size: 11pt;
     line-height: 1.68;
 }
 
 .travel-plan__profile {
     width: 100%;
-    margin: 9mm 0 14mm;
-    border: 0.2mm solid #e7e1d4;
+    margin: 9mm 0 13mm;
+    border: 0.25mm solid #d4af37;
+    border-top: 0.8mm solid #d4af37;
     border-collapse: collapse;
-    background-color: #fbfaf7;
+    background-color: #ffffff;
     font-family: "JostRegular", "Jost", sans-serif;
 }
 
 .travel-plan__profile th,
 .travel-plan__profile td {
-    padding: 3.2mm 4mm;
-    border-bottom: 0.2mm solid #ddd5c7;
+    padding: 3.4mm 4.2mm;
+    border-bottom: 0.2mm solid #e7dfcf;
     text-align: left;
     vertical-align: top;
 }
@@ -192,6 +197,11 @@ body {
     font-weight: normal;
     letter-spacing: 0.5px;
     text-transform: uppercase;
+}
+
+.travel-plan__profile td {
+    color: #071828;
+    font-size: 10.4pt;
 }
 
 /* Algemene secties */
@@ -240,7 +250,7 @@ body {
     margin: 0 0 3.6mm 9.6mm;
     padding: 0 0 3mm;
     border: 0;
-    color: #12213d;
+    color: #071828;
     font-size: 18pt;
     font-style: normal;
     line-height: 1.16;
@@ -279,8 +289,8 @@ body {
     margin: 0 0 3mm;
     padding: 5.5mm 6mm 5mm;
     border: 0;
-    border-top: 0.8mm solid #b99550;
-    background-color: #12213d;
+    border-top: 0.8mm solid #d4af37;
+    background-color: #071828;
     color: #f7f4ee;
     page-break-inside: auto;
 }
@@ -300,7 +310,7 @@ body {
 .travel-plan-day__meta,
 .travel-plan-section--day header > p:first-child {
     margin: 0 0 2mm;
-    color: #d4af62;
+    color: #e1bd55;
     font-family: "JostRegular", "Jost", sans-serif;
     font-size: 8pt;
     font-weight: normal;
@@ -312,7 +322,7 @@ body {
 .travel-plan-day__intro p,
 .travel-plan-section--day > .travel-plan-day__header p,
 .travel-plan-section--day > .travel-plan-day__header li {
-    color: #e7e0d3;
+    color: #d8dde2;
 }
 
 .travel-plan-day__blocks {
@@ -323,7 +333,7 @@ body {
 /* Kleine kaarten: table layout voor mPDF-stabiliteit. */
 table.travel-plan-block {
     width: 100%;
-    margin: 0 0 3mm;
+    margin: 0 0 3.2mm;
     border-collapse: separate;
     border-spacing: 0;
     background-color: #ffffff;
@@ -331,21 +341,17 @@ table.travel-plan-block {
 }
 
 table.travel-plan-block td {
-    border-top: 0.2mm solid #e1e4ea;
-    border-bottom: 0.2mm solid #e1e4ea;
-    background-color: #ffffff;
+    border: 0;
     vertical-align: top;
 }
 
 table.travel-plan-block .travel-plan-block__icon-cell {
     width: 12mm;
-    padding: 3.8mm 2.5mm 3.6mm 4.5mm;
-    border-left: 0.2mm solid #e1e4ea;
+    padding: 4mm 2.8mm 3.6mm 4mm;
 }
 
 table.travel-plan-block .travel-plan-block__body-cell {
-    padding: 3.8mm 5mm 3.6mm 0;
-    border-right: 0.2mm solid #e1e4ea;
+    padding: 4mm 5mm 3.6mm 0;
 }
 
 table.travel-plan-block .travel-plan-icon {
@@ -365,9 +371,9 @@ table.travel-plan-block .travel-plan-icon {
 .travel-plan-block__header h3 {
     margin: 0 0 1mm;
     padding: 0;
-    color: #12213d;
+    color: #0f293a;
     font-family: "Cormorant", serif;
-    font-size: 12.5pt;
+    font-size: 12.8pt;
     font-weight: normal;
     line-height: 1.2;
 }
@@ -406,48 +412,49 @@ table.travel-plan-block .travel-plan-icon {
     margin: 2.5mm 0 0;
 }
 
-/* Tipkaart als table. */
-table.travel-plan-block--tip,
-table.travel-plan-block--tip td {
-    border-color: #12213d;
-    background-color: #12213d;
+/* Primaire kaart als table. */
+table.travel-plan-block--primary,
+table.travel-plan-block--primary td {
+    border-color: #071828;
+    background-color: #071828;
 }
 
-.travel-plan-block--tip h3,
-.travel-plan-block--tip .travel-plan-block__content,
-.travel-plan-block--tip .travel-plan-block__content p,
-.travel-plan-block--tip .travel-plan-block__content li {
-    color: #f7f4ee;
+.travel-plan-block--primary h3,
+.travel-plan-block--primary .travel-plan-block__content,
+.travel-plan-block--primary .travel-plan-block__content p,
+.travel-plan-block--primary .travel-plan-block__content li {
+    color: #eef1f6;
 }
 
-.travel-plan-block--tip .travel-plan-block__time,
-.travel-plan-block--tip .travel-plan-block__location,
-.travel-plan-block--tip a {
-    color: #d4af62;
+.travel-plan-block--primary .travel-plan-block__time,
+.travel-plan-block--primary .travel-plan-block__location,
+.travel-plan-block--primary a {
+    color: #e1bd55;
 }
 
 /* Lange blokken: mogen doorlopen; geef wel begin/einde visuele begrenzing. */
 .travel-plan-block--flow {
     margin: 0 0 3mm;
-    padding: 4mm 5mm;
-    border-top: 0.2mm solid #e1e4ea;
+    padding: 4.5mm 5.2mm;
+    border-top: 0.55mm solid #d4af37;
     border-bottom: 0.2mm solid #e1e4ea;
     background-color: #ffffff;
     color: #17233b;
     page-break-inside: auto;
 }
 
-.travel-plan-block--flow.travel-plan-block--tip {
-    border-color: #12213d;
-    background-color: #12213d;
-    color: #f7f4ee;
+.travel-plan-block--flow.travel-plan-block--primary {
+    border-color: #071828;
+    border-left: 0.85mm solid #071828;
+    background-color: #071828;
+    color: #eef1f6;
 }
 
-.travel-plan-block--flow.travel-plan-block--tip h3,
-.travel-plan-block--flow.travel-plan-block--tip p,
-.travel-plan-block--flow.travel-plan-block--tip li,
-.travel-plan-block--flow.travel-plan-block--tip .travel-plan-block__content {
-    color: #f7f4ee;
+.travel-plan-block--flow.travel-plan-block--primary h3,
+.travel-plan-block--flow.travel-plan-block--primary p,
+.travel-plan-block--flow.travel-plan-block--primary li,
+.travel-plan-block--flow.travel-plan-block--primary .travel-plan-block__content {
+    color: #eef1f6;
 }
 
 /* Route/editor/checklist tables */
@@ -473,7 +480,7 @@ table.travel-plan-block--tip td {
 
 .travel-plan-editor-table th {
     background-color: #f4efe6;
-    color: #12213d;
+    color: #071828;
     font-family: "JostRegular", "Jost", sans-serif;
     font-size: 9.5pt;
     font-weight: bold;
@@ -497,7 +504,7 @@ table.travel-plan-block--tip td {
 .travel-plan-section--free-text {
     padding: 6mm 7mm;
     border: 0.2mm solid #e3dccd;
-    border-left: 1.5mm solid #b99550;
+    border-left: 1.5mm solid #d4af37;
     background-color: #fbfaf7;
     color: #17233b;
     page-break-inside: auto;
@@ -511,8 +518,8 @@ table.travel-plan-block--tip td {
 .travel-plan-section--free-text h2 {
     margin-bottom: 4mm;
     padding-bottom: 2mm;
-    border-bottom: 0.25mm solid #b99550;
-    color: #12213d;
+    border-bottom: 0.25mm solid #d4af37;
+    color: #071828;
 }
 
 .travel-plan-route {
@@ -566,14 +573,14 @@ table.travel-plan-block--tip td {
     display: block;
     width: 4mm;
     height: 4mm;
-    border: 0.45mm solid #b99550;
+    border: 0.45mm solid #d4af37;
 }
 
 /* Free text / practical frame tables */
 .travel-plan-frame-card {
     margin-bottom: 6mm;
     border: 0.2mm solid #e5d9bf;
-    border-left: 1.5mm solid #b99550;
+    border-left: 1.5mm solid #d4af37;
     background-color: #fbfaf7;
 }
 
@@ -595,7 +602,7 @@ table.travel-plan-block--tip td {
 
 .travel-plan-section-frame__title {
     margin: 0 0 3mm;
-    color: #12213d;
+    color: #071828;
     font-family: "Cormorant", serif;
     font-size: 16.5pt;
     font-weight: normal;
@@ -629,7 +636,7 @@ table.travel-plan-block--tip td {
     display: block;
     margin: 0;
     padding: 6mm 0 2.2mm;
-    color: #12213d;
+    color: #071828;
     font-family: "Cormorant", serif;
     font-size: 15pt;
     font-weight: normal;
@@ -661,7 +668,7 @@ table.travel-plan-block--tip td {
 .travel-plan-section__content h4,
 .travel-plan-section-frame .travel-plan-section__content h4 {
     margin: 4.5mm 0 1mm;
-    color: #12213d;
+    color: #071828;
     font-family: "JostRegular", "Jost", sans-serif;
     font-size: 10.2pt;
     font-weight: bold;
@@ -718,8 +725,8 @@ table.travel-plan-block--tip td {
 .travel-plan-toc h2 {
     margin: 0 0 8mm;
     padding-bottom: 2.5mm;
-    border-bottom: 0.45mm solid #b99550;
-    color: #12213d;
+    border-bottom: 0.45mm solid #d4af37;
+    color: #071828;
     font-family: "Cormorant", serif;
     font-size: 21pt;
     font-weight: normal;

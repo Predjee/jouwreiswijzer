@@ -7,17 +7,17 @@
 {% set isPrimary = section.isPrimary|default(false) or variant == 'primary' %}
 {% set isSecondary = section.isSecondary|default(false) or variant == 'secondary' %}
 {% set background = isPrimary ? '#071828' : (isSecondary ? '#fff7df' : '#ffffff') %}
-{% set edge = isPrimary ? '#d4af37' : (isSecondary ? '#d4af37' : '#d4af37') %}
-{% set barColor = isPrimary ? '#d4af37' : (isSecondary ? '#d4af37' : '#b99a4d') %}
+{% set edge = isPrimary ? '#e1bd55' : (isSecondary ? '#c79b28' : '#d4af37') %}
+{% set barColor = isPrimary ? '#e1bd55' : (isSecondary ? '#c79b28' : '#b99a4d') %}
 {% set titleColor = isPrimary ? '#ffffff' : '#071828' %}
 {% set metaColor = isPrimary ? '#e1bd55' : '#8a6a31' %}
 {% set textColor = isPrimary ? '#eef1f6' : '#17233b' %}
 {% set colorClass = isPrimary ? ' travel-plan-section--primary' : (isSecondary ? ' travel-plan-section--secondary' : '') %}
-<div class="travel-plan-section travel-plan-section--destination{{ colorClass }}" style="padding: 8.5mm 9mm 7.5mm 12mm; background-color: {{ background }}; border: 0; border-left: 1.05mm solid {{ barColor }};{% if isPrimary or isSecondary %} border-top: 0.25mm solid {{ edge }};{% endif %} border-radius: 0; color: {{ textColor }};">
+<div class="travel-plan-section travel-plan-section--destination{{ colorClass }}" style="padding: 8.5mm 9mm 7.5mm 13mm; background-color: {{ background }}; border: 0; border-left: 1.25mm solid {{ barColor }};{% if isPrimary or isSecondary %} border-top: 0.25mm solid {{ edge }};{% endif %} border-radius: 0; color: {{ textColor }};">
 {% endif %}
-{% if section.title|default %}<h2{% if not accountView %} style="color: {{ titleColor }}; margin-bottom: 2.8mm; padding-bottom: 0; border: 0;"{% endif %}>{{ section.title }}</h2>{% endif %}
+{% if section.title|default %}<h2{% if not accountView %} style="color: {{ titleColor }}; margin-bottom: 0; padding-bottom: 0; border: 0;"{% endif %}>{{ section.title }}</h2>{% endif %}
     {% set location = [section.city|default, section.region|default, section.country|default]|filter(value => value)|join(', ') %}
-    {% if location %}<p class="travel-plan-section__location"{% if not accountView %} style="margin: 0 0 4.2mm; color: {{ metaColor }};"{% endif %}>{{ location }}</p>{% endif %}
+    {% if location %}<p class="travel-plan-section__location"{% if not accountView %} style="margin: 0; padding-top: 2.6mm; color: {{ metaColor }};"{% endif %}>{{ location }}</p>{% endif %}
     {% if section.text|default %}
         {% if accountView %}
             <div class="travel-plan-section__content">{{ section.text|raw }}</div>
@@ -26,7 +26,7 @@
                 '<p>': '<p style="color: ' ~ textColor ~ ';">',
                 '<li>': '<li style="color: ' ~ textColor ~ ';">'
             }) %}
-            <div class="travel-plan-section__content" style="color: {{ textColor }};">{{ textHtml|raw }}</div>
+            <div class="travel-plan-section__content" style="padding-top: 3.2mm; color: {{ textColor }};">{{ textHtml|raw }}</div>
         {% endif %}
     {% endif %}
 {% if accountView %}

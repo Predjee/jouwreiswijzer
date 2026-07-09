@@ -1,0 +1,29 @@
+{# Bestemmings-hero: lichte stijl met een gekleurde balk links. De balk
+   kleurt mee met de CMS-keuze "PDF kleur" (section.barColor, afgeleid van
+   colorVariant in TravelPlanPdfRenderer). Divranden schilderen overal
+   betrouwbaar; de keep-tabel houdt de hero op één pagina (transparant,
+   want alleen top-level div-achtergronden renderen betrouwbaar). #}
+<div class="travel-plan-section travel-plan-section--destination" style="padding: 0; margin: 2mm 0 12mm; border: 0; border-left: 1.5mm solid {{ section.barColor }}; background-color: transparent;">
+    {% if section.keep %}
+    <table style="width: 100%; border-collapse: collapse; page-break-inside: avoid;"><tr>
+        <td style="padding: 2.5mm 3mm 2.5mm 8mm; vertical-align: top;">{{ _self.inner(section, t) }}</td>
+        {{ _self.iconCell(section) }}
+    </tr></table>
+    {% else %}
+    <div style="padding: 2.5mm 3mm 2.5mm 8mm;">{{ _self.inner(section, t) }}</div>
+    {% endif %}
+</div>
+
+{% macro inner(section, t) %}
+    {% if section.title %}<h2 style="margin: 0 0 2mm; padding: 0; border: 0; color: {{ t.navy }}; font-size: 22pt; line-height: 1.08;">{{ section.title }}</h2>{% endif %}
+    {% if section.location %}<p class="travel-plan-section__location" style="color: {{ t.gold }}; margin: 0 0 4.5mm; font-size: 8pt; letter-spacing: 1.4px;">{{ section.location }}</p>{% endif %}
+    {% if section.textHtml %}<div class="travel-plan-section__content" style="color: #3c4557; line-height: 1.72;">{{ section.textHtml|raw }}</div>{% endif %}
+{% endmacro %}
+
+{% macro iconCell(section) %}
+    {% if section.iconSrc %}
+    <td style="width: 12mm; padding: 3mm 0 0 0; vertical-align: top;">
+        <img class="travel-plan-icon" src="{{ section.iconSrc }}" style="float: none; display: block; width: 6.5mm; height: 6.5mm; margin: 0;" alt="">
+    </td>
+    {% endif %}
+{% endmacro %}

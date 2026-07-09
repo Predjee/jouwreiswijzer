@@ -767,3 +767,30 @@ div.mpdf_toc_level_1 {
     letter-spacing: 0.3px;
     text-align: center;
 }
+
+/*
+ * Polish-pass: rustiger paginaritme en verfijnde micro-typografie —
+ * meer wit tussen secties, kleinere maar strakker gespatieerde
+ * meta-labels (luxe zit in terughoudendheid, niet in meer accenten).
+ */
+.travel-plan-section {
+    margin-bottom: 9mm;
+}
+
+.travel-plan-day__meta,
+.travel-plan-block__time,
+.travel-plan-block__location,
+.travel-plan-section__location {
+    font-size: 7.6pt;
+    letter-spacing: 1.1px;
+}
+
+.travel-plan-block__header h3 {
+    margin-bottom: 1mm;
+    font-size: 12.5pt;
+}
+
+.travel-plan-block__content,
+.travel-plan-day__intro {
+    line-height: 1.62;
+}

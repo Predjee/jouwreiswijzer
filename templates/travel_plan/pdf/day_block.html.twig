@@ -26,8 +26,12 @@
 {% set iconBackground = block.isPrimary ? '#fff7df' : (block.isSecondary or block.isGold ? t.white : '#f8f5ef') %}
 {% set iconBorder = block.isPrimary ? t.gold : (block.isSecondary or block.isGold ? t.gold : t.edge) %}
 {% set colorClass = block.isPrimary ? ' travel-plan-block--primary' : (block.isSecondary ? ' travel-plan-block--secondary' : (block.isGold ? ' travel-plan-block--gold' : '')) %}
-{% set cardStyle = 'background-color: ' ~ background ~ '; border: 0.22mm solid ' ~ edge ~ '; border-left: 0.85mm solid ' ~ accent ~ '; border-top: 0.38mm solid ' ~ accent ~ '; border-radius: ' ~ t.cardRadius ~ '; overflow: hidden;' %}
-{% set flowStyle = 'background-color: ' ~ background ~ '; border-left: 0.85mm solid ' ~ accent ~ '; border-right: 0.22mm solid ' ~ edge ~ '; border-top: 0.38mm solid ' ~ accent ~ '; border-bottom: 0; border-radius: ' ~ t.cardRadius ~ ' ' ~ t.cardRadius ~ ' 0 0; overflow: visible;' %}
+{# Luxe = terughoudendheid: standaardkaarten dragen alleen een hairline
+   omranding; uitsluitend kaarten met een CMS-kleurkeuze krijgen één
+   accent (linkerbalk). Nooit meerdere accenten tegelijk. #}
+{% set hasVariant = variant != 'default' %}
+{% set cardStyle = 'background-color: ' ~ background ~ '; border: 0.2mm solid ' ~ edge ~ ';' ~ (hasVariant ? ' border-left: 0.8mm solid ' ~ accent ~ ';' : '') ~ ' border-radius: ' ~ t.cardRadius ~ '; overflow: hidden;' %}
+{% set flowStyle = 'background-color: ' ~ background ~ '; border: 0.2mm solid ' ~ edge ~ ';' ~ (hasVariant ? ' border-left: 0.8mm solid ' ~ accent ~ ';' : '') ~ ' border-bottom: 0; border-radius: ' ~ t.cardRadius ~ ' ' ~ t.cardRadius ~ ' 0 0; overflow: visible;' %}
 
 {% if block.flow %}
 <div class="travel-plan-block travel-plan-block--flow travel-plan-block--{{ block.type }}{{ colorClass }}{% if block.startOnNewPage %} travel-plan-page-break-before{% endif %}" style="{{ flowStyle }}">
@@ -43,12 +47,12 @@
 <div class="travel-plan-block travel-plan-block--{{ block.type }}{{ colorClass }}{% if block.startOnNewPage %} travel-plan-page-break-before{% endif %}" style="{{ cardStyle }}">
     <table class="travel-plan-block__layout" style="width: 100%; background-color: {{ background }}; border: 0; border-collapse: separate; border-spacing: 0;">
         <tr>
-            <td class="travel-plan-block__icon-cell" style="width: 12mm; padding: 4mm 2.8mm 3.6mm 4mm; vertical-align: top; background-color: {{ background }};">
+            <td class="travel-plan-block__icon-cell" style="width: 12.5mm; padding: 4.6mm 3mm 4.2mm 4.6mm; vertical-align: top; background-color: {{ background }};">
             {% if block.iconSrc %}
-                <img class="travel-plan-icon" src="{{ block.iconSrc }}" style="float: none; display: block; width: 7mm; height: 7mm; margin: 0;" alt="">
+                <img class="travel-plan-icon" src="{{ block.iconSrc }}" style="float: none; display: block; width: 6.5mm; height: 6.5mm; margin: 0.4mm 0 0;" alt="">
             {% endif %}
             </td>
-            <td class="travel-plan-block__body-cell" style="padding: 4mm 5mm 3.6mm 0; vertical-align: top; background-color: {{ background }};">
+            <td class="travel-plan-block__body-cell" style="padding: 4.6mm 5.5mm 4.2mm 0; vertical-align: top; background-color: {{ background }};">
                 <div class="travel-plan-block__main">
                     <div class="travel-plan-block__header">{{ _self.header(block, titleColor, metaColor) }}</div>
                     {{ _self.content(block, bodyColor, metaColor) }}

@@ -26,7 +26,7 @@
         <div style="margin: 0; padding: 0;">
             {{ _self.headerTable(group, t, false) }}
             {% if group.boundCard %}
-                {{ _self.creamWrap(group, t, sideBorders, group.boundCard, group.boundCloses ? '3mm 4mm 3mm' : '3mm 4mm 0', group.boundCloses) }}
+                {{ _self.creamWrap(group, t, sideBorders, group.boundCard, group.boundCloses ? '3.5mm 4.5mm 3.5mm' : '3.5mm 4.5mm 0', group.boundCloses) }}
             {% endif %}
         </div>
     </td></tr>
@@ -40,11 +40,11 @@
             {% if row.isFirstOfSegment or row.isLastOfSegment %}
                 <tr><td style="padding: 0; background-color: {{ t.cream }}; vertical-align: top;">
                     <div style="margin: 0; padding: 0;">
-                        {{ _self.creamWrap(group, t, sideBorders, row.block, '3mm 4mm ' ~ (row.isLastOfSegment ? '3mm' : '0'), row.isLastOfSegment) }}
+                        {{ _self.creamWrap(group, t, sideBorders, row.block, '3.5mm 4.5mm ' ~ (row.isLastOfSegment ? '3.5mm' : '0'), row.isLastOfSegment) }}
                     </div>
                 </td></tr>
             {% else %}
-                <tr><td style="padding: 3mm 4mm 0; background-color: {{ t.cream }}; vertical-align: top; {{ sideBorders }}">
+                <tr><td style="padding: 3.5mm 4.5mm 0; background-color: {{ t.cream }}; vertical-align: top; {{ sideBorders }}">
                     {{ include('travel_plan/pdf/day_block.html.twig', { block: row.block, t: t }) }}
                 </td></tr>
             {% endif %}
@@ -64,10 +64,10 @@
 {% set headerIntro = group.isPrimary ? '#eef1f6' : '#17233b' %}
     {# Navy op de cellen (niet op de tabel): mPDF houdt celachtergronden
        bij geneste tabellen betrouwbaarder bij de inhoud dan div-achtergronden. #}
-<table style="width: 100%; border-collapse: separate; border-spacing: 0; page-break-inside: avoid; border-radius: {{ t.sectionRadius }} {{ t.sectionRadius }}{% if closed %} {{ t.sectionRadius }} {{ t.sectionRadius }}{% else %} 0 0{% endif %};"><tr>
-        <td style="padding: 5mm 2.5mm 4.5mm 6mm; vertical-align: top; color: {{ headerText }}; border-top: 0.45mm solid {{ headerEdge }}; border-left: 0.2mm solid {{ headerEdge }}; border-bottom: 0.2mm solid {{ headerEdge }}; border-radius: {{ t.sectionRadius }} {% if group.iconSrc %}0{% else %}{{ t.sectionRadius }}{% endif %} {% if closed and not group.iconSrc %}{{ t.sectionRadius }}{% else %}0{% endif %} {% if closed %}{{ t.sectionRadius }}{% else %}0{% endif %};{% if not standalone %} background-color: {{ headerBackground }};{% endif %}">
-            {% if group.meta %}<p class="travel-plan-day__meta" style="color: {{ headerMeta }};">{{ group.meta }}</p>{% endif %}
-            {% if group.title %}<h2 style="margin: 0 0 2mm; padding: 0; border: 0; color: {{ headerTitle }}; font-size: 17.5pt;">{{ group.title }}</h2>{% endif %}
+<table style="width: 100%; border-collapse: separate; border-spacing: 0; page-break-inside: avoid;"><tr>
+        <td style="padding: 6mm 3mm 5mm 6.5mm; vertical-align: top; color: {{ headerText }}; border-bottom: 0.35mm solid {{ group.isPrimary ? t.gold : t.gold }};{% if not standalone %} background-color: {{ headerBackground }};{% endif %}">
+            {% if group.meta %}<p class="travel-plan-day__meta" style="color: {{ headerMeta }}; letter-spacing: 1.4px;">{{ group.meta }}</p>{% endif %}
+            {% if group.title %}<h2 style="margin: 0 0 2.5mm; padding: 0; border: 0; color: {{ headerTitle }}; font-size: 18pt;">{{ group.title }}</h2>{% endif %}
             {% if group.introHtml %}
                 {% set introHtml = group.introHtml|replace({
                     '#e7e0d3': headerIntro,
@@ -75,12 +75,12 @@
                     '#eef1f6': headerIntro,
                     '#f7f4ee': headerIntro
                 }) %}
-                <div class="travel-plan-section__content travel-plan-day__intro" style="color: {{ headerIntro }};">{{ introHtml|raw }}</div>
+                <div class="travel-plan-section__content travel-plan-day__intro" style="color: {{ headerIntro }}; line-height: 1.66;">{{ introHtml|raw }}</div>
             {% endif %}
         </td>
         {% if group.iconSrc %}
-            <td style="width: 15mm; padding: 5mm 6mm 0 0; vertical-align: top; border-top: 0.45mm solid {{ headerEdge }}; border-right: 0.2mm solid {{ headerEdge }}; border-bottom: 0.2mm solid {{ headerEdge }}; border-radius: 0 {{ t.sectionRadius }} {% if closed %}{{ t.sectionRadius }}{% else %}0{% endif %} 0;{% if not standalone %} background-color: {{ headerBackground }};{% endif %}">
-            <img class="travel-plan-icon" src="{{ group.iconSrc }}" style="float: none; display: block; width: 7mm; height: 7mm; margin: 0;" alt="">
+            <td style="width: 14mm; padding: 6mm 6mm 0 0; vertical-align: top; border-bottom: 0.35mm solid {{ t.gold }};{% if not standalone %} background-color: {{ headerBackground }};{% endif %}">
+            <img class="travel-plan-icon" src="{{ group.iconSrc }}" style="float: none; display: block; width: 6.5mm; height: 6.5mm; margin: 0;" alt="">
         </td>
         {% endif %}
     </tr></table>

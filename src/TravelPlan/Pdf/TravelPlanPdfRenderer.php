@@ -69,9 +69,9 @@ final readonly class TravelPlanPdfRenderer
                 return $html;
             }
 
-            $openingTag = \str_replace('padding: 8.5mm 9mm 7.5mm 12mm;', 'padding: 0;', $openingTag);
+            $openingTag = \str_replace('padding: 8.5mm 9mm 7.5mm 13mm;', 'padding: 0;', $openingTag);
 
-            return $prefix . $openingTag . $this->heroKeepTable($inner, '', '') . $closingTag;
+            return $prefix . $openingTag . $this->heroKeepTable($inner, '', '', '', '9.5mm 5mm 9.5mm 11mm') . $closingTag;
         }
 
         if (1 === \preg_match(
@@ -287,7 +287,13 @@ final readonly class TravelPlanPdfRenderer
         return false;
     }
 
-    private function heroKeepTable(string $inner, string $icon, string $background = TravelPlanPdfStyle::NAVY, string $extraRow = ''): string
+    private function heroKeepTable(
+        string $inner,
+        string $icon,
+        string $background = TravelPlanPdfStyle::NAVY,
+        string $extraRow = '',
+        string $bodyPadding = '5.5mm 2.5mm 4.5mm 7mm',
+    ): string
     {
         $backgroundStyle = '' !== $background ? ' style="background-color: ' . $background . ';"' : '';
         $iconCell = '' !== $icon
@@ -295,7 +301,7 @@ final readonly class TravelPlanPdfRenderer
             : '';
 
         return '<table class="travel-plan-hero__keep"' . $backgroundStyle . '><tr>'
-            . '<td class="travel-plan-hero__body" style="padding: 5.5mm 2.5mm 4.5mm 7mm; vertical-align: top;">' . $inner . '</td>'
+            . '<td class="travel-plan-hero__body" style="padding: ' . $bodyPadding . '; vertical-align: top;">' . $inner . '</td>'
             . $iconCell
             . '</tr>'
             . $extraRow

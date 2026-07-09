@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\TravelPlan\Pdf;
 
 use App\Entity\TravelPlan;
-use App\TravelPlan\Renderer\TravelPlanRenderer;
+use App\TravelPlan\Renderer\TravelPlanPdfRenderer;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 final readonly class TravelPlanPdfGenerator
 {
     public function __construct(
-        private TravelPlanRenderer $renderer,
+        private TravelPlanPdfRenderer $renderer,
         #[Autowire('%kernel.cache_dir%/mpdf')]
         private string $tempDir,
         #[Autowire('%kernel.project_dir%/assets/pdf/fonts')]

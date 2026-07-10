@@ -34,6 +34,7 @@ final class TravelPlanContentTest extends TestCase
                         [
                             'type' => 'day',
                             'title' => 'Overnachting',
+                            'destinationTimezone' => 'America/Lima',
                             'intro' => '<p>Intro</p>',
                             'blocks' => [
                                 [
@@ -69,6 +70,7 @@ final class TravelPlanContentTest extends TestCase
 
         $day = $lima->sections[0];
         self::assertSame(SectionType::Day, $day->type);
+        self::assertSame('America/Lima', $day->destinationTimezone);
         self::assertTrue($day->hasBlocks());
         self::assertCount(1, $day->blocks);
         self::assertSame(BlockType::Accommodation, $day->blocks[0]->type);

@@ -41,7 +41,9 @@
 
     <div class="travel-plan__header">
         {% if intro.title|default %}
-            <h2>{{ intro.title }}</h2>
+            {# Inline: mPDF's child-selector (.travel-plan__header > h2) is
+               onbetrouwbaar, waardoor de kop anders in sans-bold terugvalt. #}
+            <h2 style="margin: 0 0 6mm; padding: 0 0 2.4mm; border: 0; border-bottom: 0.45mm solid {{ t.gold }}; color: {{ t.navy }}; font-family: 'Cormorant', serif; font-weight: normal; font-size: 26pt; line-height: 1.08;">{{ intro.title }}</h2>
         {% endif %}
 
         {% if intro.text|default %}

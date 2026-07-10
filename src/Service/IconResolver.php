@@ -81,11 +81,19 @@ final readonly class IconResolver
         \imagealphablending($badge, false);
         \imagesavealpha($badge, true);
         $transparent = \imagecolorallocatealpha($badge, 0, 0, 0, 127);
+        $gold = \imagecolorallocate($badge, 0xd4, 0xaf, 0x37);
+
+        if (false === $transparent || false === $gold) {
+            \imagedestroy($badge);
+            \imagedestroy($icon);
+
+            return $this->getPdfIconDataUri($type);
+        }
+
         \imagefill($badge, 0, 0, $transparent);
         \imagealphablending($badge, true);
 
         // Gouden ring (#d4af37, huisstijlgoud), ca. 5px dik op 256px canvas.
-        $gold = \imagecolorallocate($badge, 0xd4, 0xaf, 0x37);
         $center = (int) ($size / 2);
 
         for ($diameter = $size - 4; $diameter >= $size - 12; --$diameter) {

@@ -1,5 +1,5 @@
 {% if accountView %}
-<article class="travel-plan-block travel-plan-block--activity">
+<article class="travel-plan-block travel-plan-block--activity {{ block.variantClass|default('travel-plan-variant--default') }}">
     <div class="travel-plan-block__main">
         <div class="travel-plan-block__header">
             {% if block.timeRangeLabel|default or block.timeLabel|default %}
@@ -13,7 +13,7 @@
     </div>
 </article>
 {% else %}
-<div class="travel-plan-block travel-plan-block--activity">
+<div class="travel-plan-block travel-plan-block--activity {{ block.variantClass|default('travel-plan-variant--default') }}">
     {% if block.timeRangeLabel|default or block.timeLabel|default %}
         <p class="travel-plan-block__time">{% if block.timeRangeLabel|default %}<strong>{{ block.timeRangeLabel }}</strong>{% endif %}{% if block.timeRangeLabel|default and block.timeLabel|default %} - {% endif %}{{ block.timeLabel|default('') }}</p>
     {% endif %}

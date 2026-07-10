@@ -84,7 +84,7 @@ final readonly class TravelPlanRenderer
             }
 
             $renderedDestination = $this->twig->render(self::SECTION_TEMPLATES['destination'], [
-                'section' => $destination->raw,
+                'section' => $this->withVariantData($destination->raw, $destination->colorVariant),
                 'accountView' => true,
                 'travelPlan' => $travelPlan,
                 'feedbackEnabled' => $feedbackEnabled,
@@ -164,10 +164,10 @@ final readonly class TravelPlanRenderer
             $section->sourceIndex,
         );
         $renderedSection = $this->twig->render(self::SECTION_TEMPLATES[$type], $context);
-        $renderedSection = $this->applyVariantClass($this->applyPageBreakClass(
+        $renderedSection = $this->applyPageBreakClass(
             $this->prependIcon($renderedSection, $section->iconOrDefault()),
             $section->startOnNewPage,
-        ), $section->colorVariant);
+        );
 
         return [
             'html' => $renderedSection,
@@ -198,7 +198,7 @@ final readonly class TravelPlanRenderer
             $renderedBlock = $this->twig->render(
                 self::DAY_BLOCK_TEMPLATES[$type],
                 [
-                    'block' => $this->helper->withTimeRange($block->raw),
+                    'block' => $this->withVariantData($this->helper->withTimeRange($block->raw), $block->colorVariant),
                     'accountView' => true,
                     'travelPlan' => $travelPlan,
                 ],
@@ -212,10 +212,7 @@ final readonly class TravelPlanRenderer
             $renderedBlock = $this->prependIcon($renderedBlock, $block->iconOrDefault());
 
             $renderedBlocks[] = [
-                'html' => $this->applyVariantClass(
-                    $this->applyPageBreakClass($renderedBlock, $block->startOnNewPage),
-                    $block->colorVariant,
-                ),
+                'html' => $this->applyPageBreakClass($renderedBlock, $block->startOnNewPage),
                 'blockPath' => $blockPath,
                 'blockType' => $type,
                 'feedback' => $feedbackEnabled ? ($feedbackByPath[$blockPath] ?? null) : null,
@@ -240,11 +237,13 @@ final readonly class TravelPlanRenderer
      */
     private function accountSection(Section $section): array
     {
+        $raw = $this->withVariantData($section->raw, $section->colorVariant);
+
         if (SectionType::RouteOverview !== $section->type) {
-            return $section->raw;
+            return $raw;
         }
 
-        return \array_replace($section->raw, [
+        return \array_replace($raw, [
             'routeStops' => \array_map(
                 fn (array $stop): array => \array_replace($stop, [
                     '_iconMarkup' => $this->iconSvg($this->iconOrDefault($stop['icon'] ?? null, SectionType::RouteOverview->defaultIcon())),
@@ -252,6 +251,26 @@ final readonly class TravelPlanRenderer
                 $section->routeStops,
             ),
         ]);
+    }
+
+    /**
+     * @param array<string, mixed> $raw
+     *
+     * @return array<string, mixed>
+     */
+    private function withVariantData(array $raw, ColorVariant $variant): array
+    {
+        $variantName = $this->variantName($variant);
+
+        return \array_replace($raw, [
+            'styleVariant' => $variantName,
+            'variantClass' => 'default' === $variantName ? '' : 'travel-plan-variant--' . $variantName,
+        ]);
+    }
+
+    private function variantName(ColorVariant $variant): string
+    {
+        return ColorVariant::Auto === $variant ? 'default' : $variant->value;
     }
 
     private function prependIcon(string $html, mixed $icon): string
@@ -267,25 +286,6 @@ final readonly class TravelPlanRenderer
         return \preg_replace(
             '/(<(?:section|article|aside|div)\b[^>]*>)/',
             '$1' . $injectedIcon,
-            $html,
-            1,
-        ) ?? $html;
-    }
-
-    /**
-     * Voegt de CMS-kleurkeuze ("PDF kleur") als variantklasse toe, zodat de
-     * mijn-omgeving dezelfde paletten toont als de PDF (via de CSS-
-     * variabelen uit _style_tokens.html.twig).
-     */
-    private function applyVariantClass(string $html, ColorVariant $variant): string
-    {
-        if (!\in_array($variant, [ColorVariant::Primary, ColorVariant::Secondary, ColorVariant::Gold], true)) {
-            return $html;
-        }
-
-        return \preg_replace(
-            '/(<(?:section|article|aside|div)\b[^>]*class=")([^"]*)(")/',
-            '$1$2 travel-plan-variant--' . $variant->value . '$3',
             $html,
             1,
         ) ?? $html;

@@ -6,7 +6,7 @@
 %}
 
 {% if accountView %}
-    <link rel="stylesheet" href="{{ asset('styles/travel-plan-theme.css') }}" media="screen">
+    {{ include('travel_plan/render/_style_tokens.html.twig', { styleVariants: styleVariants|default({}) }) }}
 {% endif %}
 
 {% if not accountView %}

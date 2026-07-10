@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\TravelPlan\Pdf;
 
+use App\TravelPlan\TravelPlanStyle;
+
 use App\Service\IconResolver;
 use App\TravelPlan\Renderer\TravelPlanContentHelper;
 use Twig\Environment;
@@ -43,7 +45,7 @@ final readonly class TravelPlanPdfRenderer
     {
         return $this->twig->render('travel_plan/pdf/day_group.html.twig', [
             'group' => $this->buildDayGroup($section, $blocks, $icon),
-            't' => TravelPlanPdfStyle::tokens(),
+            't' => TravelPlanStyle::tokens(),
         ]);
     }
 
@@ -65,7 +67,7 @@ final readonly class TravelPlanPdfRenderer
         )) {
             [, $openingTag, $icon, $inner, $closingTag] = $matches;
 
-            if (\mb_strlen(\strip_tags($inner)) > TravelPlanPdfStyle::KEEP_TOGETHER_MAX_CHARS) {
+            if (\mb_strlen(\strip_tags($inner)) > TravelPlanStyle::KEEP_TOGETHER_MAX_CHARS) {
                 return $html;
             }
 
@@ -81,7 +83,7 @@ final readonly class TravelPlanPdfRenderer
         )) {
             [$fullMatch, $openingTag, $icon, $headerTag, $headerInner, $tail] = $matches;
 
-            if (\mb_strlen(\strip_tags($headerInner)) > TravelPlanPdfStyle::KEEP_TOGETHER_MAX_CHARS) {
+            if (\mb_strlen(\strip_tags($headerInner)) > TravelPlanStyle::KEEP_TOGETHER_MAX_CHARS) {
                 return $html;
             }
 
@@ -103,10 +105,10 @@ final readonly class TravelPlanPdfRenderer
                 $card = $cardMatch[0][0];
                 $rest = \substr_replace($rest, '', $cardMatch[0][1], \strlen($card));
                 $colspan = '' !== $icon ? 2 : 1;
-                $extraRow = '<tr><td colspan="' . $colspan . '" style="background-color: ' . TravelPlanPdfStyle::CREAM . '; padding: 4mm 4mm 3mm; vertical-align: top;">' . $card . '</td></tr>';
+                $extraRow = '<tr><td colspan="' . $colspan . '" style="background-color: ' . TravelPlanStyle::CREAM . '; padding: 4mm 4mm 3mm; vertical-align: top;">' . $card . '</td></tr>';
             }
 
-            $replacement = $openingTag . $headerTag . $this->heroKeepTable($headerInner, $icon, TravelPlanPdfStyle::NAVY, $extraRow) . $tail;
+            $replacement = $openingTag . $headerTag . $this->heroKeepTable($headerInner, $icon, TravelPlanStyle::NAVY, $extraRow) . $tail;
 
             return $prefix . $replacement . $rest;
         }
@@ -118,7 +120,7 @@ final readonly class TravelPlanPdfRenderer
         )) {
             [, $openingTag, $icon, $headerTag, $headerInner, $headerClose, $sectionClose] = $matches;
 
-            if (\mb_strlen(\strip_tags($headerInner)) > TravelPlanPdfStyle::KEEP_TOGETHER_MAX_CHARS) {
+            if (\mb_strlen(\strip_tags($headerInner)) > TravelPlanStyle::KEEP_TOGETHER_MAX_CHARS) {
                 return $html;
             }
 
@@ -177,9 +179,11 @@ final readonly class TravelPlanPdfRenderer
             ];
         }
 
+        $dayNumber = \is_scalar($section['dayNumber'] ?? null) ? \trim((string) $section['dayNumber']) : '';
+        $dateLabel = \is_scalar($section['dateLabel'] ?? null) ? \trim((string) $section['dateLabel']) : '';
         $meta = \array_filter([
-            '' !== \trim((string) ($section['dayNumber'] ?? '')) ? 'Dag ' . $section['dayNumber'] : null,
-            '' !== \trim((string) ($section['dateLabel'] ?? '')) ? (string) $section['dateLabel'] : null,
+            '' !== $dayNumber ? 'Dag ' . $dayNumber : null,
+            '' !== $dateLabel ? $dateLabel : null,
         ]);
 
         return [
@@ -212,6 +216,8 @@ final readonly class TravelPlanPdfRenderer
                 continue;
             }
 
+            /** @var array<string, mixed> $block CMS-content heeft stringkeys. */
+
             $type = $block['type'] ?? null;
 
             if (!\is_string($type)) {
@@ -221,7 +227,8 @@ final readonly class TravelPlanPdfRenderer
             $block = $this->contentHelper->withTimeRange($block);
             $block = $this->prepareRichText($block, false);
             $block['type'] = $type;
-            $block['textHtml'] = \is_string($block['text'] ?? null) ? $block['text'] : '';
+            $textHtml = \is_string($block['text'] ?? null) ? $block['text'] : '';
+            $block['textHtml'] = $textHtml;
             $block = $this->withColorVariant($block);
             $block['isTip'] = $block['isPrimary'];
             $block['actionLabel'] = $this->actionLabel($type);
@@ -229,7 +236,7 @@ final readonly class TravelPlanPdfRenderer
                 $this->iconOrDefault($block['icon'] ?? null, $this->defaultDayBlockIcon($type)),
             );
             $block['startOnNewPage'] = $this->contentHelper->isTruthy($block['startOnNewPage'] ?? false);
-            $block['flow'] = \mb_strlen(\strip_tags($block['textHtml'])) > TravelPlanPdfStyle::KEEP_TOGETHER_MAX_CHARS;
+            $block['flow'] = \mb_strlen(\strip_tags($textHtml)) > TravelPlanStyle::KEEP_TOGETHER_MAX_CHARS;
 
             $prepared[] = [
                 'solo' => $block['flow'] || $block['startOnNewPage'],
@@ -254,7 +261,7 @@ final readonly class TravelPlanPdfRenderer
     }
 
     /**
-     * @param string[] $autoPrimaryTypes
+     * @param array<string, mixed> $block
      *
      * @return array<string, mixed>
      */
@@ -290,7 +297,7 @@ final readonly class TravelPlanPdfRenderer
     private function heroKeepTable(
         string $inner,
         string $icon,
-        string $background = TravelPlanPdfStyle::NAVY,
+        string $background = TravelPlanStyle::NAVY,
         string $extraRow = '',
         string $bodyPadding = '5.5mm 2.5mm 4.5mm 7mm',
     ): string
@@ -326,7 +333,7 @@ final readonly class TravelPlanPdfRenderer
 
                     $attributes = \preg_replace(
                         '/\sstyle="[^"]*"/i',
-                        ' style="' . $style . ' color: ' . TravelPlanPdfStyle::TEXT_SOFT . ';"',
+                        ' style="' . $style . ' color: ' . TravelPlanStyle::TEXT_SOFT . ';"',
                         $attributes,
                         1,
                     ) ?? $attributes;
@@ -334,7 +341,7 @@ final readonly class TravelPlanPdfRenderer
                     return '<' . $matches[1] . $attributes . '>';
                 }
 
-                return '<' . $matches[1] . $attributes . ' style="color: ' . TravelPlanPdfStyle::TEXT_SOFT . ';">';
+                return '<' . $matches[1] . $attributes . ' style="color: ' . TravelPlanStyle::TEXT_SOFT . ';">';
             },
             $html,
         ) ?? $html;

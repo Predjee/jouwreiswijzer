@@ -1,15 +1,15 @@
 {% if accountView %}
-<section class="travel-plan-section travel-plan-section--destination">
+<section class="travel-plan-section travel-plan-section--destination {{ section.variantClass|default('travel-plan-variant--default') }}">
 {% else %}
 {# Inline styles in PDF-modus: mPDF's klasse-cascade is onbetrouwbaar in
    gesplitste chunks; inline styles winnen altijd. #}
 {% set variant = section.colorVariant|default('auto') %}
 {% set isPrimary = section.isPrimary|default(false) or variant == 'primary' %}
 {% set isSecondary = section.isSecondary|default(false) or variant == 'secondary' %}
-{% set background = isPrimary ? '#071828' : (isSecondary ? '#fff7df' : '#ffffff') %}
+{% set background = isPrimary ? '#12213d' : (isSecondary ? '#fff7df' : '#ffffff') %}
 {% set edge = isPrimary ? '#e1bd55' : (isSecondary ? '#c79b28' : '#d4af37') %}
 {% set barColor = isPrimary ? '#e1bd55' : (isSecondary ? '#c79b28' : '#b99a4d') %}
-{% set titleColor = isPrimary ? '#ffffff' : '#071828' %}
+{% set titleColor = isPrimary ? '#ffffff' : '#12213d' %}
 {% set metaColor = isPrimary ? '#e1bd55' : '#8a6a31' %}
 {% set textColor = isPrimary ? '#eef1f6' : '#17233b' %}
 {% set colorClass = isPrimary ? ' travel-plan-section--primary' : (isSecondary ? ' travel-plan-section--secondary' : '') %}

@@ -164,7 +164,7 @@
                         </property>
                         <property name="colorVariant" type="single_select" colspan="4">
                             <meta>
-                                <title>PDF kleur</title>
+                                <title>Kleur</title>
                             </meta>
                             <params>
                                 <param name="default_value" value="auto"/>
@@ -245,7 +245,7 @@
                                         </property>
                                         <property name="colorVariant" type="single_select" colspan="4">
                                             <meta>
-                                                <title>PDF kleur</title>
+                                                <title>Kleur</title>
                                             </meta>
                                             <params>
                                                 <param name="default_value" value="auto"/>
@@ -337,7 +337,7 @@
                                         </property>
                                         <property name="colorVariant" type="single_select" colspan="4">
                                             <meta>
-                                                <title>PDF kleur</title>
+                                                <title>Kleur</title>
                                             </meta>
                                             <params>
                                                 <param name="default_value" value="auto"/>
@@ -419,7 +419,7 @@
                                                         </property>
                                                         <property name="colorVariant" type="single_select" colspan="4">
                                                             <meta>
-                                                                <title>PDF kleur</title>
+                                                                <title>Kleur</title>
                                                             </meta>
                                                             <params>
                                                                 <param name="default_value" value="auto"/>
@@ -506,7 +506,7 @@
                                                         </property>
                                                         <property name="colorVariant" type="single_select" colspan="4">
                                                             <meta>
-                                                                <title>PDF kleur</title>
+                                                                <title>Kleur</title>
                                                             </meta>
                                                             <params>
                                                                 <param name="default_value" value="auto"/>
@@ -593,7 +593,7 @@
                                                         </property>
                                                         <property name="colorVariant" type="single_select" colspan="4">
                                                             <meta>
-                                                                <title>PDF kleur</title>
+                                                                <title>Kleur</title>
                                                             </meta>
                                                             <params>
                                                                 <param name="default_value" value="auto"/>
@@ -680,7 +680,7 @@
                                                         </property>
                                                         <property name="colorVariant" type="single_select" colspan="4">
                                                             <meta>
-                                                                <title>PDF kleur</title>
+                                                                <title>Kleur</title>
                                                             </meta>
                                                             <params>
                                                                 <param name="default_value" value="auto"/>
@@ -767,7 +767,7 @@
                                                         </property>
                                                         <property name="colorVariant" type="single_select" colspan="4">
                                                             <meta>
-                                                                <title>PDF kleur</title>
+                                                                <title>Kleur</title>
                                                             </meta>
                                                             <params>
                                                                 <param name="default_value" value="auto"/>
@@ -849,7 +849,7 @@
                                                         </property>
                                                         <property name="colorVariant" type="single_select" colspan="4">
                                                             <meta>
-                                                                <title>PDF kleur</title>
+                                                                <title>Kleur</title>
                                                             </meta>
                                                             <params>
                                                                 <param name="default_value" value="auto"/>
@@ -931,7 +931,7 @@
                                                         </property>
                                                         <property name="colorVariant" type="single_select" colspan="4">
                                                             <meta>
-                                                                <title>PDF kleur</title>
+                                                                <title>Kleur</title>
                                                             </meta>
                                                             <params>
                                                                 <param name="default_value" value="auto"/>
@@ -1018,7 +1018,7 @@
                                         </property>
                                         <property name="colorVariant" type="single_select" colspan="4">
                                             <meta>
-                                                <title>PDF kleur</title>
+                                                <title>Kleur</title>
                                             </meta>
                                             <params>
                                                 <param name="default_value" value="auto"/>
@@ -1080,7 +1080,7 @@
                                         </property>
                                         <property name="colorVariant" type="single_select" colspan="4">
                                             <meta>
-                                                <title>PDF kleur</title>
+                                                <title>Kleur</title>
                                             </meta>
                                             <params>
                                                 <param name="default_value" value="auto"/>
@@ -1134,7 +1134,7 @@
                                         </property>
                                         <property name="colorVariant" type="single_select" colspan="4">
                                             <meta>
-                                                <title>PDF kleur</title>
+                                                <title>Kleur</title>
                                             </meta>
                                             <params>
                                                 <param name="default_value" value="auto"/>
@@ -1196,7 +1196,7 @@
                                         </property>
                                         <property name="colorVariant" type="single_select" colspan="4">
                                             <meta>
-                                                <title>PDF kleur</title>
+                                                <title>Kleur</title>
                                             </meta>
                                             <params>
                                                 <param name="default_value" value="auto"/>
@@ -1258,7 +1258,7 @@
                                         </property>
                                         <property name="colorVariant" type="single_select" colspan="4">
                                             <meta>
-                                                <title>PDF kleur</title>
+                                                <title>Kleur</title>
                                             </meta>
                                             <params>
                                                 <param name="default_value" value="auto"/>

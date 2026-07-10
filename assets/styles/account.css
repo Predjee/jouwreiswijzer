@@ -830,18 +830,6 @@
     text-transform: uppercase;
 }
 
-.account-travel-plan-content .travel-plan-block--tip {
-    border-color: rgb(18 33 61 / 20%);
-    border-left-color: #b99550;
-    background: #12213d;
-    color: #f7f4ee;
-}
-
-.account-travel-plan-content .travel-plan-block--tip h3,
-.account-travel-plan-content .travel-plan-block--tip a {
-    color: #fff;
-}
-
 .account-travel-plan-content .travel-plan-route {
     display: grid;
     gap: 0.85rem;
@@ -937,24 +925,26 @@
     right: 1rem;
 }
 
-.account-travel-plan-content .travel-plan-section--destination {
-    border: 0;
-    background: #12213d;
-    color: #f7f4ee;
+.account-travel-plan-content .travel-plan-section--destination:not(.travel-plan-variant--primary):not(.travel-plan-variant--secondary):not(.travel-plan-variant--gold) {
+    border-color: rgb(185 149 80 / 22%);
+    border-left-color: #b99550;
+    background: #fff;
+    color: #12213d;
 }
 
-.account-travel-plan-content .travel-plan-section--destination h2 {
-    color: #fff;
+.account-travel-plan-content .travel-plan-section--destination:not(.travel-plan-variant--primary):not(.travel-plan-variant--secondary):not(.travel-plan-variant--gold) h2 {
+    color: #12213d;
     border-color: rgb(185 149 80 / 55%);
 }
 
-.account-travel-plan-content .travel-plan-section--destination .travel-plan-section__location,
-.account-travel-plan-content .travel-plan-section--destination a {
+.account-travel-plan-content .travel-plan-section--destination:not(.travel-plan-variant--primary):not(.travel-plan-variant--secondary):not(.travel-plan-variant--gold) .travel-plan-section__location,
+.account-travel-plan-content .travel-plan-section--destination:not(.travel-plan-variant--primary):not(.travel-plan-variant--secondary):not(.travel-plan-variant--gold) a {
     color: #d4af62;
 }
 
-.account-travel-plan-content .travel-plan-section--destination .travel-plan-section__content {
-    color: #eef1f6;
+.account-travel-plan-content .travel-plan-section--destination:not(.travel-plan-variant--primary):not(.travel-plan-variant--secondary):not(.travel-plan-variant--gold) .travel-plan-section__content,
+.account-travel-plan-content .travel-plan-section--destination:not(.travel-plan-variant--primary):not(.travel-plan-variant--secondary):not(.travel-plan-variant--gold) .travel-plan-section__content :is(p, li, span, strong, em) {
+    color: #333f52;
 }
 
 .account-travel-plan-content .travel-plan-section--day {
@@ -985,14 +975,14 @@
     padding: 1.35rem 4.25rem 1.25rem 1.5rem;
     border: 0;
     border-radius: 0;
-    background: #12213d;
-    color: #f7f4ee;
+    background: #fff;
+    color: #333f52;
 }
 
 .account-travel-plan-content .travel-plan-day__header h2 {
     margin-bottom: 0.5rem;
     border: 0;
-    color: #fff;
+    color: #12213d;
 }
 
 .account-travel-plan-content .travel-plan-day__meta {
@@ -1006,14 +996,30 @@
 
 .account-travel-plan-content .travel-plan-day__intro {
     max-width: 42rem;
-    color: #e7e0d3;
+    color: #333f52;
 }
 
 .account-travel-plan-content .travel-plan-day__blocks {
     display: grid;
     gap: 0.85rem;
-    padding: 1rem;
-    background: #f8f5ef;
+    padding: clamp(1rem, 3vw, 1.35rem);
+    border-top: 1px solid rgb(185 149 80 / 24%);
+    background:
+        linear-gradient(180deg, rgb(255 255 255 / 46%), rgb(255 255 255 / 0) 5rem),
+        #f8f5ef;
+}
+
+.account-travel-plan-content .travel-plan-day__block-item {
+    min-width: 0;
+}
+
+.account-travel-plan-content .travel-plan-day__block-item + .travel-plan-day__block-item::before {
+    content: "";
+    display: block;
+    width: min(100%, 8rem);
+    height: 1px;
+    margin: -0.35rem auto 0.5rem;
+    background: rgb(185 149 80 / 24%);
 }
 
 .account-travel-plan-content .travel-plan-section--day .travel-plan-block {
@@ -1022,10 +1028,12 @@
     gap: 0.85rem;
     align-items: start;
     margin: 0;
-    padding: 0.95rem;
+    padding: clamp(0.95rem, 2.4vw, 1.15rem);
     border: 1px solid rgb(18 33 61 / 10%);
+    border-left: 0.25rem solid rgb(185 149 80 / 55%);
     border-radius: 0.35rem;
     background: #fff;
+    box-shadow: 0 0.7rem 1.6rem rgb(18 33 61 / 5%);
 }
 
 .account-travel-plan-content .travel-plan-section--day .travel-plan-block > .travel-plan-icon-slot {
@@ -1060,16 +1068,16 @@
 
 .account-travel-plan-content .travel-plan-block--tip,
 .account-travel-plan-content .travel-plan-block--note {
-    background: #fbfaf7;
+    background: #fff;
 }
 
-.account-travel-plan-content .travel-plan-section--day .travel-plan-block--tip {
+.account-travel-plan-content .travel-plan-section--day .travel-plan-block--tip.travel-plan-variant--primary {
     border-color: rgb(185 149 80 / 30%);
     background: #12213d;
     color: #f7f4ee;
 }
 
-.account-travel-plan-content .travel-plan-section--day .travel-plan-block--tip .travel-plan-icon-slot {
+.account-travel-plan-content .travel-plan-section--day .travel-plan-block--tip.travel-plan-variant--primary .travel-plan-icon-slot {
     border-color: rgb(255 255 255 / 24%);
     background: rgb(255 255 255 / 10%);
     color: #d4af62;
@@ -1695,4 +1703,62 @@
     .account-profile-field--full {
         grid-column: auto;
     }
+}
+
+/*
+ * Dynamische reisplanvarianten.
+ * De token-template zet per .travel-plan-variant--x dezelfde variabelen als de PDF.
+ * Deze CSS beschrijft alleen de semantiek van blokken en secties.
+ */
+.account-travel-plan-content .travel-plan-variant--default,
+.account-travel-plan-content .travel-plan-variant--primary,
+.account-travel-plan-content .travel-plan-variant--secondary,
+.account-travel-plan-content .travel-plan-variant--gold {
+    --tp-card-bg: var(--tp-variant-bg);
+    --tp-card-edge: var(--tp-variant-edge);
+    --tp-card-accent: var(--tp-variant-accent);
+    --tp-card-title: var(--tp-variant-title);
+    --tp-card-body: var(--tp-variant-body);
+    --tp-card-meta: var(--tp-variant-meta);
+    --tp-card-link: var(--tp-variant-link);
+}
+
+.account-travel-plan-content .travel-plan-block:is(.travel-plan-variant--default, .travel-plan-variant--primary, .travel-plan-variant--secondary, .travel-plan-variant--gold),
+.account-travel-plan-content .travel-plan-section:is(.travel-plan-variant--default, .travel-plan-variant--primary, .travel-plan-variant--secondary, .travel-plan-variant--gold):not(.travel-plan-section--day) {
+    background: var(--tp-card-bg);
+    border-color: var(--tp-card-edge);
+    border-left-color: var(--tp-card-accent);
+    color: var(--tp-card-body);
+}
+
+.account-travel-plan-content :is(.travel-plan-block, .travel-plan-section):is(.travel-plan-variant--default, .travel-plan-variant--primary, .travel-plan-variant--secondary, .travel-plan-variant--gold) :is(h2, h3) {
+    color: var(--tp-card-title);
+}
+
+.account-travel-plan-content :is(.travel-plan-block, .travel-plan-section):is(.travel-plan-variant--default, .travel-plan-variant--primary, .travel-plan-variant--secondary, .travel-plan-variant--gold) :is(.travel-plan-section__content, p, li) {
+    color: var(--tp-card-body);
+}
+
+.account-travel-plan-content :is(.travel-plan-block, .travel-plan-section):is(.travel-plan-variant--default, .travel-plan-variant--primary, .travel-plan-variant--secondary, .travel-plan-variant--gold) :is(.travel-plan-block__time, .travel-plan-block__location, .travel-plan-day__meta, .travel-plan-section__location) {
+    color: var(--tp-card-meta);
+}
+
+.account-travel-plan-content :is(.travel-plan-block, .travel-plan-section):is(.travel-plan-variant--default, .travel-plan-variant--primary, .travel-plan-variant--secondary, .travel-plan-variant--gold) a {
+    color: var(--tp-card-link);
+}
+
+.account-travel-plan-content .travel-plan-section--day:is(.travel-plan-variant--default, .travel-plan-variant--primary, .travel-plan-variant--secondary, .travel-plan-variant--gold) > .travel-plan-day__header {
+    background: var(--tp-card-bg);
+    color: var(--tp-card-body);
+}
+
+.account-travel-plan-content .travel-plan-section--day:is(.travel-plan-variant--default, .travel-plan-variant--primary, .travel-plan-variant--secondary, .travel-plan-variant--gold) > .travel-plan-day__header h2 {
+    color: var(--tp-card-title);
+}
+
+.account-travel-plan-content .travel-plan-section--day:is(.travel-plan-variant--default, .travel-plan-variant--primary, .travel-plan-variant--secondary, .travel-plan-variant--gold) .travel-plan-day__blocks {
+    border-top-color: var(--tp-card-edge);
+    background:
+        linear-gradient(180deg, rgb(255 255 255 / 42%), rgb(255 255 255 / 0) 5rem),
+        var(--tp-card-zone, #f8f5ef);
 }

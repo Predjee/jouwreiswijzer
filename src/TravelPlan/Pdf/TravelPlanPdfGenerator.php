@@ -45,14 +45,20 @@ final readonly class TravelPlanPdfGenerator
             ));
         }
 
+        // mPDF's getDefaults() is ongetypeerd (mixed); expliciet vernauwen.
         $defaultConfig = (new ConfigVariables())->getDefaults();
         $defaultFontConfig = (new FontVariables())->getDefaults();
-        $fontData = $defaultFontConfig['fontdata'];
+        $defaultFontDirs = \is_array($defaultConfig) && \is_array($defaultConfig['fontDir'] ?? null)
+            ? \array_values($defaultConfig['fontDir'])
+            : [];
+        $fontData = \is_array($defaultFontConfig) && \is_array($defaultFontConfig['fontdata'] ?? null)
+            ? $defaultFontConfig['fontdata']
+            : [];
 
         $mpdf = new Mpdf([
             'format' => 'A4',
             'tempDir' => $this->tempDir,
-            'fontDir' => [...$defaultConfig['fontDir'], $this->fontDir],
+            'fontDir' => [...$defaultFontDirs, $this->fontDir],
             'fontdata' => \array_merge($fontData, [
                 'jost' => [
                     'R' => 'Jost-Light.ttf',
@@ -103,7 +109,13 @@ final readonly class TravelPlanPdfGenerator
             $mpdf->WriteHTML($htmlChunk, HTMLParserMode::HTML_BODY);
         }
 
-        return $mpdf->Output('', Destination::STRING_RETURN);
+        $output = $mpdf->Output('', Destination::STRING_RETURN);
+
+        if (!\is_string($output)) {
+            throw new \RuntimeException('mPDF gaf geen PDF-string terug.');
+        }
+
+        return $output;
     }
 
     /**

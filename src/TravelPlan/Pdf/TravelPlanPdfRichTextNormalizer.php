@@ -115,7 +115,8 @@ final readonly class TravelPlanPdfRichTextNormalizer
 
     private function buildTableReplacement(\DOMDocument $dom, \DOMXPath $xpath, \DOMElement $node): ?\DOMElement
     {
-        $table = 'table' === $node->tagName ? $node : $xpath->query('.//table', $node)?->item(0);
+        $nested = $xpath->query('.//table', $node);
+        $table = 'table' === $node->tagName ? $node : (false !== $nested ? $nested->item(0) : null);
 
         if (!$table instanceof \DOMElement) {
             return null;
@@ -153,11 +154,9 @@ final readonly class TravelPlanPdfRichTextNormalizer
 
         $headings = $rows[0];
         $bodies = $rows[1];
+        // NB: $headings en $bodies bevatten hier gegarandeerd cellen
+        // (lege rijen zijn hierboven al uitgefilterd).
         $columnCount = \min(\count($headings), \count($bodies));
-
-        if (0 === $columnCount) {
-            return null;
-        }
 
         $replacementTable = $dom->createElement('table');
         $replacementTable->setAttribute('class', 'travel-plan-editor-table');

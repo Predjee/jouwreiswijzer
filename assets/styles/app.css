@@ -16,6 +16,7 @@
 @import "./blocks/_faq.css";
 @import "./blocks/_form.css";
 @import "./_animations.css";
+@import "./account.css";
 
 @theme {
     --font-body: "Jost", sans-serif;

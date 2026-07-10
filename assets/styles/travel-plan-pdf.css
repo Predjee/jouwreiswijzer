@@ -37,7 +37,7 @@ body {
 .travel-plan h1,
 .travel-plan-section h1 {
     margin: 0;
-    color: #071828;
+    color: #12213d;
     font-family: "Cormorant", serif;
     font-size: 34pt;
     font-weight: normal;
@@ -50,7 +50,7 @@ body {
     margin: 0 0 4mm;
     padding: 0 0 2mm;
     border-bottom: 0.25mm solid #d4af37;
-    color: #071828;
+    color: #12213d;
     font-family: "Cormorant", serif;
     font-size: 16.5pt;
     font-weight: normal;
@@ -61,7 +61,7 @@ body {
 .travel-plan-section h3,
 .travel-plan-frame-card h3 {
     margin: 0 0 1.2mm;
-    color: #071828;
+    color: #12213d;
     font-family: "Cormorant", serif;
     font-size: 12pt;
     font-weight: normal;
@@ -160,7 +160,7 @@ body {
     margin-bottom: 6mm;
     padding-bottom: 2.4mm;
     border-bottom: 0.45mm solid #d4af37;
-    color: #071828;
+    color: #12213d;
     font-size: 29pt;
     line-height: 1.05;
 }
@@ -200,7 +200,7 @@ body {
 }
 
 .travel-plan__profile td {
-    color: #071828;
+    color: #12213d;
     font-size: 10.4pt;
 }
 
@@ -250,7 +250,7 @@ body {
     margin: 0 0 3.6mm 9.6mm;
     padding: 0 0 3mm;
     border: 0;
-    color: #071828;
+    color: #12213d;
     font-size: 18pt;
     font-style: normal;
     line-height: 1.16;
@@ -271,7 +271,7 @@ body {
 .travel-plan-section--destination .travel-plan-section__content,
 .travel-plan-section--destination p,
 .travel-plan-section--destination li {
-    color: #17233b;
+    color: inherit;
 }
 
 /* Day groups: geen doorlopende beige kaartcontainer. */
@@ -290,7 +290,7 @@ body {
     padding: 5.5mm 6mm 5mm;
     border: 0;
     border-top: 0.8mm solid #d4af37;
-    background-color: #071828;
+    background-color: #12213d;
     color: #f7f4ee;
     page-break-inside: auto;
 }
@@ -415,8 +415,8 @@ table.travel-plan-block .travel-plan-icon {
 /* Primaire kaart als table. */
 table.travel-plan-block--primary,
 table.travel-plan-block--primary td {
-    border-color: #071828;
-    background-color: #071828;
+    border-color: #12213d;
+    background-color: #12213d;
 }
 
 .travel-plan-block--primary h3,
@@ -444,9 +444,9 @@ table.travel-plan-block--primary td {
 }
 
 .travel-plan-block--flow.travel-plan-block--primary {
-    border-color: #071828;
-    border-left: 0.85mm solid #071828;
-    background-color: #071828;
+    border-color: #12213d;
+    border-left: 0.85mm solid #12213d;
+    background-color: #12213d;
     color: #eef1f6;
 }
 
@@ -480,7 +480,7 @@ table.travel-plan-block--primary td {
 
 .travel-plan-editor-table th {
     background-color: #f4efe6;
-    color: #071828;
+    color: #12213d;
     font-family: "JostRegular", "Jost", sans-serif;
     font-size: 9.5pt;
     font-weight: bold;
@@ -519,7 +519,7 @@ table.travel-plan-block--primary td {
     margin-bottom: 4mm;
     padding-bottom: 2mm;
     border-bottom: 0.25mm solid #d4af37;
-    color: #071828;
+    color: #12213d;
 }
 
 .travel-plan-route {
@@ -602,7 +602,7 @@ table.travel-plan-block--primary td {
 
 .travel-plan-section-frame__title {
     margin: 0 0 3mm;
-    color: #071828;
+    color: #12213d;
     font-family: "Cormorant", serif;
     font-size: 16.5pt;
     font-weight: normal;
@@ -636,7 +636,7 @@ table.travel-plan-block--primary td {
     display: block;
     margin: 0;
     padding: 6mm 0 2.2mm;
-    color: #071828;
+    color: #12213d;
     font-family: "Cormorant", serif;
     font-size: 15pt;
     font-weight: normal;
@@ -668,7 +668,7 @@ table.travel-plan-block--primary td {
 .travel-plan-section__content h4,
 .travel-plan-section-frame .travel-plan-section__content h4 {
     margin: 4.5mm 0 1mm;
-    color: #071828;
+    color: #12213d;
     font-family: "JostRegular", "Jost", sans-serif;
     font-size: 10.2pt;
     font-weight: bold;
@@ -726,7 +726,7 @@ table.travel-plan-block--primary td {
     margin: 0 0 8mm;
     padding-bottom: 2.5mm;
     border-bottom: 0.45mm solid #d4af37;
-    color: #071828;
+    color: #12213d;
     font-family: "Cormorant", serif;
     font-size: 21pt;
     font-weight: normal;
@@ -793,4 +793,54 @@ div.mpdf_toc_level_1 {
 .travel-plan-block__content,
 .travel-plan-day__intro {
     line-height: 1.62;
+}
+
+/*
+ * Polish-ronde 2: welkom-pagina, frames en footer.
+ * - Profieltabel: geen gesloten kader maar een open, luxe opmaak — gouden
+ *   toplijn en hairline rijscheiders, meer lucht in de cellen.
+ * - Frame-titels: zelfde elegante gouden onderlijn als de groepskoppen.
+ * - Footer: fijner gespatieerd.
+ */
+.travel-plan__profile {
+    border: 0;
+    border-top: 0.7mm solid #d4af37;
+    background-color: transparent;
+}
+
+.travel-plan__profile th,
+.travel-plan__profile td {
+    padding: 3.8mm 4.5mm 3.4mm 0;
+    border-bottom: 0.2mm solid #e6e2d7;
+}
+
+.travel-plan__profile th {
+    padding-left: 0.2mm;
+    letter-spacing: 1.1px;
+    font-size: 7.6pt;
+}
+
+.travel-plan-frame-card {
+    border-color: #e6e2d7;
+    border-left: 1.2mm solid #d4af37;
+}
+
+.travel-plan-section-frame__title {
+    margin: 0 0 3mm;
+    padding: 0 0 2.2mm;
+    border-bottom: 0.35mm solid #d4af37;
+    font-size: 16pt;
+}
+
+.travel-plan-section-frame .travel-plan-section__content,
+.travel-plan-section-frame p,
+.travel-plan-section-frame li {
+    color: #333f52;
+    line-height: 1.66;
+}
+
+.travel-plan-footer {
+    letter-spacing: 0.9px;
+    font-size: 7.2pt;
+    color: #8d93a1;
 }

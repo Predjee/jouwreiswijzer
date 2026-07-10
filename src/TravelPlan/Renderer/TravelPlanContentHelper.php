@@ -154,10 +154,11 @@ final readonly class TravelPlanContentHelper
         }
 
         if (\is_array($image)) {
-            $thumbnail = $image['thumbnails']['text-media-landscape']
-                ?? $image['thumbnails']['package-card']
-                ?? $image['thumbnails']['large']
-                ?? $image['thumbnails']['default']
+            $thumbnails = \is_array($image['thumbnails'] ?? null) ? $image['thumbnails'] : [];
+            $thumbnail = $thumbnails['text-media-landscape']
+                ?? $thumbnails['package-card']
+                ?? $thumbnails['large']
+                ?? $thumbnails['default']
                 ?? null;
             $url = \is_scalar($thumbnail) ? (string) $thumbnail : null;
 

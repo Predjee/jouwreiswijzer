@@ -12,7 +12,7 @@ namespace App\TravelPlan;
  */
 final class TravelPlanStyle
 {
-    public const NAVY = '#071828';
+    public const NAVY = '#12213d';
     public const GOLD = '#d4af37';
     public const GOLD_LIGHT = '#e1bd55';
     public const CREAM = '#f8f5ef';
@@ -22,8 +22,8 @@ final class TravelPlanStyle
     public const TEXT_SOFT = '#d8dde2';
     public const TEXT_CONTENT_LIGHT = '#eef1f6';
     public const WHITE = '#ffffff';
-    public const CARD_RADIUS = '1.8mm';
-    public const SECTION_RADIUS = '2mm';
+    public const CARD_RADIUS = '2.4mm';
+    public const SECTION_RADIUS = '2.8mm';
 
     /**
      * mPDF kan een tabelrij niet splitsen. Blokken boven deze grens mogen
@@ -51,8 +51,8 @@ final class TravelPlanStyle
         return [
             'default' => [
                 'background' => self::WHITE,
-                'edge' => '#e6e2d7',
-                'accent' => null,
+                'edge' => self::GOLD_LIGHT,
+                'accent' => self::GOLD_LIGHT,
                 'bar' => self::GOLD,
                 'title' => self::NAVY,
                 'body' => self::TEXT_BODY,

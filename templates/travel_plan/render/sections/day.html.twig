@@ -1,11 +1,11 @@
 {% if accountView %}
-<section class="travel-plan-section travel-plan-section--day">
+<section class="travel-plan-section travel-plan-section--day {{ section.variantClass|default('travel-plan-variant--default') }}">
 {% else %}
 <div class="travel-plan-section travel-plan-section--day">
 {% endif %}
     {# Inline styling in PDF-modus: mPDF's klasse-cascade is onbetrouwbaar
        in gesplitste chunks; inline styles winnen altijd. #}
-    <div class="travel-plan-day__header"{% if not accountView %} style="background-color: #071828; color: #f7f4ee;"{% endif %}>
+    <div class="travel-plan-day__header"{% if not accountView %} style="background-color: #12213d; color: #f7f4ee;"{% endif %}>
         {% set dayMeta = [] %}
         {% if section.dayNumber|default('') is not empty %}
             {% set dayMeta = dayMeta|merge(['Dag ' ~ section.dayNumber]) %}
@@ -27,17 +27,23 @@
     </div>
 
     {% if renderedBlocks is not empty %}
-        <div class="travel-plan-day__blocks">
+        <div class="travel-plan-day__blocks{% if accountView %} travel-plan-day__blocks--account{% endif %}">
             {% for renderedBlock in renderedBlocks %}
-                {{ renderedBlock.html|raw }}
-                {% if accountView and feedbackEnabled|default(false) %}
-                    {{ include('account/_travel_plan_feedback_form.html.twig', {
-                        travelPlan: travelPlan,
-                        blockPath: renderedBlock.blockPath,
-                        feedback: renderedBlock.feedback,
-                        feedbackLabel: 'Feedback op dit dagonderdeel',
-                        feedbackContext: 'block'
-                    }) }}
+                {% if accountView %}
+                    <div class="travel-plan-day__block-item">
+                        {{ renderedBlock.html|raw }}
+                        {% if feedbackEnabled|default(false) %}
+                            {{ include('account/_travel_plan_feedback_form.html.twig', {
+                                travelPlan: travelPlan,
+                                blockPath: renderedBlock.blockPath,
+                                feedback: renderedBlock.feedback,
+                                feedbackLabel: 'Feedback op dit dagonderdeel',
+                                feedbackContext: 'block'
+                            }) }}
+                        {% endif %}
+                    </div>
+                {% else %}
+                    {{ renderedBlock.html|raw }}
                 {% endif %}
             {% endfor %}
         </div>

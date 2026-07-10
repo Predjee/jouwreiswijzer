@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\TravelPlan\Pdf;
+namespace App\TravelPlan;
 
 /**
- * Design tokens voor PDF-rendering.
+ * Gedeelde design-tokens voor de reisplan-weergaven (PDF én mijn-omgeving).
  *
  * Twig ontvangt deze waarden als `t`, zodat inline mPDF-styling niet overal
  * losse kleurcodes hoeft te herhalen.
  */
-final class TravelPlanPdfStyle
+final class TravelPlanStyle
 {
     public const NAVY = '#071828';
     public const GOLD = '#d4af37';

@@ -7,6 +7,13 @@ namespace App\TravelPlan\Renderer;
 use App\Entity\TravelPlan;
 use App\Entity\TravelPlanFeedback;
 use App\Service\IconResolver;
+use App\TravelPlan\Content\ColorVariant;
+use App\TravelPlan\Content\DayBlock;
+use App\TravelPlan\Content\Destination;
+use App\TravelPlan\Content\Section;
+use App\TravelPlan\Content\SectionType;
+use App\TravelPlan\Content\TravelPlanContent;
+use App\TravelPlan\TravelPlanStyle;
 use Twig\Environment;
 
 /**
@@ -15,27 +22,6 @@ use Twig\Environment;
  */
 final readonly class TravelPlanRenderer
 {
-    private const DEFAULT_SECTION_ICONS = [
-        'destination' => 'map',
-        'route_overview' => 'map',
-        'practical_info' => 'info',
-        'checklist' => 'list-check',
-        'budget_note' => 'wallet',
-        'personal_note' => 'heart',
-        'free_text' => 'info',
-        'image' => 'image',
-    ];
-
-    private const DEFAULT_DAY_BLOCK_ICONS = [
-        'activity' => 'compass',
-        'accommodation' => 'bed',
-        'transport' => 'car',
-        'meal' => 'utensils',
-        'tip' => 'lightbulb',
-        'note' => 'sticky-note',
-        'free_text' => 'info',
-    ];
-
     private const SECTION_TEMPLATES = [
         'destination' => 'travel_plan/render/sections/destination.html.twig',
         'route_overview' => 'travel_plan/render/sections/route_overview.html.twig',
@@ -73,164 +59,146 @@ final readonly class TravelPlanRenderer
         array $feedbackByPath = [],
         bool $feedbackEnabled = true,
     ): string {
-        $content = $travelPlan->getContent();
+        $content = TravelPlanContent::fromArray($travelPlan->getContent());
         $renderedSections = [];
 
-        foreach (($content['destinations'] ?? []) as $destinationIndex => $destination) {
-            if (!\is_array($destination)) {
-                continue;
-            }
+        foreach ($content->destinations as $destination) {
+            $destinationPath = \sprintf('destinations[%d]', $destination->sourceIndex);
 
-            $type = $destination['type'] ?? null;
-
-            if ('image' === $type) {
-                $destination['imageSrc'] = $this->helper->mediaImageSrc($destination['image'] ?? null, false);
-                $destinationPath = \sprintf('destinations[%d]', (int) $destinationIndex);
+            if ($destination->isImage()) {
                 $renderedImage = $this->twig->render(self::SECTION_TEMPLATES['image'], [
-                    'section' => $destination,
+                    'section' => $this->imageSection($destination),
                     'accountView' => true,
                     'travelPlan' => $travelPlan,
                     'feedbackEnabled' => $feedbackEnabled,
                 ]);
+
                 $renderedSections[] = [
-                    'html' => $this->applyPageBreakClass($renderedImage, $destination['startOnNewPage'] ?? false),
+                    'html' => $this->applyPageBreakClass($renderedImage, $destination->startOnNewPage),
                     'blockPath' => $destinationPath,
-                    'blockType' => 'image',
+                    'blockType' => SectionType::Image->value,
                     'feedback' => $feedbackEnabled ? ($feedbackByPath[$destinationPath] ?? null) : null,
                 ];
 
                 continue;
             }
 
-            if ('destination' !== $type) {
-                continue;
-            }
-
-            $destinationPath = \sprintf('destinations[%d]', $destinationIndex);
             $renderedDestination = $this->twig->render(self::SECTION_TEMPLATES['destination'], [
-                'section' => $destination,
+                'section' => $destination->raw,
                 'accountView' => true,
                 'travelPlan' => $travelPlan,
                 'feedbackEnabled' => $feedbackEnabled,
             ]);
             $renderedDestination = $this->applyPageBreakClass(
-                $this->prependIcon($renderedDestination, $this->iconOrDefault($destination['icon'] ?? null, self::DEFAULT_SECTION_ICONS['destination'])),
-                $destination['startOnNewPage'] ?? false,
+                $this->prependIcon($renderedDestination, $destination->iconOrDefault()),
+                $destination->startOnNewPage,
             );
+
             $renderedSections[] = [
                 'html' => $renderedDestination,
                 'blockPath' => $destinationPath,
-                'blockType' => 'destination',
+                'blockType' => SectionType::Destination->value,
                 'feedback' => $feedbackEnabled ? ($feedbackByPath[$destinationPath] ?? null) : null,
             ];
 
-            foreach ($destination['sections'] ?? [] as $sectionIndex => $section) {
-                if (!\is_array($section)) {
-                    continue;
-                }
-
-                $type = $section['type'] ?? null;
-
-                if (!\is_string($type) || !isset(self::SECTION_TEMPLATES[$type]) || 'destination' === $type) {
-                    continue;
-                }
-
-                if ('route_overview' === $type && \is_array($section['routeStops'] ?? null)) {
-                    $section['routeStops'] = \array_map(function (mixed $stop): mixed {
-                        if (!\is_array($stop)) {
-                            return $stop;
-                        }
-
-                        $stop['_iconMarkup'] = $this->iconSvg($this->iconOrDefault($stop['icon'] ?? null, 'map'));
-
-                        return $stop;
-                    }, $section['routeStops']);
-                }
-
-                $context = [
-                    'section' => $section,
-                    'accountView' => true,
-                    'travelPlan' => $travelPlan,
-                    'feedbackEnabled' => $feedbackEnabled,
-                ];
-
-                if ('day' === $type) {
-                    $context['renderedBlocks'] = $this->renderDayBlocks(
-                        $section['blocks'] ?? [],
-                        $travelPlan,
-                        $destinationIndex,
-                        (int) $sectionIndex,
-                        $feedbackByPath,
-                        $feedbackEnabled,
-                    );
-                }
-
-                $sectionPath = \sprintf(
-                    'destinations[%d].sections[%d]',
-                    $destinationIndex,
-                    (int) $sectionIndex,
+            foreach ($destination->sections as $section) {
+                $renderedSections[] = $this->renderSection(
+                    $section,
+                    $travelPlan,
+                    $destination->sourceIndex,
+                    $feedbackByPath,
+                    $feedbackEnabled,
                 );
-                $renderedSection = $this->twig->render(self::SECTION_TEMPLATES[$type], $context);
-                $renderedSection = $this->applyPageBreakClass(
-                    $this->prependIcon($renderedSection, $this->iconOrDefault($section['icon'] ?? null, self::DEFAULT_SECTION_ICONS[$type] ?? null)),
-                    $section['startOnNewPage'] ?? false,
-                );
-                $renderedSections[] = [
-                    'html' => $renderedSection,
-                    'blockPath' => $sectionPath,
-                    'blockType' => $type,
-                    'feedback' => $feedbackEnabled ? ($feedbackByPath[$sectionPath] ?? null) : null,
-                ];
             }
         }
 
         return $this->twig->render('travel_plan/render/base.html.twig', [
             'travelPlan' => $travelPlan,
-            'intro' => \is_array($content['intro'] ?? null) ? $content['intro'] : [],
-            'tripProfile' => \is_array($content['tripProfile'] ?? null) ? $content['tripProfile'] : [],
+            'intro' => ['title' => $content->introTitle, 'text' => $content->introText],
+            'tripProfile' => $content->tripProfile->raw,
             'renderedSections' => $renderedSections,
             'tableOfContents' => [],
             'showTableOfContents' => false,
             'logoSrc' => null,
             'accountView' => true,
             'feedbackEnabled' => $feedbackEnabled,
+            'styleVariants' => TravelPlanStyle::variants(),
         ]);
     }
 
     /**
      * @param array<string, TravelPlanFeedback> $feedbackByPath
      *
+     * @return array{html: string, blockPath: string, blockType: string, feedback: ?TravelPlanFeedback}
+     */
+    private function renderSection(
+        Section $section,
+        TravelPlan $travelPlan,
+        int $destinationIndex,
+        array $feedbackByPath,
+        bool $feedbackEnabled,
+    ): array {
+        $type = $section->type->value;
+        $rawSection = $this->accountSection($section);
+        $context = [
+            'section' => $rawSection,
+            'accountView' => true,
+            'travelPlan' => $travelPlan,
+            'feedbackEnabled' => $feedbackEnabled,
+        ];
+
+        if (SectionType::Day === $section->type) {
+            $context['renderedBlocks'] = $this->renderDayBlocks(
+                $section->blocks,
+                $travelPlan,
+                $destinationIndex,
+                $section->sourceIndex,
+                $feedbackByPath,
+                $feedbackEnabled,
+            );
+        }
+
+        $sectionPath = \sprintf(
+            'destinations[%d].sections[%d]',
+            $destinationIndex,
+            $section->sourceIndex,
+        );
+        $renderedSection = $this->twig->render(self::SECTION_TEMPLATES[$type], $context);
+        $renderedSection = $this->applyVariantClass($this->applyPageBreakClass(
+            $this->prependIcon($renderedSection, $section->iconOrDefault()),
+            $section->startOnNewPage,
+        ), $section->colorVariant);
+
+        return [
+            'html' => $renderedSection,
+            'blockPath' => $sectionPath,
+            'blockType' => $type,
+            'feedback' => $feedbackEnabled ? ($feedbackByPath[$sectionPath] ?? null) : null,
+        ];
+    }
+
+    /**
+     * @param list<DayBlock> $blocks
+     * @param array<string, TravelPlanFeedback> $feedbackByPath
+     *
      * @return list<array{html: string, blockPath: string, blockType: string, feedback: ?TravelPlanFeedback}>
      */
     private function renderDayBlocks(
-        mixed $blocks,
+        array $blocks,
         TravelPlan $travelPlan,
         int $destinationIndex,
         int $sectionIndex,
         array $feedbackByPath,
         bool $feedbackEnabled,
     ): array {
-        if (!\is_array($blocks)) {
-            return [];
-        }
-
         $renderedBlocks = [];
 
-        foreach ($blocks as $blockIndex => $block) {
-            if (!\is_array($block)) {
-                continue;
-            }
-
-            $type = $block['type'] ?? null;
-
-            if (!\is_string($type) || !isset(self::DAY_BLOCK_TEMPLATES[$type])) {
-                continue;
-            }
-
+        foreach ($blocks as $block) {
+            $type = $block->type->value;
             $renderedBlock = $this->twig->render(
                 self::DAY_BLOCK_TEMPLATES[$type],
                 [
-                    'block' => $this->helper->withTimeRange($block),
+                    'block' => $this->helper->withTimeRange($block->raw),
                     'accountView' => true,
                     'travelPlan' => $travelPlan,
                 ],
@@ -239,15 +207,15 @@ final readonly class TravelPlanRenderer
                 'destinations[%d].sections[%d].blocks[%d]',
                 $destinationIndex,
                 $sectionIndex,
-                $blockIndex,
+                $block->sourceIndex,
             );
-            $renderedBlock = $this->prependIcon(
-                $renderedBlock,
-                $this->iconOrDefault($block['icon'] ?? null, self::DEFAULT_DAY_BLOCK_ICONS[$type]),
-            );
+            $renderedBlock = $this->prependIcon($renderedBlock, $block->iconOrDefault());
 
             $renderedBlocks[] = [
-                'html' => $this->applyPageBreakClass($renderedBlock, $block['startOnNewPage'] ?? false),
+                'html' => $this->applyVariantClass(
+                    $this->applyPageBreakClass($renderedBlock, $block->startOnNewPage),
+                    $block->colorVariant,
+                ),
                 'blockPath' => $blockPath,
                 'blockType' => $type,
                 'feedback' => $feedbackEnabled ? ($feedbackByPath[$blockPath] ?? null) : null,
@@ -255,6 +223,35 @@ final readonly class TravelPlanRenderer
         }
 
         return $renderedBlocks;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function imageSection(Destination $destination): array
+    {
+        return \array_replace($destination->raw, [
+            'imageSrc' => $this->helper->mediaImageSrc($destination->image, false),
+        ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function accountSection(Section $section): array
+    {
+        if (SectionType::RouteOverview !== $section->type) {
+            return $section->raw;
+        }
+
+        return \array_replace($section->raw, [
+            'routeStops' => \array_map(
+                fn (array $stop): array => \array_replace($stop, [
+                    '_iconMarkup' => $this->iconSvg($this->iconOrDefault($stop['icon'] ?? null, SectionType::RouteOverview->defaultIcon())),
+                ]),
+                $section->routeStops,
+            ),
+        ]);
     }
 
     private function prependIcon(string $html, mixed $icon): string
@@ -275,9 +272,28 @@ final readonly class TravelPlanRenderer
         ) ?? $html;
     }
 
-    private function applyPageBreakClass(string $html, mixed $startOnNewPage): string
+    /**
+     * Voegt de CMS-kleurkeuze ("PDF kleur") als variantklasse toe, zodat de
+     * mijn-omgeving dezelfde paletten toont als de PDF (via de CSS-
+     * variabelen uit _style_tokens.html.twig).
+     */
+    private function applyVariantClass(string $html, ColorVariant $variant): string
     {
-        if (!$this->helper->isTruthy($startOnNewPage)) {
+        if (!\in_array($variant, [ColorVariant::Primary, ColorVariant::Secondary, ColorVariant::Gold], true)) {
+            return $html;
+        }
+
+        return \preg_replace(
+            '/(<(?:section|article|aside|div)\b[^>]*class=")([^"]*)(")/',
+            '$1$2 travel-plan-variant--' . $variant->value . '$3',
+            $html,
+            1,
+        ) ?? $html;
+    }
+
+    private function applyPageBreakClass(string $html, bool $startOnNewPage): string
+    {
+        if (!$startOnNewPage) {
             return $html;
         }
 
@@ -300,23 +316,31 @@ final readonly class TravelPlanRenderer
         return $html;
     }
 
-    private function iconOrDefault(mixed $icon, ?string $default): mixed
-    {
-        if (\is_string($icon) && '' !== \trim($icon)) {
-            return $icon;
-        }
-
-        return $default;
-    }
-
     private function iconSvg(mixed $icon): ?string
     {
-        if (!\is_string($icon)) {
+        if (!\is_scalar($icon)) {
+            return null;
+        }
+
+        $icon = \trim((string) $icon);
+
+        if ('' === $icon) {
             return null;
         }
 
         $svg = $this->iconResolver->getSvgIcon($icon);
 
         return '' === $svg ? null : $svg;
+    }
+
+    private function iconOrDefault(mixed $icon, string $default): string
+    {
+        if (!\is_scalar($icon)) {
+            return $default;
+        }
+
+        $icon = \trim((string) $icon);
+
+        return '' === $icon ? $default : $icon;
     }
 }

@@ -6,7 +6,10 @@ namespace App\PushMessage;
 
 use App\Entity\TravelPlan;
 use App\Service\TravelCompanion\CompanionContentHelper;
-use App\Service\TravelPlanContentFactory;
+use App\TravelPlan\Content\BlockType;
+use App\TravelPlan\Content\DayBlock;
+use App\TravelPlan\Content\SectionType;
+use App\TravelPlan\Content\TravelPlanContent;
 
 final readonly class TravelPlanPersonalizationContextBuilder
 {
@@ -20,10 +23,9 @@ final readonly class TravelPlanPersonalizationContextBuilder
      */
     public function build(TravelPlan $travelPlan, object $customer, array $currentDay = []): array
     {
-        $content = $travelPlan->getContent();
-        $tripProfile = \is_array($content['tripProfile'] ?? null) ? $content['tripProfile'] : [];
-        $startDate = CompanionContentHelper::createDate($tripProfile['startDate'] ?? null);
-        $endDate = CompanionContentHelper::createDate($tripProfile['endDate'] ?? null);
+        $content = TravelPlanContent::fromArray($travelPlan->getContent());
+        $startDate = CompanionContentHelper::createDate($content->tripProfile->startDate);
+        $endDate = CompanionContentHelper::createDate($content->tripProfile->endDate);
         $days = $this->days($content, $startDate);
         $selectedDay = $this->currentDay($days, $currentDay, $startDate, $endDate);
         $nextDay = $this->nextDay($days, $selectedDay);
@@ -93,35 +95,30 @@ final readonly class TravelPlanPersonalizationContextBuilder
     }
 
     /**
-     * @return list<array{number: int, title: string, date?: \DateTimeImmutable, blocks: list<array<string, mixed>>}>
+     * @return list<array{number: int, title: string, date: ?\DateTimeImmutable, blocks: list<DayBlock>}>
      */
-    private function days(mixed $content, ?\DateTimeImmutable $startDate): array
+    private function days(TravelPlanContent $content, ?\DateTimeImmutable $startDate): array
     {
-        if (!\is_array($content)) {
-            return [];
-        }
-
         $days = [];
 
-        foreach (CompanionContentHelper::destinationSections($content) as $sectionData) {
-            $section = $sectionData['section'];
+        foreach ($content->destinations as $destination) {
+            foreach ($destination->sections as $section) {
+                if (SectionType::Day !== $section->type) {
+                    continue;
+                }
 
-            if (!\is_array($section) || TravelPlanContentFactory::TYPE_DAY !== ($section['type'] ?? null)) {
-                continue;
+                $dayNumber = \max(1, (int) ($section->dayNumber ?: (\count($days) + 1)));
+                $date = $startDate instanceof \DateTimeImmutable
+                    ? $startDate->modify(\sprintf('+%d days', $dayNumber - 1))
+                    : null;
+
+                $days[] = [
+                    'number' => $dayNumber,
+                    'title' => $section->title ?: \sprintf('Dag %d', $dayNumber),
+                    'date' => $date,
+                    'blocks' => $section->blocks,
+                ];
             }
-
-            $dayNumber = \max(1, (int) ($section['dayNumber'] ?? (\count($days) + 1)));
-            $blocks = \is_array($section['blocks'] ?? null) ? $section['blocks'] : [];
-            $date = $startDate instanceof \DateTimeImmutable
-                ? $startDate->modify(\sprintf('+%d days', $dayNumber - 1))
-                : null;
-
-            $days[] = [
-                'number' => $dayNumber,
-                'title' => CompanionContentHelper::stringValue($section, 'title') ?: \sprintf('Dag %d', $dayNumber),
-                'date' => $date,
-                'blocks' => \array_values(\array_filter($blocks, \is_array(...))),
-            ];
         }
 
         \usort($days, static fn (array $left, array $right): int => $left['number'] <=> $right['number']);
@@ -130,7 +127,7 @@ final readonly class TravelPlanPersonalizationContextBuilder
     }
 
     /**
-     * @param list<array{number: int, title: string, date?: \DateTimeImmutable, blocks: list<array<string, mixed>>}> $days
+     * @param list<array{number: int, title: string, date: ?\DateTimeImmutable, blocks: list<DayBlock>}> $days
      * @param array{number?: int, title?: string, date?: \DateTimeImmutable} $currentDay
      *
      * @return array<string, mixed>
@@ -142,7 +139,7 @@ final readonly class TravelPlanPersonalizationContextBuilder
 
             foreach ($days as $day) {
                 if ($number === $day['number']) {
-                    return \array_replace($day, \array_filter($currentDay, static fn (mixed $value): bool => null !== $value));
+                return \array_replace($day, $currentDay);
                 }
             }
 
@@ -174,13 +171,14 @@ final readonly class TravelPlanPersonalizationContextBuilder
     }
 
     /**
-     * @param list<array{number: int, title: string, date?: \DateTimeImmutable, blocks: list<array<string, mixed>>}> $days
+     * @param list<array{number: int, title: string, date: ?\DateTimeImmutable, blocks: list<DayBlock>}> $days
+     * @param array<string, mixed> $currentDay
      *
      * @return array<string, mixed>
      */
     private function nextDay(array $days, array $currentDay): array
     {
-        $currentNumber = (int) ($currentDay['number'] ?? 0);
+        $currentNumber = $this->intFromArray($currentDay, 'number');
 
         foreach ($days as $day) {
             if ($day['number'] > $currentNumber) {
@@ -192,13 +190,14 @@ final readonly class TravelPlanPersonalizationContextBuilder
     }
 
     /**
-     * @param list<array{number: int, title: string, date?: \DateTimeImmutable, blocks: list<array<string, mixed>>}> $days
+     * @param list<array{number: int, title: string, date: ?\DateTimeImmutable, blocks: list<DayBlock>}> $days
+     * @param array<string, mixed> $currentDay
      *
      * @return array<string, string>
      */
     private function nextActivity(array $days, array $currentDay): array
     {
-        $currentNumber = (int) ($currentDay['number'] ?? 0);
+        $currentNumber = $this->intFromArray($currentDay, 'number');
 
         foreach ($days as $day) {
             if ($day['number'] < $currentNumber) {
@@ -206,11 +205,11 @@ final readonly class TravelPlanPersonalizationContextBuilder
             }
 
             foreach ($day['blocks'] as $block) {
-                if (TravelPlanContentFactory::TYPE_ACTIVITY !== ($block['type'] ?? null)) {
+                if (BlockType::Activity !== $block->type) {
                     continue;
                 }
 
-                $title = CompanionContentHelper::stringValue($block, 'title');
+                $title = $block->title;
 
                 if ('' === $title) {
                     continue;
@@ -219,7 +218,7 @@ final readonly class TravelPlanPersonalizationContextBuilder
                 return [
                     'title' => $title,
                     'time' => $this->activityTime($block),
-                    'location' => CompanionContentHelper::stringValue($block, 'location'),
+                    'location' => $block->location,
                 ];
             }
         }
@@ -227,20 +226,25 @@ final readonly class TravelPlanPersonalizationContextBuilder
         return [];
     }
 
-    /**
-     * @param array<string, mixed> $block
-     */
-    private function activityTime(array $block): string
+    private function activityTime(DayBlock $block): string
     {
-        foreach (['timeLabel', 'startTime', 'time'] as $key) {
-            $value = CompanionContentHelper::stringValue($block, $key);
-
+        foreach ([$block->timeLabel, $block->startTime, $block->time] as $value) {
             if ('' !== \trim($value)) {
                 return $value;
             }
         }
 
         return '';
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function intFromArray(array $data, string $key): int
+    {
+        $value = $data[$key] ?? 0;
+
+        return \is_scalar($value) ? (int) $value : 0;
     }
 
     private function formatDate(mixed $date): string

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Service\TravelCompanion;
 
 use App\Entity\TravelPlan;
+use App\TravelPlan\Content\SectionType;
+use App\TravelPlan\Content\TravelPlanContent;
 
 final readonly class ReminderPlanBuilder
 {
@@ -28,67 +30,66 @@ final readonly class ReminderPlanBuilder
      */
     public function buildForRange(TravelPlan $travelPlan, \DateTimeImmutable $from, \DateTimeImmutable $to): array
     {
-        $content = $travelPlan->getContent();
-        $tripProfile = \is_array($content['tripProfile'] ?? null) ? $content['tripProfile'] : [];
-        $startDate = CompanionContentHelper::createDate($tripProfile['startDate'] ?? null);
+        $content = TravelPlanContent::fromArray($travelPlan->getContent());
+        $startDate = CompanionContentHelper::createDate($content->tripProfile->startDate);
 
         if (!$startDate instanceof \DateTimeImmutable || $to < $from) {
             return [];
         }
 
         $reminders = [];
-
-        foreach (CompanionContentHelper::destinationSections($content) as $sectionData) {
-            $section = $sectionData['section'];
-            $destinationTitle = CompanionContentHelper::stringValue($sectionData['destination'], 'title');
-
-            if (!\is_array($section) || 'day' !== ($section['type'] ?? null)) {
-                continue;
-            }
-
-            $dayNumber = \max(1, (int) ($section['dayNumber'] ?? 1));
-            $dayDate = $startDate->modify(\sprintf('+%d days', $dayNumber - 1));
-
-            if ($dayDate < $from || $dayDate >= $to) {
-                continue;
-            }
-
-            $timezone = $this->timezone(CompanionContentHelper::stringValue($section, 'destinationTimezone'));
-
-            foreach ($section['blocks'] ?? [] as $block) {
-                if (!\is_array($block)) {
+        foreach ($content->destinations as $destination) {
+            foreach ($destination->sections as $section) {
+                if (SectionType::Day !== $section->type) {
                     continue;
                 }
 
-                $timeLabel = CompanionContentHelper::stringValue($block, 'timeLabel');
-                $time = CompanionContentHelper::stringValue($block, 'startTime')
-                    ?: CompanionContentHelper::stringValue($block, 'time')
-                        ?: $timeLabel;
+                $dayNumber = \max(1, (int) ($section->dayNumber ?: 1));
+                $dayDate = $startDate->modify(\sprintf('+%d days', $dayNumber - 1));
 
-                if (!$this->isValidTime($time)) {
+                if ($dayDate < $from || $dayDate >= $to) {
                     continue;
                 }
 
-                $triggerAt = new \DateTimeImmutable($dayDate->format('Y-m-d') . ' ' . $time, $timezone);
+                $timezone = $this->timezone($section->destinationTimezone);
+                foreach ($section->blocks as $block) {
+                    $timeLabel = $block->timeLabel;
+                    $time = $block->startTime ?: $block->time;
 
-                if (!$this->isInReminderWindow($triggerAt)) {
-                    continue;
+                    if (!$this->isValidTime($time)) {
+                        continue;
+                    }
+
+                    $localTrigger = new \DateTimeImmutable(
+                        $dayDate->format('Y-m-d') . ' ' . $time,
+                        $timezone,
+                    );
+
+                    if (!$this->isInReminderWindow($localTrigger)) {
+                        continue;
+                    }
+
+                    $triggerAt = $localTrigger->setTimezone(new \DateTimeZone('UTC'));
+
+                    if ($triggerAt < $from || $triggerAt >= $to) {
+                        continue;
+                    }
+
+                    $reminders[] = [
+                        'triggerAt' => $triggerAt,
+                        'tripId' => $travelPlan->getId(),
+                        'dayNumber' => $dayNumber,
+                        'dayTitle' => $section->title,
+                        'destinationTitle' => $destination->title,
+                        'blockType' => $block->type->value,
+                        'title' => $block->title,
+                        'text' => $block->text,
+                        'location' => $block->location,
+                        'timeLabel' => $timeLabel,
+                        'icon' => $block->iconOrDefault(),
+                        'bookingUrl' => $block->bookingUrl,
+                    ];
                 }
-
-                $reminders[] = [
-                    'triggerAt' => $triggerAt,
-                    'tripId' => $travelPlan->getId(),
-                    'dayNumber' => $dayNumber,
-                    'dayTitle' => CompanionContentHelper::stringValue($section, 'title'),
-                    'destinationTitle' => $destinationTitle,
-                    'blockType' => CompanionContentHelper::stringValue($block, 'type'),
-                    'title' => CompanionContentHelper::stringValue($block, 'title'),
-                    'text' => CompanionContentHelper::stringValue($block, 'text'),
-                    'location' => CompanionContentHelper::stringValue($block, 'location'),
-                    'timeLabel' => $timeLabel ?: $time,
-                    'icon' => CompanionContentHelper::stringValue($block, 'icon'),
-                    'bookingUrl' => CompanionContentHelper::stringValue($block, 'bookingUrl'),
-                ];
             }
         }
 

@@ -1,0 +1,81 @@
+{# Dagkaart in de PDF.
+   Kritieke kleuren staan inline omdat mPDF stylesheet-cascade beperkt is.
+   De gouden linkerbalk is een echte tabelcel; dat rendert betrouwbaarder dan
+   border-left bij geneste tabellen. #}
+{% set variant = block.isPrimary ? 'primary' : (block.isSecondary ? 'secondary' : (block.isGold ? 'gold' : 'default')) %}
+{% set v = t.variants[variant] %}
+{% set colorClass = variant != 'default' ? ' travel-plan-block--' ~ variant : '' %}
+{% set railColor = v.accent ?: t.gold %}
+{% set cardStyle = 'background-color: ' ~ v.background ~ '; border: 0.2mm solid ' ~ v.edge ~ '; border-radius: ' ~ t.cardRadius ~ '; overflow: hidden;' %}
+{% set tableStyle = 'width: 100%; border: 0; border-collapse: separate; border-spacing: 0; background-color: ' ~ v.background ~ '; border-radius: ' ~ t.cardRadius ~ ';' %}
+{% set railStyle = 'width: 1mm; padding: 0; background-color: ' ~ railColor ~ ';' %}
+{% set iconStyle = 'width: 10.5mm; padding: 4.6mm 2.8mm 4.2mm 4.4mm; vertical-align: top; background-color: ' ~ v.background ~ ';' %}
+{% set bodyStyle = 'padding: 4.6mm 5.5mm 4.2mm 0; vertical-align: top; background-color: ' ~ v.background ~ ';' %}
+
+{% if block.flow %}
+    <div class="travel-plan-block travel-plan-block--flow travel-plan-block--{{ block.type }}{{ colorClass }}{% if block.startOnNewPage %} travel-plan-page-break-before{% endif %}" style="{{ cardStyle }} border-bottom: 0; border-radius: {{ t.cardRadius }} {{ t.cardRadius }} 0 0;">
+        <table class="travel-plan-block__layout" style="{{ tableStyle }}">
+            <tr>
+                <td style="{{ railStyle }}">&nbsp;</td>
+                <td style="{{ iconStyle }}">
+                    {% if block.iconSrc %}
+                        <img class="travel-plan-icon" src="{{ block.iconSrc }}" style="float: none; display: block; width: 6.2mm; height: 6.2mm; margin: 0.4mm 0 0;" alt="">
+                    {% endif %}
+                </td>
+                <td class="travel-plan-block__body-cell" style="{{ bodyStyle }}">
+                    <div class="travel-plan-block__main travel-plan-block__main--flow">
+                        <div class="travel-plan-block__header">{{ _self.header(block, v) }}</div>
+                        {{ _self.content(block, v) }}
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+{% else %}
+    <div class="travel-plan-block travel-plan-block--{{ block.type }}{{ colorClass }}{% if block.startOnNewPage %} travel-plan-page-break-before{% endif %}" style="{{ cardStyle }}">
+        <table class="travel-plan-block__layout" style="{{ tableStyle }}">
+            <tr>
+                <td style="{{ railStyle }}">&nbsp;</td>
+                <td style="{{ iconStyle }}">
+                    {% if block.iconSrc %}
+                        <img class="travel-plan-icon" src="{{ block.iconSrc }}" style="float: none; display: block; width: 6.2mm; height: 6.2mm; margin: 0.4mm 0 0;" alt="">
+                    {% endif %}
+                </td>
+                <td class="travel-plan-block__body-cell" style="{{ bodyStyle }}">
+                    <div class="travel-plan-block__main">
+                        <div class="travel-plan-block__header">{{ _self.header(block, v) }}</div>
+                        {{ _self.content(block, v) }}
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+{% endif %}
+
+{% macro header(block, v) %}
+    {% if block.timeRangeLabel|default or block.timeLabel|default %}
+        <p class="travel-plan-block__time" style="color: {{ v.meta }};">{% if block.timeRangeLabel|default %}<strong>{{ block.timeRangeLabel }}</strong>{% endif %}{% if block.timeRangeLabel|default and block.timeLabel|default %} - {% endif %}{{ block.timeLabel|default('') }}</p>
+    {% endif %}
+    {% if block.title|default %}<h3 style="color: {{ v.title }};">{{ block.title }}</h3>{% endif %}
+    {% if block.location|default %}<p class="travel-plan-block__location" style="color: {{ v.meta }};">{{ block.location }}</p>{% endif %}
+{% endmacro %}
+
+{% macro content(block, v) %}
+    {% if block.textHtml|default %}
+        {% set textHtml = block.textHtml|replace({
+            '#17233b': v.body,
+            '#333f52': v.body,
+            '#3c4557': v.body,
+            '#12213d': v.body,
+            '#071828': v.body,
+            '#e7e0d3': v.body,
+            '#d8dde2': v.body,
+            '#eef1f6': v.body,
+            '#f7f4ee': v.body
+        }) %}
+        <div class="travel-plan-section__content travel-plan-block__content" style="color: {{ v.body }};">{{ textHtml|raw }}</div>
+    {% endif %}
+    {% if block.bookingUrl|default %}
+        <p class="travel-plan-block__action"><a href="{{ block.bookingUrl }}" style="color: {{ v.link }};">{{ block.actionLabel }}</a></p>
+    {% endif %}
+{% endmacro %}

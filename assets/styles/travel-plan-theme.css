@@ -34,20 +34,18 @@
     --font-heading: "Cormorant", serif;
 }
 
-body {
-    font-family: "Jost", sans-serif;
-    font-family: var(--font-body);
+.travel-plan {
+    font-family: var(--font-body), serif;
     font-weight: 300;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: "Cormorant", serif;
-    font-family: var(--font-heading);
+.travel-plan h1,
+.travel-plan h2,
+.travel-plan h3,
+.travel-plan h4,
+.travel-plan h5,
+.travel-plan h6 {
+    font-family: var(--font-heading), serif;
 }
 
 .travel-plan {
@@ -280,6 +278,28 @@ h6 {
 
 .travel-plan-page-break-before {
     page-break-before: always;
+    break-before: page;
+}
+
+.travel-plan-section--image {
+    margin-bottom: 14mm;
+}
+
+.travel-plan-image-block {
+    margin: 0;
+}
+
+.travel-plan-image-block img {
+    display: block;
+    width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+}
+
+.travel-plan-image-block figcaption {
+    margin-top: 3mm;
+    color: var(--color-muted);
+    font-size: 0.95rem;
 }
 
 .travel-plan-checklist {
@@ -341,4 +361,31 @@ h6 {
     font-size: 8pt;
     padding-top: 2mm;
     text-align: center;
+}
+
+.travel-plan-section--content-blocks {
+    margin-bottom: 13mm;
+}
+
+.travel-plan-section--content-blocks > h2 {
+    margin-bottom: 5mm;
+}
+
+.travel-plan-section__content h4,
+.travel-plan-section-frame .travel-plan-section__content h4 {
+    margin: 4.5mm 0 1mm;
+    color: #12213d;
+    font-family: "JostRegular", "Jost", sans-serif;
+    font-size: 10.2pt;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.travel-plan-section__content h4:first-child,
+.travel-plan-section-frame .travel-plan-section__content h4:first-child {
+    margin-top: 0;
+}
+
+.travel-plan-block--meal {
+    background-color: #fbfaf7;
 }

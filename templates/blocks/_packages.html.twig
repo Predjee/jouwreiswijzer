@@ -53,8 +53,15 @@
                         {% endif %}
 
                         {% if card.image|default %}
+                            {% set package_image = card.image.thumbnails['package-card']|default(card.image.url|default('')) %}
+                            {% set package_image_sm = card.image.thumbnails['package-card-sm']|default(package_image) %}
+                            {% set package_image_lg = card.image.thumbnails['package-card-lg']|default(package_image) %}
                             <figure class="package-card__image">
-                                <img src="{{ card.image.thumbnails['package-card'] }}"
+                                <img src="{{ package_image }}"
+                                     srcset="{{ package_image_sm }} 480w,
+                                             {{ package_image }} 640w,
+                                             {{ package_image_lg }} 960w"
+                                     sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                                      alt="{{ card.image.title|default('') }}"
                                      width="640"
                                      height="420"

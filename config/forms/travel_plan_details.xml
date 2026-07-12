@@ -112,6 +112,31 @@
                         <title>Pakkettype</title>
                     </meta>
                 </property>
+                <property name="showTableOfContents" type="single_select" colspan="6">
+                    <meta>
+                        <title>Inhoudsopgave</title>
+                    </meta>
+                    <params>
+                        <param name="default_value" value="none"/>
+                        <param name="values" type="collection">
+                            <param name="none">
+                                <meta>
+                                    <title>Geen</title>
+                                </meta>
+                            </param>
+                            <param name="one">
+                                <meta>
+                                    <title>Een laag</title>
+                                </meta>
+                            </param>
+                            <param name="two">
+                                <meta>
+                                    <title>Twee lagen</title>
+                                </meta>
+                            </param>
+                        </param>
+                    </params>
+                </property>
             </properties>
         </section>
 
@@ -136,6 +161,31 @@
                             <meta>
                                 <title>Nieuwe pagina</title>
                             </meta>
+                        </property>
+                        <property name="colorVariant" type="single_select" colspan="4">
+                            <meta>
+                                <title>Kleur</title>
+                            </meta>
+                            <params>
+                                <param name="default_value" value="auto"/>
+                                <param name="values" type="collection">
+                                    <param name="auto">
+                                        <meta>
+                                            <title>Standaard</title>
+                                        </meta>
+                                    </param>
+                                    <param name="primary">
+                                        <meta>
+                                            <title>Primair (blauw)</title>
+                                        </meta>
+                                    </param>
+                                    <param name="secondary">
+                                        <meta>
+                                            <title>Secundair (geel)</title>
+                                        </meta>
+                                    </param>
+                                </param>
+                            </params>
                         </property>
                         <property name="title" type="text_line">
                             <meta>
@@ -193,6 +243,31 @@
                                                 <title>Nieuwe pagina</title>
                                             </meta>
                                         </property>
+                                        <property name="colorVariant" type="single_select" colspan="4">
+                                            <meta>
+                                                <title>Kleur</title>
+                                            </meta>
+                                            <params>
+                                                <param name="default_value" value="auto"/>
+                                                <param name="values" type="collection">
+                                                    <param name="auto">
+                                                        <meta>
+                                                            <title>Standaard</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="primary">
+                                                        <meta>
+                                                            <title>Primair (blauw)</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="secondary">
+                                                        <meta>
+                                                            <title>Secundair (geel)</title>
+                                                        </meta>
+                                                    </param>
+                                                </param>
+                                            </params>
+                                        </property>
                                         <property name="title" type="text_line">
                                             <meta>
                                                 <title>Titel</title>
@@ -223,7 +298,7 @@
                                                                 <title>Locatie</title>
                                                             </meta>
                                                         </property>
-                                                        <property name="text" type="text_area">
+                                                        <property name="text" type="text_editor">
                                                             <meta>
                                                                 <title>Tekst</title>
                                                             </meta>
@@ -260,6 +335,31 @@
                                                 <title>Nieuwe pagina</title>
                                             </meta>
                                         </property>
+                                        <property name="colorVariant" type="single_select" colspan="4">
+                                            <meta>
+                                                <title>Kleur</title>
+                                            </meta>
+                                            <params>
+                                                <param name="default_value" value="auto"/>
+                                                <param name="values" type="collection">
+                                                    <param name="auto">
+                                                        <meta>
+                                                            <title>Standaard</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="primary">
+                                                        <meta>
+                                                            <title>Primair (blauw)</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="secondary">
+                                                        <meta>
+                                                            <title>Secundair (geel)</title>
+                                                        </meta>
+                                                    </param>
+                                                </param>
+                                            </params>
+                                        </property>
                                         <property name="dayNumber" type="number" colspan="3">
                                             <meta>
                                                 <title>Dagnummer</title>
@@ -290,7 +390,7 @@
                                                 <title>Titel</title>
                                             </meta>
                                         </property>
-                                        <property name="intro" type="text_area">
+                                        <property name="intro" type="text_editor">
                                             <meta>
                                                 <title>Introductie</title>
                                             </meta>
@@ -317,12 +417,37 @@
                                                                 <title>Nieuwe pagina</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="colorVariant" type="single_select" colspan="4">
+                                                            <meta>
+                                                                <title>Kleur</title>
+                                                            </meta>
+                                                            <params>
+                                                                <param name="default_value" value="auto"/>
+                                                                <param name="values" type="collection">
+                                                                    <param name="auto">
+                                                                        <meta>
+                                                                            <title>Standaard</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="primary">
+                                                                        <meta>
+                                                                            <title>Primair (blauw)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="secondary">
+                                                                        <meta>
+                                                                            <title>Secundair (geel)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                </param>
+                                                            </params>
+                                                        </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
                                                                 <title>Titel</title>
                                                             </meta>
                                                         </property>
-                                                        <property name="text" type="text_area">
+                                                        <property name="text" type="text_editor">
                                                             <meta>
                                                                 <title>Tekst</title>
                                                             </meta>
@@ -379,12 +504,37 @@
                                                                 <title>Nieuwe pagina</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="colorVariant" type="single_select" colspan="4">
+                                                            <meta>
+                                                                <title>Kleur</title>
+                                                            </meta>
+                                                            <params>
+                                                                <param name="default_value" value="auto"/>
+                                                                <param name="values" type="collection">
+                                                                    <param name="auto">
+                                                                        <meta>
+                                                                            <title>Standaard</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="primary">
+                                                                        <meta>
+                                                                            <title>Primair (blauw)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="secondary">
+                                                                        <meta>
+                                                                            <title>Secundair (geel)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                </param>
+                                                            </params>
+                                                        </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
                                                                 <title>Titel</title>
                                                             </meta>
                                                         </property>
-                                                        <property name="text" type="text_area">
+                                                        <property name="text" type="text_editor">
                                                             <meta>
                                                                 <title>Tekst</title>
                                                             </meta>
@@ -441,12 +591,37 @@
                                                                 <title>Nieuwe pagina</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="colorVariant" type="single_select" colspan="4">
+                                                            <meta>
+                                                                <title>Kleur</title>
+                                                            </meta>
+                                                            <params>
+                                                                <param name="default_value" value="auto"/>
+                                                                <param name="values" type="collection">
+                                                                    <param name="auto">
+                                                                        <meta>
+                                                                            <title>Standaard</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="primary">
+                                                                        <meta>
+                                                                            <title>Primair (blauw)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="secondary">
+                                                                        <meta>
+                                                                            <title>Secundair (geel)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                </param>
+                                                            </params>
+                                                        </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
                                                                 <title>Titel</title>
                                                             </meta>
                                                         </property>
-                                                        <property name="text" type="text_area">
+                                                        <property name="text" type="text_editor">
                                                             <meta>
                                                                 <title>Tekst</title>
                                                             </meta>
@@ -503,12 +678,37 @@
                                                                 <title>Nieuwe pagina</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="colorVariant" type="single_select" colspan="4">
+                                                            <meta>
+                                                                <title>Kleur</title>
+                                                            </meta>
+                                                            <params>
+                                                                <param name="default_value" value="auto"/>
+                                                                <param name="values" type="collection">
+                                                                    <param name="auto">
+                                                                        <meta>
+                                                                            <title>Standaard</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="primary">
+                                                                        <meta>
+                                                                            <title>Primair (blauw)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="secondary">
+                                                                        <meta>
+                                                                            <title>Secundair (geel)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                </param>
+                                                            </params>
+                                                        </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
                                                                 <title>Titel</title>
                                                             </meta>
                                                         </property>
-                                                        <property name="text" type="text_area">
+                                                        <property name="text" type="text_editor">
                                                             <meta>
                                                                 <title>Tekst</title>
                                                             </meta>
@@ -565,12 +765,37 @@
                                                                 <title>Nieuwe pagina</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="colorVariant" type="single_select" colspan="4">
+                                                            <meta>
+                                                                <title>Kleur</title>
+                                                            </meta>
+                                                            <params>
+                                                                <param name="default_value" value="auto"/>
+                                                                <param name="values" type="collection">
+                                                                    <param name="auto">
+                                                                        <meta>
+                                                                            <title>Standaard</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="primary">
+                                                                        <meta>
+                                                                            <title>Primair (blauw)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="secondary">
+                                                                        <meta>
+                                                                            <title>Secundair (geel)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                </param>
+                                                            </params>
+                                                        </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
                                                                 <title>Titel</title>
                                                             </meta>
                                                         </property>
-                                                        <property name="text" type="text_area">
+                                                        <property name="text" type="text_editor">
                                                             <meta>
                                                                 <title>Tekst</title>
                                                             </meta>
@@ -622,12 +847,37 @@
                                                                 <title>Nieuwe pagina</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="colorVariant" type="single_select" colspan="4">
+                                                            <meta>
+                                                                <title>Kleur</title>
+                                                            </meta>
+                                                            <params>
+                                                                <param name="default_value" value="auto"/>
+                                                                <param name="values" type="collection">
+                                                                    <param name="auto">
+                                                                        <meta>
+                                                                            <title>Standaard</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="primary">
+                                                                        <meta>
+                                                                            <title>Primair (blauw)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="secondary">
+                                                                        <meta>
+                                                                            <title>Secundair (geel)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                </param>
+                                                            </params>
+                                                        </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
                                                                 <title>Titel</title>
                                                             </meta>
                                                         </property>
-                                                        <property name="text" type="text_area">
+                                                        <property name="text" type="text_editor">
                                                             <meta>
                                                                 <title>Tekst</title>
                                                             </meta>
@@ -679,12 +929,37 @@
                                                                 <title>Nieuwe pagina</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="colorVariant" type="single_select" colspan="4">
+                                                            <meta>
+                                                                <title>Kleur</title>
+                                                            </meta>
+                                                            <params>
+                                                                <param name="default_value" value="auto"/>
+                                                                <param name="values" type="collection">
+                                                                    <param name="auto">
+                                                                        <meta>
+                                                                            <title>Standaard</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="primary">
+                                                                        <meta>
+                                                                            <title>Primair (blauw)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                    <param name="secondary">
+                                                                        <meta>
+                                                                            <title>Secundair (geel)</title>
+                                                                        </meta>
+                                                                    </param>
+                                                                </param>
+                                                            </params>
+                                                        </property>
                                                         <property name="title" type="text_line">
                                                             <meta>
                                                                 <title>Titel</title>
                                                             </meta>
                                                         </property>
-                                                        <property name="text" type="text_area">
+                                                        <property name="text" type="text_editor">
                                                             <meta>
                                                                 <title>Tekst</title>
                                                             </meta>
@@ -741,6 +1016,31 @@
                                                 <title>Nieuwe pagina</title>
                                             </meta>
                                         </property>
+                                        <property name="colorVariant" type="single_select" colspan="4">
+                                            <meta>
+                                                <title>Kleur</title>
+                                            </meta>
+                                            <params>
+                                                <param name="default_value" value="auto"/>
+                                                <param name="values" type="collection">
+                                                    <param name="auto">
+                                                        <meta>
+                                                            <title>Standaard</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="primary">
+                                                        <meta>
+                                                            <title>Primair (blauw)</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="secondary">
+                                                        <meta>
+                                                            <title>Secundair (geel)</title>
+                                                        </meta>
+                                                    </param>
+                                                </param>
+                                            </params>
+                                        </property>
                                         <property name="title" type="text_line">
                                             <meta>
                                                 <title>Titel</title>
@@ -778,12 +1078,37 @@
                                                 <title>Nieuwe pagina</title>
                                             </meta>
                                         </property>
+                                        <property name="colorVariant" type="single_select" colspan="4">
+                                            <meta>
+                                                <title>Kleur</title>
+                                            </meta>
+                                            <params>
+                                                <param name="default_value" value="auto"/>
+                                                <param name="values" type="collection">
+                                                    <param name="auto">
+                                                        <meta>
+                                                            <title>Standaard</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="primary">
+                                                        <meta>
+                                                            <title>Primair (blauw)</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="secondary">
+                                                        <meta>
+                                                            <title>Secundair (geel)</title>
+                                                        </meta>
+                                                    </param>
+                                                </param>
+                                            </params>
+                                        </property>
                                         <property name="title" type="text_line">
                                             <meta>
                                                 <title>Titel</title>
                                             </meta>
                                         </property>
-                                        <property name="text" type="text_area">
+                                        <property name="text" type="text_editor">
                                             <meta>
                                                 <title>Checklistregels</title>
                                             </meta>
@@ -807,12 +1132,37 @@
                                                 <title>Nieuwe pagina</title>
                                             </meta>
                                         </property>
+                                        <property name="colorVariant" type="single_select" colspan="4">
+                                            <meta>
+                                                <title>Kleur</title>
+                                            </meta>
+                                            <params>
+                                                <param name="default_value" value="auto"/>
+                                                <param name="values" type="collection">
+                                                    <param name="auto">
+                                                        <meta>
+                                                            <title>Standaard</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="primary">
+                                                        <meta>
+                                                            <title>Primair (blauw)</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="secondary">
+                                                        <meta>
+                                                            <title>Secundair (geel)</title>
+                                                        </meta>
+                                                    </param>
+                                                </param>
+                                            </params>
+                                        </property>
                                         <property name="title" type="text_line">
                                             <meta>
                                                 <title>Titel</title>
                                             </meta>
                                         </property>
-                                        <property name="text" type="text_area">
+                                        <property name="text" type="text_editor">
                                             <meta>
                                                 <title>Tekst</title>
                                             </meta>
@@ -844,12 +1194,37 @@
                                                 <title>Nieuwe pagina</title>
                                             </meta>
                                         </property>
+                                        <property name="colorVariant" type="single_select" colspan="4">
+                                            <meta>
+                                                <title>Kleur</title>
+                                            </meta>
+                                            <params>
+                                                <param name="default_value" value="auto"/>
+                                                <param name="values" type="collection">
+                                                    <param name="auto">
+                                                        <meta>
+                                                            <title>Standaard</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="primary">
+                                                        <meta>
+                                                            <title>Primair (blauw)</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="secondary">
+                                                        <meta>
+                                                            <title>Secundair (geel)</title>
+                                                        </meta>
+                                                    </param>
+                                                </param>
+                                            </params>
+                                        </property>
                                         <property name="title" type="text_line">
                                             <meta>
                                                 <title>Titel</title>
                                             </meta>
                                         </property>
-                                        <property name="text" type="text_area">
+                                        <property name="text" type="text_editor">
                                             <meta>
                                                 <title>Tekst</title>
                                             </meta>
@@ -880,6 +1255,31 @@
                                             <meta>
                                                 <title>Nieuwe pagina</title>
                                             </meta>
+                                        </property>
+                                        <property name="colorVariant" type="single_select" colspan="4">
+                                            <meta>
+                                                <title>Kleur</title>
+                                            </meta>
+                                            <params>
+                                                <param name="default_value" value="auto"/>
+                                                <param name="values" type="collection">
+                                                    <param name="auto">
+                                                        <meta>
+                                                            <title>Standaard</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="primary">
+                                                        <meta>
+                                                            <title>Primair (blauw)</title>
+                                                        </meta>
+                                                    </param>
+                                                    <param name="secondary">
+                                                        <meta>
+                                                            <title>Secundair (geel)</title>
+                                                        </meta>
+                                                    </param>
+                                                </param>
+                                            </params>
                                         </property>
                                         <property name="title" type="text_line">
                                             <meta>
@@ -913,6 +1313,43 @@
                                 </type>
                             </types>
                         </block>
+                    </properties>
+                </type>
+                <type name="image">
+                    <meta>
+                        <title>Afbeelding</title>
+                    </meta>
+                    <properties>
+                        <property name="_feedback"
+                                  visibleCondition="__parent._feedback != null and __parent._feedback != ''"
+                                  type="app_travel_plan_feedback">
+                            <meta>
+                                <title>Klantfeedback</title>
+                            </meta>
+                        </property>
+                        <property name="startOnNewPage" type="checkbox" colspan="4">
+                            <meta>
+                                <title>Nieuwe pagina</title>
+                            </meta>
+                        </property>
+                        <property name="title" type="text_line">
+                            <meta>
+                                <title>Titel</title>
+                            </meta>
+                        </property>
+                        <property name="image" type="single_media_selection">
+                            <meta>
+                                <title>Afbeelding</title>
+                            </meta>
+                            <params>
+                                <param name="types" value="image"/>
+                            </params>
+                        </property>
+                        <property name="caption" type="text_editor">
+                            <meta>
+                                <title>Bijschrift</title>
+                            </meta>
+                        </property>
                     </properties>
                 </type>
             </types>

@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\TravelPlan\Content\BlockType;
+use App\TravelPlan\Content\ColorVariant;
+use App\TravelPlan\Content\DayBlock;
+use App\TravelPlan\Content\Destination;
+use App\TravelPlan\Content\Section;
+use App\TravelPlan\Content\SectionType;
+use App\TravelPlan\Content\TravelPlanContent;
+
 final class TravelPlanContentFactory
 {
     public const TYPE_TRAVEL_PLAN_INTRO = 'travel_plan_intro';
@@ -23,8 +31,9 @@ final class TravelPlanContentFactory
     public const TYPE_MEAL = 'meal';
     public const TYPE_TIP = 'tip';
     public const TYPE_NOTE = 'note';
+    public const TYPE_IMAGE = 'image';
 
-    /** @var string[] */
+    /** @var list<string> */
     private const DESTINATION_SECTION_TYPES = [
         self::TYPE_ROUTE_OVERVIEW,
         self::TYPE_DAY,
@@ -69,21 +78,31 @@ final class TravelPlanContentFactory
                 'travelParty' => '',
                 'travelStyle' => '',
                 'packageType' => '',
+                'showTableOfContents' => false,
             ],
             self::TYPE_DESTINATION => [
                 'type' => $type,
                 'startOnNewPage' => false,
+                'colorVariant' => ColorVariant::Auto->value,
                 'title' => '',
                 'country' => '',
                 'region' => '',
                 'city' => '',
                 'text' => '',
-                'icon' => 'map',
+                'icon' => SectionType::Destination->defaultIcon(),
                 'sections' => [],
+            ],
+            self::TYPE_IMAGE => [
+                'type' => $type,
+                'startOnNewPage' => false,
+                'title' => '',
+                'image' => null,
+                'caption' => '',
             ],
             self::TYPE_ROUTE_OVERVIEW => [
                 'type' => $type,
                 'startOnNewPage' => false,
+                'colorVariant' => ColorVariant::Auto->value,
                 'title' => '',
                 'text' => '',
                 'routeStops' => [],
@@ -93,12 +112,13 @@ final class TravelPlanContentFactory
                 'title' => '',
                 'location' => '',
                 'text' => '',
-                'icon' => 'map',
+                'icon' => SectionType::RouteOverview->defaultIcon(),
             ],
             self::TYPE_DAY => [
                 'type' => $type,
                 'startOnNewPage' => false,
-                'dayNumber' => 1,
+                'colorVariant' => ColorVariant::Auto->value,
+                'dayNumber' => '',
                 'title' => '',
                 'dateLabel' => '',
                 'destinationTimezone' => '',
@@ -111,6 +131,7 @@ final class TravelPlanContentFactory
             self::TYPE_MEAL => [
                 'type' => $type,
                 'startOnNewPage' => false,
+                'colorVariant' => ColorVariant::Auto->value,
                 'title' => '',
                 'text' => '',
                 'icon' => $this->defaultIcon($type),
@@ -126,6 +147,7 @@ final class TravelPlanContentFactory
             self::TYPE_FREE_TEXT => [
                 'type' => $type,
                 'startOnNewPage' => false,
+                'colorVariant' => ColorVariant::Auto->value,
                 'title' => '',
                 'text' => '',
                 'icon' => $this->defaultIcon($type),
@@ -140,6 +162,7 @@ final class TravelPlanContentFactory
             self::TYPE_PERSONAL_NOTE => [
                 'type' => $type,
                 'startOnNewPage' => false,
+                'colorVariant' => ColorVariant::Auto->value,
                 'title' => '',
                 'text' => '',
                 'icon' => $this->defaultIcon($type),
@@ -147,6 +170,7 @@ final class TravelPlanContentFactory
             self::TYPE_CHECKLIST => [
                 'type' => $type,
                 'startOnNewPage' => false,
+                'colorVariant' => ColorVariant::Auto->value,
                 'title' => '',
                 'text' => '',
             ],
@@ -160,7 +184,7 @@ final class TravelPlanContentFactory
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
     public static function supportedBlockTypes(): array
     {
@@ -168,6 +192,7 @@ final class TravelPlanContentFactory
             self::TYPE_TRAVEL_PLAN_INTRO,
             self::TYPE_TRIP_PROFILE,
             self::TYPE_DESTINATION,
+            self::TYPE_IMAGE,
             self::TYPE_ROUTE_OVERVIEW,
             self::TYPE_ROUTE_STOP,
             self::TYPE_DAY,
@@ -192,19 +217,19 @@ final class TravelPlanContentFactory
      */
     public function toFormData(array $content): array
     {
-        $content = \array_replace_recursive($this->createDefault(), $content);
-        $intro = \is_array($content['intro']) ? $content['intro'] : [];
-        $tripProfile = \is_array($content['tripProfile']) ? $content['tripProfile'] : [];
+        $content = TravelPlanContent::fromArray($this->stringKeyedArray(\array_replace_recursive($this->createDefault(), $content)));
+        $tripProfile = $content->tripProfile->raw;
 
         return [
-            'introTitle' => $this->stringValue($intro, 'title'),
-            'introText' => $this->stringValue($intro, 'text'),
+            'introTitle' => $content->introTitle,
+            'introText' => $content->introText,
             'startDate' => $this->normalizeDateValue($tripProfile['startDate'] ?? null),
             'endDate' => $this->normalizeDateValue($tripProfile['endDate'] ?? null),
-            'travelParty' => $this->stringValue($tripProfile, 'travelParty'),
-            'travelStyle' => $this->stringValue($tripProfile, 'travelStyle'),
-            'packageType' => $this->stringValue($tripProfile, 'packageType'),
-            'destinations' => $this->normalizeDestinations($content['destinations'] ?? []),
+            'travelParty' => $content->tripProfile->travelParty,
+            'travelStyle' => $content->tripProfile->travelStyle,
+            'packageType' => $content->tripProfile->packageType,
+            'showTableOfContents' => $this->tableOfContentsValue($content->tripProfile->showTableOfContents),
+            'destinations' => $this->normalizeDestinations($content->destinations),
         ];
     }
 
@@ -216,9 +241,8 @@ final class TravelPlanContentFactory
      */
     public function fromFormData(array $formData, array $currentContent = []): array
     {
-        $currentTripProfile = \is_array($currentContent['tripProfile'] ?? null)
-            ? $currentContent['tripProfile']
-            : [];
+        $currentContent = TravelPlanContent::fromArray($currentContent);
+        $currentTripProfile = $currentContent->tripProfile->raw;
         $startDate = $this->normalizeDateValue($formData['startDate'] ?? null);
         $endDate = $this->normalizeDateValue($formData['endDate'] ?? null);
 
@@ -226,8 +250,7 @@ final class TravelPlanContentFactory
 
         $derivedPeriod = $this->formatPeriod($startDate, $endDate);
         $derivedDuration = $this->formatDuration($startDate, $endDate);
-
-        return [
+        $rawContent = [
             'intro' => $this->createBlock(self::TYPE_TRAVEL_PLAN_INTRO, [
                 'title' => $this->stringValue($formData, 'introTitle'),
                 'text' => $this->stringValue($formData, 'introText'),
@@ -240,103 +263,96 @@ final class TravelPlanContentFactory
                 'travelParty' => $this->stringValue($formData, 'travelParty'),
                 'travelStyle' => $this->stringValue($formData, 'travelStyle'),
                 'packageType' => $this->stringValue($formData, 'packageType'),
+                'showTableOfContents' => $this->tableOfContentsValue($formData['showTableOfContents'] ?? null),
             ]),
-            'destinations' => $this->normalizeDestinations($formData['destinations'] ?? []),
+            'destinations' => $this->normalizeFormDestinations($formData['destinations'] ?? []),
         ];
+
+        return $this->contentToStorageArray(TravelPlanContent::fromArray($rawContent));
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @param list<Destination> $destinations
+     *
+     * @return list<array<string, mixed>>
      */
-    private function normalizeDestinations(mixed $destinations): array
+    private function normalizeDestinations(array $destinations): array
     {
-        if (!\is_array($destinations)) {
-            return [];
-        }
-
         $normalized = [];
 
         foreach ($destinations as $destination) {
-            if (!\is_array($destination)) {
+            if ($destination->isImage()) {
+                $normalized[] = $this->imageToArray($destination);
                 continue;
             }
 
-            $type = $destination['type'] ?? self::TYPE_DESTINATION;
-
-            if (self::TYPE_DESTINATION !== $type) {
-                continue;
-            }
-
-            $normalized[] = $this->createBlock(self::TYPE_DESTINATION, [
-                'startOnNewPage' => $this->boolValue($destination, 'startOnNewPage'),
-                'title' => $this->stringValue($destination, 'title'),
-                'country' => $this->stringValue($destination, 'country'),
-                'region' => $this->stringValue($destination, 'region'),
-                'city' => $this->stringValue($destination, 'city'),
-                'text' => $this->stringValue($destination, 'text'),
-                'icon' => $this->stringValue($destination, 'icon') ?: 'map',
-                'sections' => $this->normalizeDestinationSections($destination['sections'] ?? []),
-            ]);
+            $normalized[] = $this->destinationToArray($destination);
         }
 
         return $normalized;
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return array<string, mixed>
      */
-    private function normalizeDestinationSections(mixed $sections): array
+    private function destinationToArray(Destination $destination): array
     {
-        if (!\is_array($sections)) {
-            return [];
-        }
+        return $this->createBlock(self::TYPE_DESTINATION, [
+            'startOnNewPage' => $destination->startOnNewPage,
+            'colorVariant' => $destination->colorVariant->value,
+            'title' => $this->stringValue($destination->raw, 'title'),
+            'country' => $this->stringValue($destination->raw, 'country'),
+            'region' => $this->stringValue($destination->raw, 'region'),
+            'city' => $this->stringValue($destination->raw, 'city'),
+            'text' => $this->stringValue($destination->raw, 'text'),
+            'icon' => $destination->iconOrDefault(),
+            'sections' => $this->normalizeDestinationSections($destination->sections),
+        ]);
+    }
 
+    /**
+     * @return array<string, mixed>
+     */
+    private function imageToArray(Destination $destination): array
+    {
+        return $this->createBlock(self::TYPE_IMAGE, [
+            'startOnNewPage' => $destination->startOnNewPage,
+            'title' => $this->stringValue($destination->raw, 'title'),
+            'image' => $this->mediaValue($destination->raw['image'] ?? null),
+            'caption' => $this->stringValue($destination->raw, 'caption'),
+        ]);
+    }
+
+    /**
+     * @param list<Section> $sections
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function normalizeDestinationSections(array $sections): array
+    {
         $normalized = [];
+
         foreach ($sections as $section) {
-            if (!\is_array($section)) {
-                continue;
-            }
-
-            $type = $section['type'] ?? null;
-
-            if (!\is_string($type) || !\in_array($type, self::DESTINATION_SECTION_TYPES, true)) {
-                continue;
-            }
-
-            if (self::TYPE_DAY === $type) {
-                $normalized[] = $this->createBlock($type, [
-                    'startOnNewPage' => $this->boolValue($section, 'startOnNewPage'),
-                    'dayNumber' => \max(1, (int) ($section['dayNumber'] ?? 1)),
-                    'title' => $this->stringValue($section, 'title'),
-                    'dateLabel' => $this->stringValue($section, 'dateLabel'),
-                    'destinationTimezone' => $this->stringValue($section, 'destinationTimezone'),
-                    'intro' => $this->stringValue($section, 'intro'),
-                    'blocks' => $this->normalizeDayBlocks($section['blocks'] ?? []),
-                ]);
-
-                continue;
-            }
-
-            if (self::TYPE_ROUTE_OVERVIEW === $type) {
-                $normalized[] = $this->createBlock($type, [
-                    'startOnNewPage' => $this->boolValue($section, 'startOnNewPage'),
-                    'title' => $this->stringValue($section, 'title'),
-                    'text' => $this->stringValue($section, 'text'),
-                    'routeStops' => $this->normalizeRouteStops($section['routeStops'] ?? []),
-                ]);
-
+            $type = $section->type->value;
+            if (!\in_array($type, self::DESTINATION_SECTION_TYPES, true)) {
                 continue;
             }
 
             $defaults = $this->createBlock($type);
             $values = [];
-
             foreach (\array_keys($defaults) as $field) {
-                if ('type' !== $field) {
-                    $values[$field] = 'startOnNewPage' === $field
-                        ? $this->boolValue($section, $field)
-                        : $this->stringValue($section, $field);
+                if ('type' === $field) {
+                    continue;
                 }
+
+                $values[$field] = match ($field) {
+                    'blocks' => $this->normalizeDayBlocks($section->blocks),
+                    'routeStops' => $this->normalizeRouteStops($section->routeStops),
+                    'startOnNewPage' => $section->startOnNewPage,
+                    'colorVariant' => $section->colorVariant->value,
+                    'icon' => $this->sectionIcon($section),
+                    default => $this->stringValue($section->raw, $field),
+                };
             }
 
             $normalized[] = $this->createBlock($type, $values);
@@ -346,23 +362,16 @@ final class TravelPlanContentFactory
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @param list<array<string, mixed>> $routeStops
+     *
+     * @return list<array<string, mixed>>
      */
-    private function normalizeRouteStops(mixed $routeStops): array
+    private function normalizeRouteStops(array $routeStops): array
     {
-        if (!\is_array($routeStops)) {
-            return [];
-        }
-
         $normalized = [];
 
         foreach ($routeStops as $routeStop) {
-            if (!\is_array($routeStop)) {
-                continue;
-            }
-
             $type = $routeStop['type'] ?? null;
-
             if (!\in_array($type, [self::TYPE_ROUTE_STOP, 'route_step'], true)) {
                 continue;
             }
@@ -371,7 +380,7 @@ final class TravelPlanContentFactory
                 'title' => $this->stringValue($routeStop, 'title'),
                 'location' => $this->stringValue($routeStop, 'location'),
                 'text' => $this->stringValue($routeStop, 'text'),
-                'icon' => $this->stringValue($routeStop, 'icon') ?: 'map',
+                'icon' => $this->stringValue($routeStop, 'icon') ?: SectionType::RouteOverview->defaultIcon(),
             ]);
         }
 
@@ -379,15 +388,170 @@ final class TravelPlanContentFactory
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @param list<DayBlock> $blocks
+     *
+     * @return list<array<string, mixed>>
      */
-    private function normalizeDayBlocks(mixed $blocks): array
+    private function normalizeDayBlocks(array $blocks): array
+    {
+        $normalized = [];
+
+        foreach ($blocks as $block) {
+            $type = $block->type->value;
+            $defaults = $this->createBlock($type);
+            $values = [];
+
+            foreach (\array_keys($defaults) as $field) {
+                if ('type' === $field) {
+                    continue;
+                }
+
+                $values[$field] = match (true) {
+                    'startOnNewPage' === $field => $block->startOnNewPage,
+                    'colorVariant' === $field => $block->colorVariant->value,
+                    'icon' === $field => $block->iconOrDefault(),
+                    \in_array($field, ['time', 'startTime', 'endTime'], true) => $this->normalizeTimeValue($block->raw[$field] ?? null),
+                    default => $this->stringValue($block->raw, $field),
+                };
+            }
+
+            $normalized[] = $this->createBlock($type, $values);
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function normalizeFormDestinations(mixed $destinations): array
+    {
+        $rawDestinations = [];
+        if (\is_array($destinations)) {
+            foreach ($destinations as $destination) {
+                $destination = $this->stringKeyedArray($destination);
+                if ([] === $destination) {
+                    continue;
+                }
+
+                $type = $destination['type'] ?? self::TYPE_DESTINATION;
+                if (self::TYPE_IMAGE === $type) {
+                    $rawDestinations[] = $this->createBlock(self::TYPE_IMAGE, [
+                        'startOnNewPage' => $this->boolValue($destination, 'startOnNewPage'),
+                        'title' => $this->stringValue($destination, 'title'),
+                        'image' => $this->mediaValue($destination['image'] ?? null),
+                        'caption' => $this->stringValue($destination, 'caption'),
+                    ]);
+                    continue;
+                }
+
+                if (self::TYPE_DESTINATION !== $type) {
+                    continue;
+                }
+
+                $rawDestinations[] = $this->createBlock(self::TYPE_DESTINATION, [
+                    'startOnNewPage' => $this->boolValue($destination, 'startOnNewPage'),
+                    'colorVariant' => $this->colorVariantValue($destination['colorVariant'] ?? null),
+                    'title' => $this->stringValue($destination, 'title'),
+                    'country' => $this->stringValue($destination, 'country'),
+                    'region' => $this->stringValue($destination, 'region'),
+                    'city' => $this->stringValue($destination, 'city'),
+                    'text' => $this->stringValue($destination, 'text'),
+                    'icon' => $this->stringValue($destination, 'icon') ?: SectionType::Destination->defaultIcon(),
+                    'sections' => $this->normalizeFormDestinationSections($destination['sections'] ?? []),
+                ]);
+            }
+        }
+
+        return $this->normalizeDestinations(TravelPlanContent::fromArray([
+            'destinations' => $rawDestinations,
+        ])->destinations);
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function normalizeFormDestinationSections(mixed $sections): array
+    {
+        if (!\is_array($sections)) {
+            return [];
+        }
+
+        $normalized = [];
+        foreach ($sections as $section) {
+            $section = $this->stringKeyedArray($section);
+            if ([] === $section) {
+                continue;
+            }
+
+            $type = $section['type'] ?? null;
+            if (!\is_string($type) || !\in_array($type, self::DESTINATION_SECTION_TYPES, true)) {
+                continue;
+            }
+
+            $defaults = $this->createBlock($type);
+            $values = [];
+            foreach (\array_keys($defaults) as $field) {
+                if ('type' === $field) {
+                    continue;
+                }
+
+                $values[$field] = match ($field) {
+                    'blocks' => $this->normalizeFormDayBlocks($section['blocks'] ?? []),
+                    'routeStops' => $this->normalizeFormRouteStops($section['routeStops'] ?? []),
+                    'startOnNewPage' => $this->boolValue($section, $field),
+                    'colorVariant' => $this->colorVariantValue($section[$field] ?? null),
+                    default => $this->stringValue($section, $field),
+                };
+            }
+
+            $normalized[] = $this->createBlock($type, $values);
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function normalizeFormRouteStops(mixed $routeStops): array
+    {
+        if (!\is_array($routeStops)) {
+            return [];
+        }
+
+        $normalized = [];
+        foreach ($routeStops as $routeStop) {
+            $routeStop = $this->stringKeyedArray($routeStop);
+            if ([] === $routeStop) {
+                continue;
+            }
+
+            $type = $routeStop['type'] ?? null;
+            if (!\in_array($type, [self::TYPE_ROUTE_STOP, 'route_step'], true)) {
+                continue;
+            }
+
+            $normalized[] = $this->createBlock(self::TYPE_ROUTE_STOP, [
+                'title' => $this->stringValue($routeStop, 'title'),
+                'location' => $this->stringValue($routeStop, 'location'),
+                'text' => $this->stringValue($routeStop, 'text'),
+                'icon' => $this->stringValue($routeStop, 'icon') ?: SectionType::RouteOverview->defaultIcon(),
+            ]);
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function normalizeFormDayBlocks(mixed $blocks): array
     {
         if (!\is_array($blocks)) {
             return [];
         }
 
-        $normalized = [];
         $allowedTypes = [
             self::TYPE_ACTIVITY,
             self::TYPE_ACCOMMODATION,
@@ -397,43 +561,106 @@ final class TravelPlanContentFactory
             self::TYPE_NOTE,
             self::TYPE_FREE_TEXT,
         ];
+        $normalized = [];
 
         foreach ($blocks as $block) {
-            if (!\is_array($block)) {
+            $block = $this->stringKeyedArray($block);
+            if ([] === $block) {
                 continue;
             }
 
             $type = $block['type'] ?? null;
-
             if (!\is_string($type) || !\in_array($type, $allowedTypes, true)) {
                 continue;
             }
 
             $defaults = $this->createBlock($type);
             $values = [];
-
             foreach (\array_keys($defaults) as $field) {
-                if ('type' !== $field) {
-                    $values[$field] = match (true) {
-                        'startOnNewPage' === $field => $this->boolValue($block, $field),
-                        \in_array($field, ['time', 'startTime', 'endTime'], true) => $this->normalizeTimeValue($block[$field] ?? null),
-                        default => $this->stringValue($block, $field),
-                    };
+                if ('type' === $field) {
+                    continue;
                 }
-            }
 
-            if ('' === ($values['startTime'] ?? '') && '' !== ($values['time'] ?? '')) {
-                $values['startTime'] = $values['time'];
-            }
-
-            if ('' === ($values['time'] ?? '') && '' !== ($values['startTime'] ?? '')) {
-                $values['time'] = $values['startTime'];
+                $values[$field] = match (true) {
+                    'startOnNewPage' === $field => $this->boolValue($block, $field),
+                    'colorVariant' === $field => $this->colorVariantValue($block[$field] ?? null),
+                    \in_array($field, ['time', 'startTime', 'endTime'], true) => $this->normalizeTimeValue($block[$field] ?? null),
+                    default => $this->stringValue($block, $field),
+                };
             }
 
             $normalized[] = $this->createBlock($type, $values);
         }
 
         return $normalized;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function contentToStorageArray(TravelPlanContent $content): array
+    {
+        return [
+            'intro' => $this->createBlock(self::TYPE_TRAVEL_PLAN_INTRO, [
+                'title' => $content->introTitle,
+                'text' => $content->introText,
+            ]),
+            'tripProfile' => $this->createBlock(self::TYPE_TRIP_PROFILE, [
+                'startDate' => $content->tripProfile->startDate,
+                'endDate' => $content->tripProfile->endDate,
+                'period' => $content->tripProfile->period,
+                'duration' => $content->tripProfile->duration,
+                'travelParty' => $content->tripProfile->travelParty,
+                'travelStyle' => $content->tripProfile->travelStyle,
+                'packageType' => $content->tripProfile->packageType,
+                'showTableOfContents' => $this->tableOfContentsValue($content->tripProfile->showTableOfContents),
+            ]),
+            'destinations' => $this->normalizeDestinations($content->destinations),
+        ];
+    }
+
+    private function sectionIcon(Section $section): string
+    {
+        if ('' !== $section->icon) {
+            return $section->icon;
+        }
+
+        return match ($section->type) {
+            SectionType::Checklist => '',
+            default => $section->type->defaultIcon(),
+        };
+    }
+
+    private function mediaValue(mixed $value): mixed
+    {
+        if (\is_array($value)) {
+            return $value;
+        }
+
+        if (\is_scalar($value) && '' !== \trim((string) $value)) {
+            return $value;
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function stringKeyedArray(mixed $value): array
+    {
+        if (!\is_array($value)) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($value as $key => $item) {
+            if (\is_string($key)) {
+                $result[$key] = $item;
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -444,6 +671,35 @@ final class TravelPlanContentFactory
         $value = $data[$key] ?? '';
 
         return \is_scalar($value) ? (string) $value : '';
+    }
+
+    private function tableOfContentsValue(mixed $value): string
+    {
+        if (!\is_scalar($value)) {
+            return 'none';
+        }
+
+        return match (\trim((string) $value)) {
+            'one', 'Een laag' => 'one',
+            'two', 'Twee lagen' => 'two',
+            'none', '', 'Geen' => 'none',
+            default => 'none',
+        };
+    }
+
+    private function colorVariantValue(mixed $value): string
+    {
+        if (!\is_scalar($value)) {
+            return ColorVariant::Auto->value;
+        }
+
+        return match (\trim((string) $value)) {
+            'primary', 'Primair', 'Blauw' => ColorVariant::Primary->value,
+            'secondary', 'Secundair', 'Geel' => ColorVariant::Secondary->value,
+            'gold', 'Goud' => ColorVariant::Gold->value,
+            'auto', '', 'Standaard' => ColorVariant::Auto->value,
+            default => ColorVariant::Auto->value,
+        };
     }
 
     /**
@@ -556,36 +812,23 @@ final class TravelPlanContentFactory
             return '';
         }
 
-        $days = $this->createDate($startDate)->diff($this->createDate($endDate))->days;
+        $days = $this->createDate($endDate)->diff($this->createDate($startDate))->days;
 
-        if (false === $days) {
-            return '';
-        }
-
-        ++$days;
-
-        return \sprintf('%d %s', $days, 1 === $days ? 'dag' : 'dagen');
+        return \sprintf('%d %s', $days + 1, 1 === $days + 1 ? 'dag' : 'dagen');
     }
 
     private function formatDateLabel(string $date): string
     {
-        $months = [
-            1 => 'januari',
-            2 => 'februari',
-            3 => 'maart',
-            4 => 'april',
-            5 => 'mei',
-            6 => 'juni',
-            7 => 'juli',
-            8 => 'augustus',
-            9 => 'september',
-            10 => 'oktober',
-            11 => 'november',
-            12 => 'december',
-        ];
-        $date = $this->createDate($date);
+        if ('' === $date) {
+            return '';
+        }
 
-        return \sprintf('%d %s', (int) $date->format('j'), $months[(int) $date->format('n')]);
+        $formatter = new \IntlDateFormatter('nl_NL', \IntlDateFormatter::LONG, \IntlDateFormatter::NONE);
+        $formatter->setPattern('d MMMM yyyy');
+
+        $formatted = $formatter->format($this->createDate($date));
+
+        return false === $formatted ? $date : $formatted;
     }
 
     private function createDate(string $date): \DateTimeImmutable
@@ -596,16 +839,16 @@ final class TravelPlanContentFactory
     private function defaultIcon(string $type): string
     {
         return match ($type) {
-            self::TYPE_ACTIVITY => 'compass',
-            self::TYPE_ACCOMMODATION => 'bed',
-            self::TYPE_TRANSPORT => 'car',
-            self::TYPE_MEAL => 'utensils',
-            self::TYPE_TIP => 'lightbulb',
-            self::TYPE_DESTINATION => 'map',
-            self::TYPE_BUDGET_NOTE => 'wallet',
-            self::TYPE_PERSONAL_NOTE => 'heart',
-            self::TYPE_NOTE => 'sticky-note',
-            default => 'info',
+            self::TYPE_ACTIVITY => BlockType::Activity->defaultIcon(),
+            self::TYPE_ACCOMMODATION => BlockType::Accommodation->defaultIcon(),
+            self::TYPE_TRANSPORT => BlockType::Transport->defaultIcon(),
+            self::TYPE_MEAL => BlockType::Meal->defaultIcon(),
+            self::TYPE_TIP => BlockType::Tip->defaultIcon(),
+            self::TYPE_DESTINATION => SectionType::Destination->defaultIcon(),
+            self::TYPE_BUDGET_NOTE => SectionType::BudgetNote->defaultIcon(),
+            self::TYPE_PERSONAL_NOTE => SectionType::PersonalNote->defaultIcon(),
+            self::TYPE_NOTE => BlockType::Note->defaultIcon(),
+            default => SectionType::PracticalInfo->defaultIcon(),
         };
     }
 }

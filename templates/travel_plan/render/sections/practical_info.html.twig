@@ -1,18 +1,22 @@
 {% if accountView %}
-    <section class="travel-plan-section travel-plan-section--practical-info">
-        {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
-        {% if section.text|default %}<div class="travel-plan-section__content">{{ section.text|raw }}</div>{% endif %}
-    </section>
+<section class="travel-plan-section travel-plan-section--practical-info {{ section.variantClass|default('travel-plan-variant--default') }}">
+    {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
+    {% if section.text|default %}<div class="travel-plan-section__content">{{ section.text|raw }}</div>{% endif %}
+</section>
 {% else %}
-    <table class="travel-plan-section travel-plan-section-frame travel-plan-section-frame--practical-info">
-        <tr>
-            <td class="travel-plan-section-frame__cell">
+{% set colorClass = section.isPrimary ? ' travel-plan-section--primary' : (section.isSecondary ? ' travel-plan-section--secondary' : '') %}
+{% set colorStyle = section.isPrimary ? 'background-color: #ffffff; border-color: #12213d; color: #17233b;' : (section.isSecondary ? 'background-color: #f8f5ef; border-color: #d4af37; color: #17233b;' : '') %}
+<div class="travel-plan-frame-card">
+<table class="travel-plan-section travel-plan-section-frame travel-plan-section-frame--practical-info{{ colorClass }}"{% if colorStyle %} style="{{ colorStyle }}"{% endif %}>
+    <tr>
+        <td class="travel-plan-section-frame__cell">
             {% if section.title|default %}
                 <div class="travel-plan-section-frame__title">{{ section.title }}</div>
                 <div class="travel-plan-section-frame__title-spacer">&nbsp;</div>
             {% endif %}
-                {% if section.text|default %}<div class="travel-plan-section__content">{{ section.text|raw }}</div>{% endif %}
-            </td>
-        </tr>
-    </table>
+            {% if section.text|default %}<div class="travel-plan-section__content">{{ section.text|raw }}</div>{% endif %}
+        </td>
+    </tr>
+</table>
+</div>
 {% endif %}

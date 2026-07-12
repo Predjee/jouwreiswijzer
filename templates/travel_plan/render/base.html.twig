@@ -6,7 +6,7 @@
 %}
 
 {% if accountView %}
-    <link rel="stylesheet" href="{{ asset('styles/travel-plan-theme.css') }}" media="screen">
+    {{ include('travel_plan/render/_style_tokens.html.twig', { styleVariants: styleVariants|default({}) }) }}
 {% endif %}
 
 {% if not accountView %}
@@ -88,14 +88,27 @@
                 {% endfor %}
             </table>
         {% endif %}
-    {% if accountView %}
-    </header>
-    {% else %}
-    </div>
-    {% endif %}
+{% if accountView %}
+</header>
+{% else %}
+</div>
+{% endif %}
 
-    {% for renderedSection in renderedSections %}
-        {{ renderedSection.html|raw }}
+{% if not accountView and showTableOfContents|default(false) and tableOfContents|default([])|length > 0 %}
+    <tocpagebreak
+        toc-preHTML="&lt;div class=&quot;travel-plan-toc&quot;&gt;&lt;h2&gt;Inhoudsopgave&lt;/h2&gt;"
+        toc-postHTML="&lt;/div&gt;"
+        links="on"
+        paging="on"
+        toc-bookmarkText="Inhoudsopgave"
+        toc-odd-footer-name="travelPlanFooter"
+        toc-odd-footer-value="on"
+        toc-even-footer-name="travelPlanFooter"
+        toc-even-footer-value="on" />
+{% endif %}
+
+{% for renderedSection in renderedSections %}
+    {{ renderedSection.html|raw }}
         {% if accountView and feedbackEnabled|default(false) %}
             {{ include('account/_travel_plan_feedback_form.html.twig', {
                 travelPlan: travelPlan,

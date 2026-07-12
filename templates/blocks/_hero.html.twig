@@ -3,9 +3,15 @@
                 {{ block.size|default('full') == 'compact' ? 'block-hero--compact' : '' }}">
 
     {% if block.background_image %}
-        <img src="{{ block.background_image.thumbnails['hero-bg'] }}"
-             srcset="{{ block.background_image.thumbnails['hero-bg-md'] }} 1024w,
-                     {{ block.background_image.thumbnails['hero-bg'] }} 1920w"
+        {% set hero_bg = block.background_image.thumbnails['hero-bg']|default(block.background_image.url|default('')) %}
+        {% set hero_bg_sm = block.background_image.thumbnails['hero-bg-sm']|default(hero_bg) %}
+        {% set hero_bg_md = block.background_image.thumbnails['hero-bg-md']|default(hero_bg) %}
+        {% set hero_bg_lg = block.background_image.thumbnails['hero-bg-lg']|default(hero_bg) %}
+        <img src="{{ hero_bg }}"
+             srcset="{{ hero_bg_sm }} 768w,
+                     {{ hero_bg_md }} 1280w,
+                     {{ hero_bg_lg }} 1600w,
+                     {{ hero_bg }} 1920w"
              sizes="100vw"
              alt=""
              role="presentation"

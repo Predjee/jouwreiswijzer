@@ -7,7 +7,7 @@ namespace App\Controller\Admin;
 use App\Admin\TravelRequestAdmin;
 use App\Entity\TravelPlan;
 use App\Repository\TravelPlanRepository;
-use App\TravelPlan\Renderer\TravelPlanRenderer;
+use App\TravelPlan\Renderer\TravelPlanPdfRenderer;
 use Sulu\Component\Security\Authorization\PermissionTypes;
 use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +18,7 @@ final readonly class TravelPlanPreviewController
 {
     public function __construct(
         private TravelPlanRepository $repository,
-        private TravelPlanRenderer $renderer,
+        private TravelPlanPdfRenderer $renderer,
         private SecurityCheckerInterface $securityChecker,
     ) {
     }

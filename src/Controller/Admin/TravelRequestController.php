@@ -388,13 +388,16 @@ final class TravelRequestController extends AbstractRestController implements Se
             $blockIndex = (int) $matches[3];
             $section = $data['destinations'][$destinationIndex]['sections'][$sectionIndex] ?? [];
             $block = $section['blocks'][$blockIndex] ?? [];
-            $dayNumber = \max(1, (int) ($section['dayNumber'] ?? $sectionIndex + 1));
+            $dayNumber = \trim((string) ($section['dayNumber'] ?? ''));
+            $dayLabel = '' !== $dayNumber
+                ? \sprintf('dag %d', (int) $dayNumber)
+                : \sprintf('sectie %d', $sectionIndex + 1);
             $title = \trim((string) ($block['title'] ?? ''));
 
             return \sprintf(
-                'Bestemming %d, dag %d: %s',
+                'Bestemming %d, %s: %s',
                 $destinationIndex + 1,
-                $dayNumber,
+                $dayLabel,
                 '' !== $title ? $title : ($feedback->getBlockType() ?? 'Dagonderdeel'),
             );
         }

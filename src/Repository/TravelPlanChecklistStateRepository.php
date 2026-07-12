@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\TravelPlan;
 use App\Entity\TravelPlanChecklistState;
+use App\Service\TravelCompanion\TravelPlanChecklistStateProvider;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
@@ -13,7 +14,7 @@ use Sulu\Bundle\ContactBundle\Entity\Contact;
 /**
  * @extends ServiceEntityRepository<TravelPlanChecklistState>
  */
-final class TravelPlanChecklistStateRepository extends ServiceEntityRepository
+final class TravelPlanChecklistStateRepository extends ServiceEntityRepository implements TravelPlanChecklistStateProvider
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -46,9 +47,7 @@ final class TravelPlanChecklistStateRepository extends ServiceEntityRepository
         $checked = [];
 
         foreach ($states as $state) {
-            if ($state instanceof TravelPlanChecklistState) {
-                $checked[$state->getItemKey()] = true;
-            }
+            $checked[$state->getItemKey()] = true;
         }
 
         return $checked;

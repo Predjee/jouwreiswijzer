@@ -35,7 +35,7 @@
     </a>
 
     {# Desktop navigatie #}
-    <ul class="hidden md:flex items-center gap-6 lg:gap-7"
+    <ul class="hidden lg:flex items-center gap-7"
         role="list">
         <li>
             <a href="{{ root_path }}"
@@ -64,7 +64,7 @@
         {% if is_granted('ROLE_SULU_CUSTOMER') %}
             {% set unread_notifications = account_unread_notification_count() %}
             {% set account_route = app.request.attributes.get('_route') %}
-            <details class="nav-account-menu hidden md:block" data-controller="nav-account-menu">
+            <details class="nav-account-menu hidden lg:block" data-controller="nav-account-menu">
                 <summary class="nav-account-summary">
                     <svg class="nav-account-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
@@ -104,7 +104,7 @@
         {% else %}
             <a
                 href="{{ path('account_login') }}"
-                class="nav-account-link hidden md:inline-flex {{ app.request.attributes.get('_route') == 'account_login' ? 'is-active' : '' }}"
+                class="nav-account-link hidden lg:inline-flex {{ app.request.attributes.get('_route') == 'account_login' ? 'is-active' : '' }}"
             >
                 <svg class="nav-account-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
@@ -116,7 +116,7 @@
 
         {# Hamburger mobiel #}
         <button type="button"
-                class="nav-toggle md:hidden flex flex-col gap-1.5 p-2"
+                class="nav-toggle lg:hidden flex flex-col gap-1.5 p-2"
                 aria-expanded="false"
                 aria-controls="mobile-menu"
                 aria-label="Menu openen"

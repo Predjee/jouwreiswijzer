@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\TravelPlan\Pdf;
 
 use App\Entity\TravelPlan;
-use App\TravelPlan\Renderer\TravelPlanRenderer;
+use App\TravelPlan\Renderer\TravelPlanPdfRenderer;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 final readonly class TravelPlanPdfGenerator
 {
     public function __construct(
-        private TravelPlanRenderer $renderer,
+        private TravelPlanPdfRenderer $renderer,
         #[Autowire('%kernel.cache_dir%/mpdf')]
         private string $tempDir,
         #[Autowire('%kernel.project_dir%/assets/pdf/fonts')]
@@ -45,14 +45,20 @@ final readonly class TravelPlanPdfGenerator
             ));
         }
 
+        // mPDF's getDefaults() is ongetypeerd (mixed); expliciet vernauwen.
         $defaultConfig = (new ConfigVariables())->getDefaults();
         $defaultFontConfig = (new FontVariables())->getDefaults();
-        $fontData = $defaultFontConfig['fontdata'];
+        $defaultFontDirs = \is_array($defaultConfig) && \is_array($defaultConfig['fontDir'] ?? null)
+            ? \array_values($defaultConfig['fontDir'])
+            : [];
+        $fontData = \is_array($defaultFontConfig) && \is_array($defaultFontConfig['fontdata'] ?? null)
+            ? $defaultFontConfig['fontdata']
+            : [];
 
         $mpdf = new Mpdf([
             'format' => 'A4',
             'tempDir' => $this->tempDir,
-            'fontDir' => [...$defaultConfig['fontDir'], $this->fontDir],
+            'fontDir' => [...$defaultFontDirs, $this->fontDir],
             'fontdata' => \array_merge($fontData, [
                 'jost' => [
                     'R' => 'Jost-Light.ttf',
@@ -69,6 +75,10 @@ final readonly class TravelPlanPdfGenerator
                 ],
             ]),
             'default_font' => 'jost',
+            // Verbied het verkleinen van tabellen die nét niet in de
+            // resterende paginaruimte passen (mini-tekst in kaarten);
+            // met waarde 1 schuiven ze gewoon door naar de volgende pagina.
+            'shrink_tables_to_fit' => 1,
             'margin_top' => 0,
             'margin_right' => 0,
             'margin_bottom' => 0,
@@ -85,8 +95,48 @@ final readonly class TravelPlanPdfGenerator
         }
 
         $mpdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
-        $mpdf->WriteHTML($this->renderer->render($travelPlan), HTMLParserMode::HTML_BODY);
 
-        return $mpdf->Output('', Destination::STRING_RETURN);
+        // NB: géén extra wrapper-div per chunk toevoegen: een div om elke
+        // chunk laat mPDF na de eerste automatische paginaovergang de
+        // achtergrondkleuren van latere blokken "vergeten" (verbleekte
+        // hero's). Basisstijlen worden daarom via sectieklassen
+        // geselecteerd (.travel-plan-section h2, ...) i.p.v. .travel-plan.
+        foreach ($this->splitHtmlBody($this->renderer->render($travelPlan)) as $htmlChunk) {
+            if ('<!--PDF-CHUNK-->' === $htmlChunk) {
+                continue;
+            }
+
+            $mpdf->WriteHTML($htmlChunk, HTMLParserMode::HTML_BODY);
+        }
+
+        $output = $mpdf->Output('', Destination::STRING_RETURN);
+
+        if (!\is_string($output)) {
+            throw new \RuntimeException('mPDF gaf geen PDF-string terug.');
+        }
+
+        return $output;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function splitHtmlBody(string $html): array
+    {
+        $parts = \preg_split(
+            '/(<(?:pagebreak|tocpagebreak|tocentry)\b[^>]*\/>|<!--PDF-CHUNK-->)/i',
+            $html,
+            -1,
+            \PREG_SPLIT_DELIM_CAPTURE | \PREG_SPLIT_NO_EMPTY,
+        );
+
+        if (false === $parts) {
+            return [$html];
+        }
+
+        return \array_values(\array_filter(
+            $parts,
+            static fn (string $part): bool => '' !== \trim($part),
+        ));
     }
 }

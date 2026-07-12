@@ -1,0 +1,15 @@
+{# Vrije-tekst-/praktische-info-sectie: afgeronde kaart met gouden
+   linkerrand (top-level div: radius en achtergrond renderen betrouwbaar). #}
+<div class="travel-plan-frame-card">
+<table class="travel-plan-section travel-plan-section-frame">
+    <tr>
+        <td class="travel-plan-section-frame__cell">
+            {% if section.title %}
+                <div class="travel-plan-section-frame__title">{{ section.title }}</div>
+                <div class="travel-plan-section-frame__title-spacer">&nbsp;</div>
+            {% endif %}
+            {% if section.textHtml %}<div class="travel-plan-section__content">{{ section.textHtml|raw }}</div>{% endif %}
+        </td>
+    </tr>
+</table>
+</div>

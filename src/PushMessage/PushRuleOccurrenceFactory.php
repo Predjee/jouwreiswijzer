@@ -7,7 +7,11 @@ namespace App\PushMessage;
 use App\Entity\PushRule;
 use App\Entity\TravelPlan;
 use App\Service\TravelCompanion\CompanionContentHelper;
-use App\Service\TravelPlanContentFactory;
+use App\TravelPlan\Content\BlockType;
+use App\TravelPlan\Content\DayBlock;
+use App\TravelPlan\Content\Section;
+use App\TravelPlan\Content\SectionType;
+use App\TravelPlan\Content\TravelPlanContent;
 
 final readonly class PushRuleOccurrenceFactory
 {
@@ -42,9 +46,9 @@ final readonly class PushRuleOccurrenceFactory
      */
     private function tripDateOffsetOccurrences(PushRule $rule, TravelPlan $travelPlan, string $anchor): array
     {
-        $content = $travelPlan->getContent();
-        $tripProfile = \is_array($content['tripProfile'] ?? null) ? $content['tripProfile'] : [];
-        $date = CompanionContentHelper::createDate($tripProfile['trip_start' === $anchor ? 'startDate' : 'endDate'] ?? null);
+        $content = TravelPlanContent::fromArray($travelPlan->getContent());
+        $tripProfile = $content->tripProfile->raw;
+        $date = CompanionContentHelper::createDate('trip_start' === $anchor ? $content->tripProfile->startDate : $content->tripProfile->endDate);
 
         if (!$date instanceof \DateTimeImmutable || !$this->hasOffset($rule)) {
             return [];
@@ -77,10 +81,10 @@ final readonly class PushRuleOccurrenceFactory
             return [];
         }
 
-        $content = $travelPlan->getContent();
-        $tripProfile = \is_array($content['tripProfile'] ?? null) ? $content['tripProfile'] : [];
-        $startDate = CompanionContentHelper::createDate($tripProfile['startDate'] ?? null);
-        $endDate = CompanionContentHelper::createDate($tripProfile['endDate'] ?? null);
+        $content = TravelPlanContent::fromArray($travelPlan->getContent());
+        $tripProfile = $content->tripProfile->raw;
+        $startDate = CompanionContentHelper::createDate($content->tripProfile->startDate);
+        $endDate = CompanionContentHelper::createDate($content->tripProfile->endDate);
 
         if (!$startDate instanceof \DateTimeImmutable || !$endDate instanceof \DateTimeImmutable || $endDate < $startDate) {
             return [];
@@ -91,9 +95,9 @@ final readonly class PushRuleOccurrenceFactory
         $occurrences = [];
 
         foreach (\range(1, CompanionContentHelper::inclusiveDays($startDate, $endDate)) as $dayNumber) {
-            $section = $sectionsByDayNumber[$dayNumber] ?? [];
+            $section = $sectionsByDayNumber[$dayNumber] ?? null;
             $dayDate = $startDate->modify(\sprintf('+%d days', $dayNumber - 1));
-            $timezone = $this->timezone($rule, $this->dayTimezone($section), $tripTimezone);
+            $timezone = $this->timezone($rule, $this->dayTimezone(null !== $section ? $section->destinationTimezone : ''), $tripTimezone);
             $scheduledFor = new \DateTimeImmutable($dayDate->format('Y-m-d').' '.$localTime, $timezone);
 
             $occurrences[] = $this->createOccurrence(
@@ -103,7 +107,7 @@ final readonly class PushRuleOccurrenceFactory
                 $scheduledFor,
                 [
                     'number' => $dayNumber,
-                    'title' => CompanionContentHelper::stringValue($section, 'title') ?: \sprintf('Dag %d', $dayNumber),
+                    'title' => (null !== $section ? $section->title : '') ?: \sprintf('Dag %d', $dayNumber),
                     'date' => $dayDate,
                 ],
             );
@@ -121,9 +125,9 @@ final readonly class PushRuleOccurrenceFactory
             return [];
         }
 
-        $content = $travelPlan->getContent();
-        $tripProfile = \is_array($content['tripProfile'] ?? null) ? $content['tripProfile'] : [];
-        $startDate = CompanionContentHelper::createDate($tripProfile['startDate'] ?? null);
+        $content = TravelPlanContent::fromArray($travelPlan->getContent());
+        $tripProfile = $content->tripProfile->raw;
+        $startDate = CompanionContentHelper::createDate($content->tripProfile->startDate);
 
         if (!$startDate instanceof \DateTimeImmutable) {
             return [];
@@ -132,47 +136,47 @@ final readonly class PushRuleOccurrenceFactory
         $tripTimezone = $this->tripTimezone($tripProfile);
         $occurrences = [];
 
-        foreach (CompanionContentHelper::destinationSections($content) as $sectionData) {
-            $section = $sectionData['section'];
+        foreach ($content->destinations as $destination) {
+            foreach ($destination->sections as $section) {
+                if (SectionType::Day !== $section->type) {
+                    continue;
+                }
 
-            if (!\is_array($section) || TravelPlanContentFactory::TYPE_DAY !== ($section['type'] ?? null)) {
-                continue;
-            }
-
-            $dayNumber = \max(1, (int) ($section['dayNumber'] ?? 1));
+                $dayNumber = \max(1, (int) ($section->dayNumber ?: 1));
             $dayDate = $startDate->modify(\sprintf('+%d days', $dayNumber - 1));
-            $timezone = $this->timezone($rule, $this->dayTimezone($section), $tripTimezone);
+                $timezone = $this->timezone($rule, $this->dayTimezone($section->destinationTimezone), $tripTimezone);
 
-            foreach ($section['blocks'] ?? [] as $blockIndex => $block) {
-                if (!\is_array($block) || TravelPlanContentFactory::TYPE_ACTIVITY !== ($block['type'] ?? null)) {
-                    continue;
+                foreach ($section->blocks as $block) {
+                    if (BlockType::Activity !== $block->type) {
+                        continue;
+                    }
+
+                    $time = $this->timeValue($block);
+
+                    if (null === $time) {
+                        continue;
+                    }
+
+                    $scheduledFor = new \DateTimeImmutable($dayDate->format('Y-m-d').' '.$time, $timezone);
+
+                    $occurrences[] = $this->createOccurrence(
+                        $rule,
+                        $travelPlan,
+                        \sprintf(
+                            'rule_%d:trip_%d:day_%d:block_%d',
+                            $rule->getId(),
+                            $travelPlan->getId(),
+                            $dayNumber,
+                            $block->sourceIndex + 1,
+                        ),
+                        $this->applyOffset($scheduledFor, $rule),
+                        [
+                            'number' => $dayNumber,
+                            'title' => $section->title ?: \sprintf('Dag %d', $dayNumber),
+                            'date' => $dayDate,
+                        ],
+                    );
                 }
-
-                $time = $this->timeValue($block);
-
-                if (null === $time) {
-                    continue;
-                }
-
-                $scheduledFor = new \DateTimeImmutable($dayDate->format('Y-m-d').' '.$time, $timezone);
-
-                $occurrences[] = $this->createOccurrence(
-                    $rule,
-                    $travelPlan,
-                    \sprintf(
-                        'rule_%d:trip_%d:day_%d:block_%d',
-                        $rule->getId(),
-                        $travelPlan->getId(),
-                        $dayNumber,
-                        (int) $blockIndex + 1,
-                    ),
-                    $this->applyOffset($scheduledFor, $rule),
-                    [
-                        'number' => $dayNumber,
-                        'title' => CompanionContentHelper::stringValue($section, 'title') ?: \sprintf('Dag %d', $dayNumber),
-                        'date' => $dayDate,
-                    ],
-                );
             }
         }
 
@@ -226,12 +230,9 @@ final readonly class PushRuleOccurrenceFactory
         return null;
     }
 
-    /**
-     * @param array<string, mixed> $section
-     */
-    private function dayTimezone(array $section): ?\DateTimeZone
+    private function dayTimezone(string $timezone): ?\DateTimeZone
     {
-        return $this->validTimezone(CompanionContentHelper::stringValue($section, 'destinationTimezone'));
+        return $this->validTimezone($timezone);
     }
 
     private function timezone(PushRule $rule, ?\DateTimeZone $dayTimezone, ?\DateTimeZone $tripTimezone): \DateTimeZone
@@ -265,39 +266,28 @@ final readonly class PushRuleOccurrenceFactory
     }
 
     /**
-     * @param mixed $content
-     *
-     * @return array<int, array<string, mixed>>
+     * @return array<int, Section>
      */
-    private function sectionsByDayNumber(mixed $content): array
+    private function sectionsByDayNumber(TravelPlanContent $content): array
     {
-        if (!\is_array($content)) {
-            return [];
-        }
-
         $indexed = [];
 
-        foreach (CompanionContentHelper::destinationSections($content) as $sectionData) {
-            $section = $sectionData['section'];
+        foreach ($content->destinations as $destination) {
+            foreach ($destination->sections as $section) {
+                if (SectionType::Day !== $section->type) {
+                    continue;
+                }
 
-            if (!\is_array($section) || TravelPlanContentFactory::TYPE_DAY !== ($section['type'] ?? null)) {
-                continue;
+                $indexed[\max(1, (int) ($section->dayNumber ?: 1))] = $section;
             }
-
-            $indexed[\max(1, (int) ($section['dayNumber'] ?? 1))] = $section;
         }
 
         return $indexed;
     }
 
-    /**
-     * @param array<string, mixed> $block
-     */
-    private function timeValue(array $block): ?string
+    private function timeValue(DayBlock $block): ?string
     {
-        foreach (['startTime', 'time'] as $key) {
-            $time = CompanionContentHelper::stringValue($block, $key);
-
+        foreach ([$block->startTime, $block->time] as $time) {
             if (1 === \preg_match('/^([01]\d|2[0-3]):[0-5]\d$/D', $time)) {
                 return $time;
             }

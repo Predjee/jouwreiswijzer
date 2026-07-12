@@ -3,6 +3,39 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://schemas.sulu.io/media/formats http://schemas.sulu.io/media/formats-1.1.xsd">
 
+    <format key="hero-bg-sm">
+        <meta>
+            <title lang="nl">Hero achtergrond mobiel/tablet</title>
+        </meta>
+        <scale x="768"/>
+        <options>
+            <option name="jpeg_quality">80</option>
+            <option name="webp_quality">80</option>
+        </options>
+    </format>
+
+    <format key="hero-bg-md">
+        <meta>
+            <title lang="nl">Hero achtergrond tablet</title>
+        </meta>
+        <scale x="1280"/>
+        <options>
+            <option name="jpeg_quality">80</option>
+            <option name="webp_quality">80</option>
+        </options>
+    </format>
+
+    <format key="hero-bg-lg">
+        <meta>
+            <title lang="nl">Hero achtergrond groot tablet</title>
+        </meta>
+        <scale x="1600"/>
+        <options>
+            <option name="jpeg_quality">82</option>
+            <option name="webp_quality">82</option>
+        </options>
+    </format>
+
     <format key="hero-bg">
         <meta>
             <title lang="nl">Hero achtergrond</title>
@@ -11,17 +44,6 @@
         <options>
             <option name="jpeg_quality">82</option>
             <option name="webp_quality">82</option>
-        </options>
-    </format>
-
-    <format key="hero-bg-md">
-        <meta>
-            <title lang="nl">Hero achtergrond tablet</title>
-        </meta>
-        <scale x="1024"/>
-        <options>
-            <option name="jpeg_quality">80</option>
-            <option name="webp_quality">80</option>
         </options>
     </format>
 
@@ -47,11 +69,33 @@
         </options>
     </format>
 
+    <format key="package-card-sm">
+        <meta>
+            <title lang="nl">Pakketkaart sfeerbeeld klein</title>
+        </meta>
+        <scale x="480" y="315"/>
+        <options>
+            <option name="jpeg_quality">80</option>
+            <option name="webp_quality">80</option>
+        </options>
+    </format>
+
     <format key="package-card">
         <meta>
             <title lang="nl">Pakketkaart sfeerbeeld</title>
         </meta>
         <scale x="640" y="420"/>
+        <options>
+            <option name="jpeg_quality">82</option>
+            <option name="webp_quality">82</option>
+        </options>
+    </format>
+
+    <format key="package-card-lg">
+        <meta>
+            <title lang="nl">Pakketkaart sfeerbeeld groot</title>
+        </meta>
+        <scale x="960" y="630"/>
         <options>
             <option name="jpeg_quality">82</option>
             <option name="webp_quality">82</option>

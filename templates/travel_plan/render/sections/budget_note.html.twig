@@ -1,10 +1,12 @@
 {% if accountView %}
-<aside class="travel-plan-section travel-plan-section--budget-note">
+<aside class="travel-plan-section travel-plan-section--budget-note {{ section.variantClass|default('travel-plan-variant--default') }}">
 {% else %}
-<div class="travel-plan-section travel-plan-section--budget-note">
+{% set colorClass = section.isPrimary ? ' travel-plan-section--primary' : (section.isSecondary ? ' travel-plan-section--secondary' : '') %}
+{% set colorStyle = section.isPrimary ? 'background-color: #ffffff; border: 0.25mm solid #12213d; color: #17233b;' : (section.isSecondary ? 'background-color: #f8f5ef; border: 0.25mm solid #d4af37; color: #17233b;' : '') %}
+<div class="travel-plan-section travel-plan-section--budget-note{{ colorClass }}"{% if colorStyle %} style="{{ colorStyle }}"{% endif %}>
 {% endif %}
     {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
-    {% if section.text|default %}<p>{{ section.text }}</p>{% endif %}
+    {% if section.text|default %}<div class="travel-plan-section__content">{{ section.text|raw }}</div>{% endif %}
 {% if accountView %}
 </aside>
 {% else %}

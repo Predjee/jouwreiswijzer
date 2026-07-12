@@ -10,7 +10,7 @@ use App\Entity\TravelPlanFeedback;
 use App\Repository\TravelPlanRepository;
 use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelRequestRepository;
-use App\Service\NotificationService;
+use App\Notification\NotificationService;
 use App\TravelPlan\BlockPath;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;

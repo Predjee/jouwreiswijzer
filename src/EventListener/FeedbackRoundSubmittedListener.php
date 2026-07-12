@@ -6,7 +6,7 @@ namespace App\EventListener;
 
 use App\Entity\Notification;
 use App\Event\FeedbackRoundSubmittedEvent;
-use App\Service\NotificationService;
+use App\Notification\NotificationService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

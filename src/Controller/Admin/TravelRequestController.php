@@ -12,8 +12,8 @@ use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelRequestRepository;
 use App\Service\TravelPlanPublisher;
 use App\Service\TravelPlanContentFactory;
+use App\TravelPlan\Feedback\FeedbackContentAnnotator;
 use App\TravelPlan\Pdf\TravelPlanPdfStorage;
-use App\TravelPlan\BlockPath;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;
 use Sulu\Component\Rest\AbstractRestController;
@@ -40,6 +40,7 @@ final class TravelRequestController extends AbstractRestController implements Se
         private readonly TravelPlanPublisher $travelPlanPublisher,
         private readonly TravelPlanPdfStorage $pdfStorage,
         private readonly TravelPlanFeedbackRepository $feedbackRepository,
+        private readonly FeedbackContentAnnotator $feedbackAnnotator,
     ) {
         parent::__construct($viewHandler);
     }
@@ -50,7 +51,7 @@ final class TravelRequestController extends AbstractRestController implements Se
             TravelRequestAdmin::LIST_KEY,
         );
         $listBuilder = $this->listBuilderFactory->create(TravelRequest::class);
-        $this->restHelper->initializeListBuilder($listBuilder, $fieldDescriptors);
+        $this->restHelper->initializeListBuilder($listBuilder, $fieldDescriptors ?? []);
 
         $list = new PaginatedRepresentation(
             $listBuilder->execute(),
@@ -224,7 +225,7 @@ final class TravelRequestController extends AbstractRestController implements Se
         $data['feedbackSummary'] = \array_map(
             fn (TravelPlanFeedback $feedback): array => [
                 'id' => $feedback->getId(),
-                'label' => $this->feedbackTargetLabel($data, $feedback),
+                'label' => $this->feedbackAnnotator->targetLabel($data, $feedback),
                 'status' => $feedback->getStatus(),
                 'anchorId' => 'travel-plan-feedback-' . $feedback->getId(),
                 'blockPath' => $feedback->getBlockPath(),
@@ -234,7 +235,7 @@ final class TravelRequestController extends AbstractRestController implements Se
         );
 
         foreach ($activeFeedback as $feedback) {
-            $this->attachFeedback($data, $feedback);
+            $this->feedbackAnnotator->attach($data, $feedback);
         }
 
         return $data;
@@ -273,142 +274,6 @@ final class TravelRequestController extends AbstractRestController implements Se
             $activeCount,
             $awaitingAcceptanceCount,
         );
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function attachFeedback(array &$data, TravelPlanFeedback $feedback): void
-    {
-        $blockPath = $feedback->getBlockPath();
-        $serialized = [
-            'id' => $feedback->getId(),
-            'status' => $feedback->getStatus(),
-            'message' => $feedback->getMessage(),
-            'blockPath' => $blockPath,
-            'blockType' => $feedback->getBlockType(),
-            'contactName' => $feedback->getContact()->getFullName(),
-            'createdAt' => $feedback->getCreatedAt()->format('d-m-Y H:i'),
-        ];
-
-        if (null === $blockPath) {
-            $data['planFeedback'] ??= $serialized;
-            return;
-        }
-
-        $path = BlockPath::parse($blockPath);
-
-        if (null === $path || !\is_array($data['destinations'] ?? null)) {
-            return;
-        }
-
-        $destinations = &$data['destinations'];
-
-        if (!isset($destinations[$path->destinationIndex]) || !\is_array($destinations[$path->destinationIndex])) {
-            return;
-        }
-
-        $destination = &$destinations[$path->destinationIndex];
-
-        if ($path->isDestination()) {
-            $destination['_feedback'] ??= $serialized;
-            return;
-        }
-
-        if (null === $path->sectionIndex || !\is_array($destination['sections'] ?? null)) {
-            return;
-        }
-
-        $sections = &$destination['sections'];
-
-        if (!isset($sections[$path->sectionIndex]) || !\is_array($sections[$path->sectionIndex])) {
-            return;
-        }
-
-        $section = &$sections[$path->sectionIndex];
-
-        if ($path->isSection()) {
-            $section['_feedback'] ??= $serialized;
-            return;
-        }
-
-        if (null === $path->blockIndex || !\is_array($section['blocks'] ?? null)) {
-            return;
-        }
-
-        $blocks = &$section['blocks'];
-
-        if (isset($blocks[$path->blockIndex]) && \is_array($blocks[$path->blockIndex])) {
-            $blocks[$path->blockIndex]['_feedback'] ??= $serialized;
-        }
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function feedbackTargetLabel(array $data, TravelPlanFeedback $feedback): string
-    {
-        $blockPath = $feedback->getBlockPath();
-
-        if (null === $blockPath) {
-            return 'Hele reisplan';
-        }
-
-        $path = BlockPath::parse($blockPath);
-        $destinations = \is_array($data['destinations'] ?? null) ? $data['destinations'] : [];
-        $destination = null !== $path ? ($destinations[$path->destinationIndex] ?? []) : [];
-
-        if (null === $path || !\is_array($destination)) {
-            return $feedback->getBlockType() ?? 'Reisplanonderdeel';
-        }
-
-        if ($path->isDestination()) {
-            $title = $this->feedbackLabelValue($destination['title'] ?? null);
-
-            return \sprintf(
-                'Bestemming %d: %s',
-                $path->destinationIndex + 1,
-                '' !== $title ? $title : 'Bestemming',
-            );
-        }
-
-        $sections = \is_array($destination['sections'] ?? null) ? $destination['sections'] : [];
-        $section = null !== $path->sectionIndex ? ($sections[$path->sectionIndex] ?? []) : [];
-
-        if (!\is_array($section)) {
-            return $feedback->getBlockType() ?? 'Reisplanonderdeel';
-        }
-
-        if ($path->isSection()) {
-            $title = $this->feedbackLabelValue($section['title'] ?? null);
-
-            return \sprintf(
-                'Bestemming %d, sectie %d: %s',
-                $path->destinationIndex + 1,
-                $path->sectionIndex + 1,
-                '' !== $title ? $title : ($feedback->getBlockType() ?? 'Onderdeel'),
-            );
-        }
-
-        $blocks = \is_array($section['blocks'] ?? null) ? $section['blocks'] : [];
-        $block = null !== $path->blockIndex ? ($blocks[$path->blockIndex] ?? []) : [];
-        $dayNumber = $this->feedbackLabelValue($section['dayNumber'] ?? null);
-        $dayLabel = '' !== $dayNumber
-            ? \sprintf('dag %d', (int) $dayNumber)
-            : \sprintf('sectie %d', $path->sectionIndex + 1);
-        $title = \is_array($block) ? $this->feedbackLabelValue($block['title'] ?? null) : '';
-
-        return \sprintf(
-            'Bestemming %d, %s: %s',
-            $path->destinationIndex + 1,
-            $dayLabel,
-            '' !== $title ? $title : ($feedback->getBlockType() ?? 'Dagonderdeel'),
-        );
-    }
-
-    private function feedbackLabelValue(mixed $value): string
-    {
-        return \is_scalar($value) ? \trim((string) $value) : '';
     }
 
     /**

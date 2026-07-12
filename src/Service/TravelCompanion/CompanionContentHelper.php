@@ -52,6 +52,7 @@ final class CompanionContentHelper
                 continue;
             }
 
+            /** @var array<string, mixed> $destination CMS-content heeft stringkeys. */
             $destinations[] = [
                 'destinationIndex' => (int) $destinationIndex,
                 'destination' => $destination,
@@ -87,6 +88,7 @@ final class CompanionContentHelper
                     continue;
                 }
 
+                /** @var array<string, mixed> $section CMS-content heeft stringkeys. */
                 $sections[] = [
                     'destinationIndex' => $destinationData['destinationIndex'],
                     'sectionIndex' => (int) $sectionIndex,
@@ -152,8 +154,55 @@ final class CompanionContentHelper
 
     public static function daysBetween(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): int
     {
-        $days = $startDate->diff($endDate)->days;
+        // DateInterval::$days is false bij een niet-berekenbaar verschil;
+        // de int-cast maakt daar 0 van zonder dode-vergelijking-melding.
+        return (int) $startDate->diff($endDate)->days;
+    }
 
-        return false === $days ? 0 : $days;
+    /**
+     * @param array<string, mixed> $block
+     */
+    public static function startTime(array $block): string
+    {
+        return self::normalizeTime(self::stringValue($block, 'startTime'))
+            ?: self::normalizeTime(self::stringValue($block, 'time'));
+    }
+
+    /**
+     * @param array<string, mixed> $block
+     */
+    public static function endTime(array $block): string
+    {
+        return self::normalizeTime(self::stringValue($block, 'endTime'));
+    }
+
+    /**
+     * @param array<string, mixed> $block
+     */
+    public static function timeRangeLabel(array $block): string
+    {
+        $startTime = self::startTime($block);
+        $endTime = self::endTime($block);
+
+        if ('' === $startTime) {
+            return '';
+        }
+
+        if ('' === $endTime || $endTime === $startTime) {
+            return $startTime;
+        }
+
+        return \sprintf('%s - %s', $startTime, $endTime);
+    }
+
+    public static function normalizeTime(string $time): string
+    {
+        $time = \trim($time);
+
+        if (1 !== \preg_match('/^([01]?\d|2[0-3]):([0-5]\d)$/D', $time, $matches)) {
+            return '';
+        }
+
+        return \sprintf('%02d:%s', (int) $matches[1], $matches[2]);
     }
 }

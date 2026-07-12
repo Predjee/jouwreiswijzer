@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\TravelCompanion;
 
 use App\Entity\TravelPlan;
+use App\TravelPlan\Content\ContentValues;
 use App\Repository\TravelPlanRepository;
 use App\ViewModel\TravelCompanion\TodayContext;
 use App\ViewModel\TravelCompanion\TodayTravelPlan;
@@ -160,9 +161,7 @@ final readonly class TodayContextBuilder
      */
     private function tripProfile(TravelPlan $travelPlan): array
     {
-        $tripProfile = $travelPlan->getContent()['tripProfile'] ?? [];
-
-        return \is_array($tripProfile) ? $tripProfile : [];
+        return ContentValues::stringKeyed($travelPlan->getContent()['tripProfile'] ?? null);
     }
 
     /**
@@ -177,11 +176,13 @@ final readonly class TodayContextBuilder
         foreach (CompanionContentHelper::destinationSections($travelPlan->getContent()) as $sectionData) {
             $section = $sectionData['section'];
 
-            if (!\is_array($section) || 'day' !== ($section['type'] ?? null)) {
+            if ('day' !== ($section['type'] ?? null)) {
                 continue;
             }
 
-            if ((int) ($section['dayNumber'] ?? 0) === $dayNumber) {
+            $sectionDayNumber = $section['dayNumber'] ?? null;
+
+            if (\is_scalar($sectionDayNumber) && (int) $sectionDayNumber === $dayNumber) {
                 return $section;
             }
         }

@@ -13,17 +13,13 @@ use App\ViewModel\TravelCompanion\CompanionBlock;
 use App\ViewModel\TravelCompanion\CompanionDay;
 use App\ViewModel\TravelCompanion\CompanionTrip;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
-final class TravelCompanionBuilder
+final readonly class TravelCompanionBuilder
 {
-    /** @var array<string, string> */
-    private array $iconCache = [];
-
     public function __construct(
-        private readonly TravelPlanChecklistStateProvider $checklistStateRepository,
-        #[Autowire('%kernel.project_dir%')]
-        private readonly string $projectDir,
+        private TravelPlanChecklistStateProvider $checklistStateRepository,
+        private ChecklistItemExtractor $checklistItemExtractor,
+        private CompanionIconResolver $iconResolver,
     ) {
     }
 
@@ -240,15 +236,15 @@ final class TravelCompanionBuilder
             $type,
             CompanionContentHelper::stringValue($block, 'title'),
             $text,
-            $this->renderableIcon(CompanionContentHelper::stringValue($block, 'icon')),
+            $this->iconResolver->resolve(CompanionContentHelper::stringValue($block, 'icon')),
             $this->location($block, $type),
             CompanionContentHelper::stringValue($block, 'mapsUrl'),
             CompanionContentHelper::stringValue($block, 'timeLabel'),
-            $this->startTime($block),
-            $this->endTime($block),
-            $this->timeRangeLabel($block),
+            CompanionContentHelper::startTime($block),
+            CompanionContentHelper::endTime($block),
+            CompanionContentHelper::timeRangeLabel($block),
             CompanionContentHelper::stringValue($block, 'bookingUrl'),
-            'checklist' === $type ? $this->checklistItems($text, $path, $checkedItems) : [],
+            'checklist' === $type ? $this->checklistItemExtractor->extract($text, $path, $checkedItems) : [],
             'route_overview' === $type ? $this->routeStops($block['routeStops'] ?? []) : [],
         );
     }
@@ -274,49 +270,12 @@ final class TravelCompanionBuilder
                 'title' => CompanionContentHelper::stringValue($routeStop, 'title'),
                 'location' => CompanionContentHelper::stringValue($routeStop, 'location'),
                 'text' => CompanionContentHelper::stringValue($routeStop, 'text'),
-                'icon' => $this->renderableIcon(CompanionContentHelper::stringValue($routeStop, 'icon')),
+                'icon' => $this->iconResolver->resolve(CompanionContentHelper::stringValue($routeStop, 'icon')),
             ];
 
             if ('' !== $item['title'] || '' !== $item['location'] || '' !== $item['text']) {
                 $items[] = $item;
             }
-        }
-
-        return $items;
-    }
-
-    /**
-     * @param array<string, bool> $checkedItems
-     *
-     * @return list<array{key: string, label: string, checked: bool}>
-     */
-    private function checklistItems(string $text, string $path, array $checkedItems): array
-    {
-        $labels = [];
-
-        if (1 === \preg_match_all('/<li[^>]*>(.*?)<\/li>/is', $text, $matches)) {
-            foreach ($matches[1] as $item) {
-                $labels[] = \trim(\strip_tags((string) $item));
-            }
-        } else {
-            foreach (\preg_split('/\R/', \strip_tags($text)) ?: [] as $line) {
-                $line = \trim((string) $line, " \t\n\r\0\x0B-*•");
-
-                if ('' !== $line) {
-                    $labels[] = $line;
-                }
-            }
-        }
-
-        $items = [];
-
-        foreach (\array_values(\array_unique(\array_filter($labels))) as $index => $label) {
-            $key = \substr(\sha1($path.'|'.$index.'|'.$label), 0, 40);
-            $items[] = [
-                'key' => $key,
-                'label' => $label,
-                'checked' => $checkedItems[$key] ?? false,
-            ];
         }
 
         return $items;
@@ -414,35 +373,6 @@ final class TravelCompanionBuilder
         return CompanionContentHelper::stringValue($tripProfile, 'duration');
     }
 
-    private function renderableIcon(string $icon): string
-    {
-        $icon = \trim($icon);
-
-        if ('' === $icon) {
-            return '';
-        }
-
-        if (isset($this->iconCache[$icon])) {
-            return $this->iconCache[$icon];
-        }
-
-        if (1 === \preg_match('/^(https?:\/\/|\/).+\.(svg|png|webp|jpg|jpeg)$/i', $icon)) {
-            return $this->iconCache[$icon] = $icon;
-        }
-
-        if (1 !== \preg_match('/^[a-z0-9][a-z0-9-]*$/', $icon)) {
-            return $this->iconCache[$icon] = '';
-        }
-
-        $path = $this->projectDir.'/assets/images/icons/'.$icon.'.svg';
-
-        if (!\is_file($path) || false === $contents = \file_get_contents($path)) {
-            return $this->iconCache[$icon] = '';
-        }
-
-        return $this->iconCache[$icon] = 'data:image/svg+xml;base64,'.\base64_encode($contents);
-    }
-
     private function normalizeType(string $type): string
     {
         return match ($type) {
@@ -508,53 +438,6 @@ final class TravelCompanionBuilder
         }
 
         return $result;
-    }
-
-    /**
-     * @param array<string, mixed> $block
-     */
-    private function startTime(array $block): string
-    {
-        return $this->normalizeTime(CompanionContentHelper::stringValue($block, 'startTime'))
-            ?: $this->normalizeTime(CompanionContentHelper::stringValue($block, 'time'));
-    }
-
-    /**
-     * @param array<string, mixed> $block
-     */
-    private function endTime(array $block): string
-    {
-        return $this->normalizeTime(CompanionContentHelper::stringValue($block, 'endTime'));
-    }
-
-    /**
-     * @param array<string, mixed> $block
-     */
-    private function timeRangeLabel(array $block): string
-    {
-        $startTime = $this->startTime($block);
-        $endTime = $this->endTime($block);
-
-        if ('' === $startTime) {
-            return '';
-        }
-
-        if ('' === $endTime || $endTime === $startTime) {
-            return $startTime;
-        }
-
-        return \sprintf('%s - %s', $startTime, $endTime);
-    }
-
-    private function normalizeTime(string $time): string
-    {
-        $time = \trim($time);
-
-        if (1 !== \preg_match('/^([01]?\d|2[0-3]):([0-5]\d)$/D', $time, $matches)) {
-            return '';
-        }
-
-        return \sprintf('%02d:%s', (int) $matches[1], $matches[2]);
     }
 
     /**

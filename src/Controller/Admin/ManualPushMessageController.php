@@ -11,7 +11,7 @@ use App\PushMessage\PushMessageTemplateRenderer;
 use App\PushMessage\TravelPlanPersonalizationContextBuilder;
 use App\Repository\ScheduledPushMessageRepository;
 use App\Repository\TravelPlanRepository;
-use App\Service\ManualPushMessageManager;
+use App\PushMessage\ManualPushMessageManager;
 use FOS\RestBundle\View\ViewHandlerInterface;
 use Sulu\Component\Rest\AbstractRestController;
 use Sulu\Component\Rest\ListBuilder\PaginatedRepresentation;

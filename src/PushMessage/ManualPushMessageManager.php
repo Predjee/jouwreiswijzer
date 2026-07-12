@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\PushMessage;
 
 use App\Entity\PushRule;
 use App\Entity\ScheduledPushMessage;

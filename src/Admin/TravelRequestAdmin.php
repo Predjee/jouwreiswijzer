@@ -46,14 +46,18 @@ final class TravelRequestAdmin extends Admin
             return;
         }
 
-        $viewCollection->add(
-            $this->viewBuilderFactory->createListViewBuilder(self::LIST_VIEW, '/travel-requests')
-                ->setResourceKey(self::RESOURCE_KEY)
-                ->setListKey(self::LIST_KEY)
-                ->setTitle('Aanvragen')
-                ->addListAdapters(['table'])
-                ->setEditView(self::EDIT_VIEW),
-        );
+        $listView = $this->viewBuilderFactory->createListViewBuilder(self::LIST_VIEW, '/travel-requests')
+            ->setResourceKey(self::RESOURCE_KEY)
+            ->setListKey(self::LIST_KEY)
+            ->setTitle('Aanvragen')
+            ->addListAdapters(['table'])
+            ->setEditView(self::EDIT_VIEW);
+
+        if ($this->securityChecker->hasPermission(self::SECURITY_CONTEXT, PermissionTypes::DELETE)) {
+            $listView->addToolbarActions([new ToolbarAction('sulu_admin.delete')]);
+        }
+
+        $viewCollection->add($listView);
 
         $viewCollection->add(
             $this->viewBuilderFactory->createResourceTabViewBuilder(
@@ -76,6 +80,10 @@ final class TravelRequestAdmin extends Admin
 
         if ($this->securityChecker->hasPermission(self::SECURITY_CONTEXT, PermissionTypes::EDIT)) {
             $formView->addToolbarActions([new ToolbarAction('sulu_admin.save')]);
+        }
+
+        if ($this->securityChecker->hasPermission(self::SECURITY_CONTEXT, PermissionTypes::DELETE)) {
+            $formView->addToolbarActions([new ToolbarAction('sulu_admin.delete')]);
         }
 
         $viewCollection->add($formView);

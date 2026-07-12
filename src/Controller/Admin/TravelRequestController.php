@@ -12,6 +12,7 @@ use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelRequestRepository;
 use App\Service\TravelPlanPublisher;
 use App\Service\TravelPlanContentFactory;
+use App\Service\TravelRequestRemover;
 use App\TravelPlan\Feedback\FeedbackContentAnnotator;
 use App\TravelPlan\Pdf\TravelPlanPdfStorage;
 use Doctrine\ORM\EntityManagerInterface;
@@ -41,6 +42,7 @@ final class TravelRequestController extends AbstractRestController implements Se
         private readonly TravelPlanPdfStorage $pdfStorage,
         private readonly TravelPlanFeedbackRepository $feedbackRepository,
         private readonly FeedbackContentAnnotator $feedbackAnnotator,
+        private readonly TravelRequestRemover $travelRequestRemover,
     ) {
         parent::__construct($viewHandler);
     }
@@ -144,6 +146,13 @@ final class TravelRequestController extends AbstractRestController implements Se
         }
 
         return $this->handleView($this->view($this->serializeTravelPlan($travelPlan)));
+    }
+
+    public function deleteAction(int $id): Response
+    {
+        $this->travelRequestRemover->remove($this->findTravelRequest($id));
+
+        return new Response(status: Response::HTTP_NO_CONTENT);
     }
 
     public function getSecurityContext(): string

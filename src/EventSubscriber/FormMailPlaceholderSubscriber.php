@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
-use App\Service\FormMailPlaceholderRenderer;
+use App\Form\FormMailPlaceholderRenderer;
 use Sulu\Bundle\FormBundle\Configuration\MailConfiguration;
 use Sulu\Bundle\FormBundle\Entity\Dynamic;
 use Sulu\Bundle\FormBundle\Event\FormSavePreEvent;

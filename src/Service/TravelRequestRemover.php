@@ -7,8 +7,6 @@ namespace App\Service;
 use App\Entity\TravelMemoryAlbum;
 use App\Entity\TravelPlan;
 use App\Entity\TravelRequest;
-use App\Repository\TravelMemoryAlbumRepository;
-use App\Repository\TravelPlanRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Sulu\Bundle\MediaBundle\Media\Exception\MediaNotFoundException;
 use Sulu\Bundle\MediaBundle\Media\Manager\MediaManagerInterface;
@@ -24,20 +22,22 @@ final readonly class TravelRequestRemover
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private TravelPlanRepository $travelPlanRepository,
-        private TravelMemoryAlbumRepository $memoryAlbumRepository,
         private MediaManagerInterface $mediaManager,
     ) {
     }
 
     public function remove(TravelRequest $travelRequest): void
     {
-        $travelPlan = $this->travelPlanRepository->findOneBy(['travelRequest' => $travelRequest]);
+        $travelPlan = $this->entityManager
+            ->getRepository(TravelPlan::class)
+            ->findOneBy(['travelRequest' => $travelRequest]);
 
         if ($travelPlan instanceof TravelPlan) {
             $this->removeMedia($travelPlan->getPdfMediaId());
 
-            $album = $this->memoryAlbumRepository->findOneBy(['travelPlan' => $travelPlan]);
+            $album = $this->entityManager
+                ->getRepository(TravelMemoryAlbum::class)
+                ->findOneBy(['travelPlan' => $travelPlan]);
 
             if ($album instanceof TravelMemoryAlbum) {
                 $this->removeMedia($album->getMediaId());

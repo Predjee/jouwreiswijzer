@@ -9,7 +9,7 @@ use App\TravelPlan\Content\ContentValues;
 use App\Entity\TravelPlan;
 use App\Repository\PushSubscriptionRepository;
 use App\Repository\TravelPlanRepository;
-use App\Service\TravelCompanion\CompanionContentHelper;
+use App\Companion\CompanionContentHelper;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\SecurityBundle\Entity\User as SuluUser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

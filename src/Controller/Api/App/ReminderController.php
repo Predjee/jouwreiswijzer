@@ -6,7 +6,7 @@ namespace App\Controller\Api\App;
 
 use App\Api\App\Mapper\ReminderMapper;
 use App\Repository\TravelPlanRepository;
-use App\Service\TravelCompanion\ReminderPlanBuilder;
+use App\Companion\ReminderPlanBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

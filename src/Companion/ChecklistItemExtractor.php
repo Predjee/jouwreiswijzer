@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\TravelCompanion;
+namespace App\Companion;
 
 /**
  * Haalt checklist-items uit CMS-richtext.

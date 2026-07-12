@@ -12,7 +12,7 @@ use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelPlanRepository;
 use App\TravelPlan\Feedback\FeedbackPathResolver;
 use App\TravelPlan\Feedback\FeedbackRoundService;
-use App\Service\TravelCompanion\CompanionContentHelper;
+use App\Companion\CompanionContentHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;

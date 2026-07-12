@@ -6,7 +6,7 @@ namespace App\PushMessage;
 
 use App\Entity\PushRule;
 use App\Entity\TravelPlan;
-use App\Service\TravelCompanion\CompanionContentHelper;
+use App\Companion\CompanionContentHelper;
 use App\TravelPlan\Content\BlockType;
 use App\TravelPlan\Content\DayBlock;
 use App\TravelPlan\Content\Section;

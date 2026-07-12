@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\TravelCompanion;
+namespace App\Companion;
 
 /**
  * Gedeelde hulpmethoden voor TravelCompanionBuilder en TodayContextBuilder.

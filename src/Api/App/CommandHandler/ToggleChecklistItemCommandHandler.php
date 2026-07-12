@@ -10,7 +10,7 @@ use App\Entity\TravelPlanChecklistState;
 use App\Event\ChecklistItemToggledEvent;
 use App\Repository\TravelPlanChecklistStateRepository;
 use App\Repository\TravelPlanRepository;
-use App\Service\TravelCompanion\CompanionContentHelper;
+use App\Companion\CompanionContentHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

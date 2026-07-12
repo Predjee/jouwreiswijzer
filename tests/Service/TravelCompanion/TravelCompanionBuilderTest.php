@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Service\TravelCompanion;
 
 use App\Entity\TravelPlan;
-use App\Service\TravelCompanion\TravelPlanChecklistStateProvider;
-use App\Service\TravelCompanion\ChecklistItemExtractor;
-use App\Service\TravelCompanion\CompanionIconResolver;
-use App\Service\TravelCompanion\TravelCompanionBuilder;
+use App\Companion\TravelPlanChecklistStateProvider;
+use App\Companion\ChecklistItemExtractor;
+use App\Companion\CompanionIconResolver;
+use App\Companion\TravelCompanionBuilder;
 use PHPUnit\Framework\TestCase;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 

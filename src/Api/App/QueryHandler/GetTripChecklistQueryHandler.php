@@ -9,7 +9,7 @@ use App\Api\App\ReadModel\ChecklistReadModel;
 use App\Entity\TravelPlan;
 use App\Repository\TravelPlanChecklistStateRepository;
 use App\Repository\TravelPlanRepository;
-use App\Service\TravelCompanion\CompanionContentHelper;
+use App\Companion\CompanionContentHelper;
 
 final readonly class GetTripChecklistQueryHandler
 {

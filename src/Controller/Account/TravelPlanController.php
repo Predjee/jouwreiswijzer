@@ -8,7 +8,7 @@ use App\Entity\TravelPlan;
 use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelPlanRepository;
 use App\TravelPlan\Feedback\FeedbackIndex;
-use App\Service\TravelCompanion\CompanionContentHelper;
+use App\Companion\CompanionContentHelper;
 use App\TravelPlan\Pdf\TravelPlanPdfGenerator;
 use App\TravelPlan\Pdf\TravelPlanPdfStorage;
 use App\TravelPlan\Renderer\TravelPlanRenderer;

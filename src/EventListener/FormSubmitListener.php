@@ -6,7 +6,7 @@ namespace App\EventListener;
 
 use App\Entity\RequestFormConfiguration;
 use App\Entity\TravelRequest;
-use App\Service\ContactOnboardingService;
+use App\Account\ContactOnboardingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\ContactRepositoryInterface;

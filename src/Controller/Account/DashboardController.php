@@ -6,7 +6,7 @@ namespace App\Controller\Account;
 
 use App\Repository\NotificationRepository;
 use App\Repository\TravelPlanRepository;
-use App\Service\AccountDashboardBuilder;
+use App\Account\AccountDashboardBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\Account;
 
 use App\Security\AccountTokenHasher;
 use Doctrine\ORM\EntityManagerInterface;

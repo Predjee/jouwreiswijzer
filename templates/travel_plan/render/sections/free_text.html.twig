@@ -1,5 +1,5 @@
 {% if accountView %}
-<section class="travel-plan-section travel-plan-section--free-text {{ section.variantClass|default('travel-plan-variant--default') }}">
+<section class="travel-plan-section travel-plan-section--free-text {{ section.variantClass|default('travel-plan-variant--default') }}{{ section.pageBreakClass ? ' ' ~ section.pageBreakClass : '' }}">{% if section.iconSvg %}<span class="travel-plan-icon-slot" aria-hidden="true">{{ section.iconSvg|raw }}</span>{% endif %}{{ "\n" -}}
     {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
     {% if section.text|default %}<div class="travel-plan-section__content">{{ section.text|raw }}</div>{% endif %}
 </section>

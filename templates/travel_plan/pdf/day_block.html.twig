@@ -3,17 +3,17 @@
    De gouden linkerbalk is een echte tabelcel; dat rendert betrouwbaarder dan
    border-left bij geneste tabellen. #}
 {% set variant = block.isPrimary ? 'primary' : (block.isSecondary ? 'secondary' : (block.isGold ? 'gold' : 'default')) %}
-{% set v = t.variants[variant] %}
+{% set v = theme.variants[variant] %}
 {% set colorClass = variant != 'default' ? ' travel-plan-block--' ~ variant : '' %}
-{% set railColor = v.accent ?: t.gold %}
-{% set cardStyle = 'background-color: ' ~ v.background ~ '; border: 0.2mm solid ' ~ v.edge ~ '; border-radius: ' ~ t.cardRadius ~ '; overflow: hidden;' %}
-{% set tableStyle = 'width: 100%; border: 0; border-collapse: separate; border-spacing: 0; background-color: ' ~ v.background ~ '; border-radius: ' ~ t.cardRadius ~ ';' %}
+{% set railColor = v.accent ?: theme.gold %}
+{% set cardStyle = 'background-color: ' ~ v.background ~ '; border: 0.2mm solid ' ~ v.edge ~ '; border-radius: ' ~ theme.cardRadius ~ '; overflow: hidden;' %}
+{% set tableStyle = 'width: 100%; border: 0; border-collapse: separate; border-spacing: 0; background-color: ' ~ v.background ~ '; border-radius: ' ~ theme.cardRadius ~ ';' %}
 {% set railStyle = 'width: 1mm; padding: 0; background-color: ' ~ railColor ~ ';' %}
 {% set iconStyle = 'width: 10.5mm; padding: 4.6mm 2.8mm 4.2mm 4.4mm; vertical-align: top; background-color: ' ~ v.background ~ ';' %}
 {% set bodyStyle = 'padding: 4.6mm 5.5mm 4.2mm 0; vertical-align: top; background-color: ' ~ v.background ~ ';' %}
 
 {% if block.flow %}
-    <div class="travel-plan-block travel-plan-block--flow travel-plan-block--{{ block.type }}{{ colorClass }}{% if block.startOnNewPage %} travel-plan-page-break-before{% endif %}" style="{{ cardStyle }} border-bottom: 0; border-radius: {{ t.cardRadius }} {{ t.cardRadius }} 0 0;">
+    <div class="travel-plan-block travel-plan-block--flow travel-plan-block--{{ block.type }}{{ colorClass }}{% if block.startOnNewPage %} travel-plan-page-break-before{% endif %}" style="{{ cardStyle }} border-bottom: 0; border-radius: {{ theme.cardRadius }} {{ theme.cardRadius }} 0 0;">
         <table class="travel-plan-block__layout" style="{{ tableStyle }}">
             <tr>
                 <td style="{{ railStyle }}">&nbsp;</td>

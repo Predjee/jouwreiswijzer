@@ -11,6 +11,7 @@ use App\TravelPlan\Pdf\TravelPlanPdfRichTextNormalizer;
 use App\TravelPlan\Renderer\TravelPlanContentHelper;
 use App\TravelPlan\Renderer\TravelPlanPdfRenderer;
 use App\TravelPlan\Renderer\TravelPlanRenderer;
+use App\TravelPlan\View\TravelPlanViewFactory;
 use PHPUnit\Framework\TestCase;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\MediaBundle\Media\Manager\MediaManagerInterface;
@@ -23,8 +24,7 @@ final class TravelPlanRendererTest extends TestCase
     {
         $renderer = new TravelPlanRenderer(
             $this->twig(),
-            new IconResolver($this->projectDir()),
-            $this->helper(),
+            $this->viewFactory(new IconResolver($this->projectDir())),
         );
 
         $html = $renderer->renderForAccount($this->travelPlan(), feedbackEnabled: false);
@@ -36,9 +36,8 @@ final class TravelPlanRendererTest extends TestCase
     {
         $renderer = new TravelPlanPdfRenderer(
             $this->twig(),
-            new IconResolver('/tmp'),
             $this->helper(),
-            new TravelPlanPdfRichTextNormalizer(),
+            $this->viewFactory(new IconResolver('/tmp')),
         );
 
         $html = $renderer->render($this->travelPlan());
@@ -78,6 +77,15 @@ final class TravelPlanRendererTest extends TestCase
         return new TravelPlanContentHelper(
             $this->createStub(MediaManagerInterface::class),
             $this->projectDir(),
+        );
+    }
+
+    private function viewFactory(IconResolver $iconResolver): TravelPlanViewFactory
+    {
+        return new TravelPlanViewFactory(
+            $iconResolver,
+            $this->helper(),
+            new TravelPlanPdfRichTextNormalizer(),
         );
     }
 

@@ -1,5 +1,5 @@
 {% if accountView %}
-<section class="travel-plan-section travel-plan-section--image">
+<section class="travel-plan-section travel-plan-section--image{{ section.pageBreakClass ? ' ' ~ section.pageBreakClass : '' }}">
 {% else %}
 <div class="travel-plan-section travel-plan-section--image">
 {% endif %}

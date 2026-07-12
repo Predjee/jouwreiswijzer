@@ -76,7 +76,7 @@ final readonly class GetTodayQueryHandler
         }
 
         foreach ($day->blocks as $block) {
-            if (!$block instanceof CompanionBlock || !$this->isActivity($block)) {
+            if (!$this->isActivity($block)) {
                 continue;
             }
 

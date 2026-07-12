@@ -31,6 +31,7 @@ final readonly class FormMailPlaceholderSubscriber implements EventSubscriberInt
             return;
         }
 
+        /** @var array<string, mixed> $values Sulu-formuliervelden hebben stringkeys. */
         $values = $dynamic->getFields();
         $configuration = $event->getConfiguration();
 

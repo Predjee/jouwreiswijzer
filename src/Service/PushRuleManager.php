@@ -105,7 +105,7 @@ final readonly class PushRuleManager
             ->setOffsetValue($offsetValue)
             ->setOffsetUnit($offsetUnit)
             ->setLocalTime($localTime)
-            ->setTimezoneStrategy($timezoneStrategy)
+            ->setTimezoneStrategy($timezoneStrategy ?? PushRule::TIMEZONE_STRATEGY_FALLBACK)
             ->setTitleTemplate($titleTemplate)
             ->setBodyTemplate($bodyTemplate)
             ->setActionType($actionType)

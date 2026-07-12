@@ -64,7 +64,7 @@ final readonly class GetTripChecklistQueryHandler
         foreach (CompanionContentHelper::destinationSections($content) as $sectionData) {
             $section = $sectionData['section'];
 
-            if (!\is_array($section) || 'checklist' !== ($section['type'] ?? null)) {
+            if ('checklist' !== ($section['type'] ?? null)) {
                 continue;
             }
 

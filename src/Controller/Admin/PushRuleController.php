@@ -37,7 +37,7 @@ final class PushRuleController extends AbstractRestController implements Secured
     {
         $fieldDescriptors = $this->fieldDescriptorFactory->getFieldDescriptors(PushRuleAdmin::LIST_KEY);
         $listBuilder = $this->listBuilderFactory->create(PushRule::class);
-        $this->restHelper->initializeListBuilder($listBuilder, $fieldDescriptors);
+        $this->restHelper->initializeListBuilder($listBuilder, $fieldDescriptors ?? []);
 
         $list = new PaginatedRepresentation(
             $listBuilder->execute(),

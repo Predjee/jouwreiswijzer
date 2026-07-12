@@ -129,7 +129,7 @@ final class CreateMemoryAlbumCommandHandler
             $sourceWidth = \imagesx($sourceImage);
             $sourceHeight = \imagesy($sourceImage);
             $targetWidth = \min($sourceWidth, self::MAX_IMAGE_WIDTH);
-            $targetHeight = (int) \max(1, \round($sourceHeight * ($targetWidth / $sourceWidth)));
+            $targetHeight = \max(1, (int) \round($sourceHeight * ($targetWidth / $sourceWidth)));
             $targetImage = \imagecreatetruecolor($targetWidth, $targetHeight);
 
             if (false === $targetImage) {

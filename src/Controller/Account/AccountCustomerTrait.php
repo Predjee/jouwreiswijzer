@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace App\Controller\Account;
 
 use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Component\Security\Authentication\UserInterface as SuluUserInterface;
+use Sulu\Bundle\SecurityBundle\Entity\User as SuluUser;
 
 trait AccountCustomerTrait
 {
     /**
-     * @return array{SuluUserInterface, Contact}
+     * @return array{SuluUser, Contact}
      */
     private function getCustomer(): array
     {
         $user = $this->getUser();
-        $contact = $user instanceof SuluUserInterface ? $user->getContact() : null;
+        $contact = $user instanceof SuluUser ? $user->getContact() : null;
 
-        if (!($user instanceof SuluUserInterface) || !($contact instanceof Contact)) {
+        if (!($user instanceof SuluUser) || !($contact instanceof Contact)) {
             throw $this->createAccessDeniedException('Aan deze gebruiker is geen contact gekoppeld.');
         }
 

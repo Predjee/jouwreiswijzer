@@ -69,8 +69,10 @@ final class TravelRequestAdmin extends Admin
             ->createFormViewBuilder(self::EDIT_VIEW . '.details', '/details')
             ->setResourceKey(self::RESOURCE_KEY)
             ->setFormKey('travel_request_details')
-            ->setTabTitle('Details')
-            ->setParent(self::EDIT_VIEW);
+            ->setTabTitle('Details');
+        // setParent als losse call: die zit op het base-interface en zou
+        // het buildertype in de chain versmallen.
+        $formView->setParent(self::EDIT_VIEW);
 
         if ($this->securityChecker->hasPermission(self::SECURITY_CONTEXT, PermissionTypes::EDIT)) {
             $formView->addToolbarActions([new ToolbarAction('sulu_admin.save')]);
@@ -82,8 +84,8 @@ final class TravelRequestAdmin extends Admin
             ->createFormViewBuilder(self::EDIT_VIEW . '.travel_plan', '/travel-plan')
             ->setResourceKey('travel_request_plans')
             ->setFormKey('travel_plan_details')
-            ->setTabTitle('Reisplan')
-            ->setParent(self::EDIT_VIEW);
+            ->setTabTitle('Reisplan');
+        $travelPlanView->setParent(self::EDIT_VIEW);
 
         if ($this->securityChecker->hasPermission(self::SECURITY_CONTEXT, PermissionTypes::EDIT)) {
             $travelPlanView->addToolbarActions([

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Api\App;
 
 use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Component\Security\Authentication\UserInterface as SuluUserInterface;
+use Sulu\Bundle\SecurityBundle\Entity\User as SuluUser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -27,7 +27,7 @@ final class MeController extends AbstractController
         ]);
     }
 
-    private function resolveEmail(SuluUserInterface $user, Contact $contact): string
+    private function resolveEmail(SuluUser $user, Contact $contact): string
     {
         $email = $contact->getMainEmail();
 
@@ -35,6 +35,6 @@ final class MeController extends AbstractController
             return $email;
         }
 
-        return $user->getEmail();
+        return $user->getEmail() ?? '';
     }
 }

@@ -13,12 +13,7 @@ use App\ViewModel\TravelCompanion\CompanionTrip;
 final class TripDetailMapper
 {
     /**
-     * @return array{
-     *     screen: string,
-     *     version: int,
-     *     trip: array{id: int, title: string, pdfAvailable: bool},
-     *     sections: list<array{type: string, data: array<string, mixed>}>
-     * }
+     * @return array<string, mixed> Envelope-structuur: screen, version, trip, sections.
      */
     public function map(CompanionTrip $trip): array
     {

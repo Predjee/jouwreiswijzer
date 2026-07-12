@@ -7,7 +7,7 @@ namespace App\TravelPlan\View;
 use App\TravelPlan\BlockPath;
 
 /**
- * @phpstan-type RouteStop array{type?: string, title?: string, icon?: string, _iconMarkup?: string|null}
+ * @phpstan-type RouteStop array{type?: string, title?: string, location?: string, text?: string, icon?: string, _iconMarkup?: string|null}
  */
 final readonly class DestinationView
 {

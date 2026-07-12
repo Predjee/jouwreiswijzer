@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Controller\Api\App;
 
 use App\Entity\PushSubscription;
+use App\TravelPlan\Content\ContentValues;
 use App\Entity\TravelPlan;
 use App\Repository\PushSubscriptionRepository;
 use App\Repository\TravelPlanRepository;
 use App\Service\TravelCompanion\CompanionContentHelper;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Component\Security\Authentication\UserInterface as SuluUserInterface;
+use Sulu\Bundle\SecurityBundle\Entity\User as SuluUser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -122,9 +123,7 @@ final class SettingsController extends AbstractController
      */
     private function tripProfile(TravelPlan $travelPlan): array
     {
-        $tripProfile = $travelPlan->getContent()['tripProfile'] ?? [];
-
-        return \is_array($tripProfile) ? $tripProfile : [];
+        return ContentValues::stringKeyed($travelPlan->getContent()['tripProfile'] ?? null);
     }
 
     /**
@@ -141,7 +140,7 @@ final class SettingsController extends AbstractController
         return true;
     }
 
-    private function resolveEmail(SuluUserInterface $user, Contact $contact): string
+    private function resolveEmail(SuluUser $user, Contact $contact): string
     {
         $email = $contact->getMainEmail();
 
@@ -149,7 +148,7 @@ final class SettingsController extends AbstractController
             return $email;
         }
 
-        return $user->getEmail();
+        return $user->getEmail() ?? '';
     }
 
     private function resolveFullName(Contact $contact): string

@@ -96,8 +96,10 @@ final class PushRuleAdmin extends Admin
                     ->setFormKey(self::FORM_KEY)
                     ->setTabTitle('Details')
                     ->setEditView(self::EDIT_VIEW)
-                    ->setParent(self::ADD_VIEW)
-                    ->addToolbarActions([new ToolbarAction('sulu_admin.save')]),
+                    ->addToolbarActions([new ToolbarAction('sulu_admin.save')])
+                    // setParent als laatste: die zit op het base-interface en
+                    // versmalt het buildertype voor alles wat erna komt.
+                    ->setParent(self::ADD_VIEW),
             );
         }
 
@@ -111,8 +113,8 @@ final class PushRuleAdmin extends Admin
         $formView = $this->viewBuilderFactory->createFormViewBuilder(self::EDIT_VIEW.'.details', '/details')
             ->setResourceKey(self::RESOURCE_KEY)
             ->setFormKey(self::FORM_KEY)
-            ->setTabTitle('Details')
-            ->setParent(self::EDIT_VIEW);
+            ->setTabTitle('Details');
+        $formView->setParent(self::EDIT_VIEW);
 
         if ($this->securityChecker->hasPermission(self::SECURITY_CONTEXT, PermissionTypes::EDIT)) {
             $formView->addToolbarActions([new ToolbarAction('sulu_admin.save')]);
@@ -148,8 +150,8 @@ final class PushRuleAdmin extends Admin
                     ->setFormKey(self::MANUAL_FORM_KEY)
                     ->setTabTitle('Bericht')
                     ->setEditView(self::MANUAL_EDIT_VIEW)
-                    ->setParent(self::MANUAL_ADD_VIEW)
-                    ->addToolbarActions([new ToolbarAction('sulu_admin.save')]),
+                    ->addToolbarActions([new ToolbarAction('sulu_admin.save')])
+                    ->setParent(self::MANUAL_ADD_VIEW),
             );
         }
 
@@ -163,8 +165,8 @@ final class PushRuleAdmin extends Admin
         $manualFormView = $this->viewBuilderFactory->createFormViewBuilder(self::MANUAL_EDIT_VIEW.'.details', '/details')
             ->setResourceKey(self::MANUAL_RESOURCE_KEY)
             ->setFormKey(self::MANUAL_FORM_KEY)
-            ->setTabTitle('Bericht')
-            ->setParent(self::MANUAL_EDIT_VIEW);
+            ->setTabTitle('Bericht');
+        $manualFormView->setParent(self::MANUAL_EDIT_VIEW);
 
         if ($this->securityChecker->hasPermission(self::SECURITY_CONTEXT, PermissionTypes::EDIT)) {
             $manualFormView->addToolbarActions([new ToolbarAction('sulu_admin.save')]);

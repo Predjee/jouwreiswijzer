@@ -8,6 +8,7 @@ use App\Entity\TravelMemoryAlbum;
 use App\Entity\TravelPlan;
 use App\Repository\TravelMemoryAlbumRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Sulu\Bundle\MediaBundle\Entity\MediaInterface;
 use Sulu\Bundle\MediaBundle\Media\Exception\MediaNotFoundException;
 use Sulu\Bundle\MediaBundle\Media\Manager\MediaManagerInterface;
 use Sulu\Component\Media\SystemCollections\SystemCollectionManagerInterface;
@@ -69,7 +70,7 @@ final readonly class TravelMemoryAlbumStorage
             $mediaEntity = $media->getEntity();
             $contact = $travelPlan->getTravelRequest()->getContact();
 
-            if (!$contact->getMedias()->contains($mediaEntity)) {
+            if ($mediaEntity instanceof MediaInterface && !$contact->getMedias()->contains($mediaEntity)) {
                 $contact->addMedia($mediaEntity);
             }
 

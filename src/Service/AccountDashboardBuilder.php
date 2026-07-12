@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\TravelPlan;
+use App\TravelPlan\Content\ContentValues;
 use App\Entity\TravelPlanFeedback;
 use App\Repository\TravelPlanFeedbackRepository;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
@@ -116,8 +117,7 @@ final readonly class AccountDashboardBuilder
      */
     private function dateContext(TravelPlan $travelPlan, \DateTimeImmutable $today): array
     {
-        $tripProfile = $travelPlan->getContent()['tripProfile'] ?? [];
-        $tripProfile = \is_array($tripProfile) ? $tripProfile : [];
+        $tripProfile = ContentValues::stringKeyed($travelPlan->getContent()['tripProfile'] ?? null);
         $startDate = $this->createDate($tripProfile['startDate'] ?? null);
         $endDate = $this->createDate($tripProfile['endDate'] ?? null);
 
@@ -193,25 +193,31 @@ final readonly class AccountDashboardBuilder
             'unknown' => 2,
             'past' => 3,
         ];
-        $stateComparison = ($order[$left['travelState']] ?? 4) <=> ($order[$right['travelState']] ?? 4);
+        $leftState = $this->stringValue($left, 'travelState');
+        $rightState = $this->stringValue($right, 'travelState');
+        $stateComparison = ($order[$leftState] ?? 4) <=> ($order[$rightState] ?? 4);
 
         if (0 !== $stateComparison) {
             return $stateComparison;
         }
 
-        if ('upcoming' === $left['travelState']) {
-            return ((string) $left['startDate']) <=> ((string) $right['startDate']);
+        if ('upcoming' === $leftState) {
+            return $this->stringValue($left, 'startDate') <=> $this->stringValue($right, 'startDate');
         }
 
-        if ('past' === $left['travelState']) {
-            return ((string) $right['endDate']) <=> ((string) $left['endDate']);
+        if ('past' === $leftState) {
+            return $this->stringValue($right, 'endDate') <=> $this->stringValue($left, 'endDate');
         }
 
-        if ('active' === $left['travelState']) {
-            return ((string) $left['endDate']) <=> ((string) $right['endDate']);
+        if ('active' === $leftState) {
+            return $this->stringValue($left, 'endDate') <=> $this->stringValue($right, 'endDate');
         }
 
-        return $left['travelPlan']->getId() <=> $right['travelPlan']->getId();
+        $leftPlan = $left['travelPlan'] ?? null;
+        $rightPlan = $right['travelPlan'] ?? null;
+
+        return ($leftPlan instanceof TravelPlan ? $leftPlan->getId() : 0)
+            <=> ($rightPlan instanceof TravelPlan ? $rightPlan->getId() : 0);
     }
 
     private function createDate(mixed $value): ?\DateTimeImmutable
@@ -290,8 +296,8 @@ final readonly class AccountDashboardBuilder
 
     private function daysBetween(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): int
     {
-        $days = $startDate->diff($endDate)->days;
-
-        return false === $days ? 0 : $days;
+        // DateInterval::$days is false bij een niet-berekenbaar verschil;
+        // de int-cast maakt daar 0 van zonder dode-vergelijking-melding.
+        return (int) $startDate->diff($endDate)->days;
     }
 }

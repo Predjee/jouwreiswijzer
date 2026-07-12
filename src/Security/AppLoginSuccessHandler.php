@@ -6,7 +6,7 @@ namespace App\Security;
 
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Component\Security\Authentication\UserInterface as SuluUserInterface;
+use Sulu\Bundle\SecurityBundle\Entity\User as SuluUser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,10 +23,10 @@ final readonly class AppLoginSuccessHandler implements AuthenticationSuccessHand
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): Response
     {
         $user = $token->getUser();
-        $contact = $user instanceof SuluUserInterface ? $user->getContact() : null;
+        $contact = $user instanceof SuluUser ? $user->getContact() : null;
 
         if (
-            !($user instanceof SuluUserInterface)
+            !($user instanceof SuluUser)
             || !($contact instanceof Contact)
             || !\in_array('ROLE_SULU_CUSTOMER', $user->getRoles(), true)
         ) {
@@ -47,7 +47,7 @@ final readonly class AppLoginSuccessHandler implements AuthenticationSuccessHand
         return new JsonResponse(['message' => 'Invalid credentials.'], Response::HTTP_UNAUTHORIZED);
     }
 
-    private function resolveEmail(SuluUserInterface $user, Contact $contact): string
+    private function resolveEmail(SuluUser $user, Contact $contact): string
     {
         $email = $contact->getMainEmail();
 
@@ -55,7 +55,7 @@ final readonly class AppLoginSuccessHandler implements AuthenticationSuccessHand
             return $email;
         }
 
-        return $user->getEmail();
+        return $user->getEmail() ?? '';
     }
 
     private function resolveFullName(Contact $contact): string

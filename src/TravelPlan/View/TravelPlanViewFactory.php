@@ -245,7 +245,7 @@ final readonly class TravelPlanViewFactory
     }
 
     /**
-     * @return list<array{type?: string, title?: string, icon?: string, _iconMarkup?: string|null}>
+     * @return list<array{type?: string, title?: string, location?: string, text?: string, icon?: string, _iconMarkup?: string|null}>
      */
     private function routeStops(Section $section): array
     {

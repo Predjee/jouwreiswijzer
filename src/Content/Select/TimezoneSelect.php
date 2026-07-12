@@ -9,7 +9,7 @@ class TimezoneSelect
     /**
      * Haalt alle IANA tijdzones op voor de Sulu select component.
      *
-     * * @return array<int, array{name: string, title: string}>
+     * @return array<int, array{name: string, title: string}>
      */
     public function getValues(): array
     {

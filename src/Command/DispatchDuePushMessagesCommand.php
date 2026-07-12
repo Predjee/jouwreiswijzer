@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Entity\ScheduledPushMessage;
 use App\PushMessage\SendPushMessage;
 use App\Repository\ScheduledPushMessageRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -55,7 +56,7 @@ final class DispatchDuePushMessagesCommand extends Command
                 $this->messageBus->dispatch(new SendPushMessage($id));
             } catch (\Throwable $exception) {
                 $scheduledMessage
-                    ->setStatus($scheduledMessage::STATUS_PENDING)
+                    ->setStatus(ScheduledPushMessage::STATUS_PENDING)
                     ->setLastError('Queue dispatch failed: '.$exception->getMessage());
                 $this->entityManager->flush();
 

@@ -63,6 +63,7 @@ final class FormConfigurationSubscriber implements EventSubscriberInterface
             return;
         }
 
+        /** @var array<string, mixed> $responseData JSON-objecten hebben stringkeys. */
         $formId = $this->resolveFormId($request, $responseData);
 
         if (null === $formId) {

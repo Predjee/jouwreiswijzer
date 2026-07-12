@@ -41,6 +41,7 @@ final readonly class FormSubmitListener
             return;
         }
 
+        /** @var array<string, mixed> $data Sulu-formulierdata heeft stringkeys. */
         $data = $dynamic->getData();
         $email = $this->findStringValue($form, $data, 'email');
 
@@ -100,6 +101,11 @@ final readonly class FormSubmitListener
         }
 
         $contact = $this->contactRepository->createNew();
+
+        if (!$contact instanceof Contact) {
+            throw new \LogicException('Contact repository gaf een onverwachte implementatie terug.');
+        }
+
         $contact
             ->setFirstName($this->findStringValue($form, $data, 'firstName') ?? '')
             ->setLastName($this->findStringValue($form, $data, 'lastName') ?? '')

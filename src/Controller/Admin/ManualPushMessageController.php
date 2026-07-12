@@ -94,7 +94,7 @@ final class ManualPushMessageController extends AbstractRestController implement
 
         $travelPlans = $qb->getQuery()->getResult();
 
-        if ((\is_int($selectedId) || (\is_string($selectedId) && 1 === \preg_match('/^\d+$/D', $selectedId)))) {
+        if (\is_string($selectedId) && 1 === \preg_match('/^\d+$/D', $selectedId)) {
             $selected = $this->travelPlanRepository->find((int) $selectedId);
 
             if ($selected instanceof TravelPlan && !\in_array($selected, $travelPlans, true)) {

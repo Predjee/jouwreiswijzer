@@ -46,7 +46,9 @@ final class TravelPlanFeedbackRepository extends ServiceEntityRepository
                 ->setParameter('blockPath', $blockPath);
         }
 
-        return $queryBuilder->getQuery()->getOneOrNullResult();
+        $result = $queryBuilder->getQuery()->getOneOrNullResult();
+
+        return $result instanceof TravelPlanFeedback ? $result : null;
     }
 
     /**

@@ -30,10 +30,6 @@ final class PasswordController extends AbstractController
     ): Response {
         [$user] = $this->getCustomer();
 
-        if (!$user instanceof User) {
-            throw $this->createAccessDeniedException('Ongeldig gebruikerstype.');
-        }
-
         $errors = [];
 
         if ($request->isMethod('POST')) {

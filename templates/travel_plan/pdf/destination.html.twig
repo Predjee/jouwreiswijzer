@@ -1,9 +1,9 @@
 {# Bestemmingskaart in de PDF.
-   Visueel volgt deze de mijn-omgeving: een volwaardig blok met dynamische
-   paletkleuren. De gouden accentlijn hoort bij dagonderdelen/subblokken. #}
+   Een open blok met een stevige gouden zijlijn, zodat bestemming duidelijker
+   afwijkt van de overige kaderblokken. #}
 {% set variantClass = section.variant|default('default') != 'default' ? ' travel-plan-section--' ~ section.variant : '' %}
-{% set cardStyle = 'padding: 0; margin: 2mm 0 12mm; border: 0.2mm solid ' ~ section.edge ~ '; border-radius: ' ~ t.sectionRadius ~ '; background-color: ' ~ section.background ~ '; color: ' ~ section.bodyColor ~ '; overflow: hidden;' %}
-{% set contentStyle = 'padding: 6.5mm 7mm 6mm 8mm; vertical-align: top; background-color: ' ~ section.background ~ ';' %}
+{% set cardStyle = 'padding: 0; margin: 2mm 0 12mm; border: 0; border-left: 1.35mm solid ' ~ section.accent ~ '; border-radius: 0; background-color: ' ~ section.background ~ '; color: ' ~ section.bodyColor ~ '; overflow: hidden;' %}
+{% set contentStyle = 'padding: 7.8mm 7mm 7.2mm 8.5mm; vertical-align: top; background-color: ' ~ section.background ~ ';' %}
 
 <div class="travel-plan-section travel-plan-section--destination{{ variantClass }}" style="{{ cardStyle }}">
     {% if section.keep %}
@@ -14,7 +14,7 @@
             </tr>
         </table>
     {% else %}
-        <div style="padding: 6.5mm 7mm 6mm 8mm;">{{ _self.inner(section) }}</div>
+        <div style="padding: 7.8mm 7mm 7.2mm 8.5mm;">{{ _self.inner(section) }}</div>
     {% endif %}
 </div>
 
@@ -27,10 +27,10 @@
         '#071828': section.bodyColor
     }) %}
     {% if section.title %}
-        <h2 style="margin: 0 0 2.4mm; padding: 0 0 1.8mm; border: 0; border-bottom: 0.25mm solid {{ section.accent }}; color: {{ section.titleColor }}; font-size: 22pt; line-height: 1.08;">{{ section.title }}</h2>
+        <h2 style="margin: 0 0 4.2mm; padding: 0; border: 0; color: {{ section.titleColor }}; font-size: 22pt; line-height: 1.08;">{{ section.title }}</h2>
     {% endif %}
     {% if section.location %}
-        <p class="travel-plan-section__location" style="color: {{ section.metaColor }}; margin: 0 0 4.5mm; font-size: 8pt; letter-spacing: 1.4px;">{{ section.location }}</p>
+        <p class="travel-plan-section__location" style="color: {{ section.metaColor }}; margin: 0 0 5.2mm; font-size: 8pt; letter-spacing: 1.4px;">{{ section.location }}</p>
     {% endif %}
     {% if textHtml %}
         <div class="travel-plan-section__content" style="color: {{ section.bodyColor }}; line-height: 1.72;">{{ textHtml|raw }}</div>
@@ -39,7 +39,7 @@
 
 {% macro iconCell(section) %}
     {% if section.iconSrc %}
-        <td style="width: 9mm; padding: 6.5mm 6mm 0 0; vertical-align: top; background-color: {{ section.background }};">
+        <td style="width: 9mm; padding: 7.8mm 6mm 0 0; vertical-align: top; background-color: {{ section.background }};">
             <img class="travel-plan-icon" src="{{ section.iconSrc }}" style="float: none; display: block; width: 6.5mm; height: 6.5mm; margin: 0;" alt="">
         </td>
     {% endif %}

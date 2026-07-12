@@ -926,15 +926,15 @@
 }
 
 .account-travel-plan-content .travel-plan-section--destination:not(.travel-plan-variant--primary):not(.travel-plan-variant--secondary):not(.travel-plan-variant--gold) {
-    border-color: rgb(185 149 80 / 22%);
-    border-left-color: #b99550;
+    border: 0;
+    border-left: 0.42rem solid #b99550;
+    border-radius: 0;
     background: #fff;
     color: #12213d;
 }
 
 .account-travel-plan-content .travel-plan-section--destination:not(.travel-plan-variant--primary):not(.travel-plan-variant--secondary):not(.travel-plan-variant--gold) h2 {
     color: #12213d;
-    border-color: rgb(185 149 80 / 55%);
 }
 
 .account-travel-plan-content .travel-plan-section--destination:not(.travel-plan-variant--primary):not(.travel-plan-variant--secondary):not(.travel-plan-variant--gold) .travel-plan-section__location,
@@ -945,6 +945,20 @@
 .account-travel-plan-content .travel-plan-section--destination:not(.travel-plan-variant--primary):not(.travel-plan-variant--secondary):not(.travel-plan-variant--gold) .travel-plan-section__content,
 .account-travel-plan-content .travel-plan-section--destination:not(.travel-plan-variant--primary):not(.travel-plan-variant--secondary):not(.travel-plan-variant--gold) .travel-plan-section__content :is(p, li, span, strong, em) {
     color: #333f52;
+}
+
+.account-travel-plan-content .travel-plan-section--destination {
+    padding: clamp(1.2rem, 3.2vw, 1.7rem) clamp(1rem, 3vw, 1.45rem) clamp(1.25rem, 3vw, 1.65rem);
+}
+
+.account-travel-plan-content .travel-plan-section--destination h2 {
+    margin-bottom: 0.85rem;
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.account-travel-plan-content .travel-plan-section--destination .travel-plan-section__location {
+    margin: 0 0 1.2rem;
 }
 
 .account-travel-plan-content .travel-plan-section--day {
@@ -1729,6 +1743,12 @@
     border-color: var(--tp-card-edge);
     border-left-color: var(--tp-card-accent);
     color: var(--tp-card-body);
+}
+
+.account-travel-plan-content .travel-plan-section--destination:is(.travel-plan-variant--default, .travel-plan-variant--primary, .travel-plan-variant--secondary, .travel-plan-variant--gold) {
+    border: 0;
+    border-left: 0.42rem solid var(--tp-card-accent);
+    border-radius: 0;
 }
 
 .account-travel-plan-content :is(.travel-plan-block, .travel-plan-section):is(.travel-plan-variant--default, .travel-plan-variant--primary, .travel-plan-variant--secondary, .travel-plan-variant--gold) :is(h2, h3) {

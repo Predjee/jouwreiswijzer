@@ -6,7 +6,7 @@ namespace App\Tests\TravelPlan\Renderer;
 
 use App\Entity\TravelPlan;
 use App\Entity\TravelRequest;
-use App\Service\IconResolver;
+use App\TravelPlan\IconResolver;
 use App\TravelPlan\Pdf\TravelPlanPdfRichTextNormalizer;
 use App\TravelPlan\Renderer\TravelPlanContentHelper;
 use App\TravelPlan\Renderer\TravelPlanPdfRenderer;

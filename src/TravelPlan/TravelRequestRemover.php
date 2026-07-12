@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\TravelPlan;
 
 use App\Entity\TravelMemoryAlbum;
 use App\Entity\TravelPlan;

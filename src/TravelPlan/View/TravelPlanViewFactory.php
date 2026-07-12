@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\TravelPlan\View;
 
-use App\Service\IconResolver;
+use App\TravelPlan\IconResolver;
 use App\TravelPlan\BlockPath;
 use App\TravelPlan\Content\BlockType;
 use App\TravelPlan\Content\ColorVariant;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
-use App\Service\TravelPlanContentFactory;
+use App\TravelPlan\Content\TravelPlanContentFactory;
 use PHPUnit\Framework\TestCase;
 
 final class TravelPlanContentFactoryTest extends TestCase

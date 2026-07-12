@@ -7,7 +7,7 @@ namespace App\Tests\Service;
 use App\Entity\TravelMemoryAlbum;
 use App\Entity\TravelPlan;
 use App\Entity\TravelRequest;
-use App\Service\TravelRequestRemover;
+use App\TravelPlan\TravelRequestRemover;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\TestCase;

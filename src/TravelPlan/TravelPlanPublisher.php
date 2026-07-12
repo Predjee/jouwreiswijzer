@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\TravelPlan;
 
 use App\Entity\TravelPlan;
 use App\Event\TravelPlanPublishedEvent;

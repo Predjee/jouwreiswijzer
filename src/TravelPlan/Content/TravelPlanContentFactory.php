@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\TravelPlan\Content;
 
 use App\TravelPlan\Content\ContentBlueprints;
 use App\TravelPlan\Content\FormContentMapper;

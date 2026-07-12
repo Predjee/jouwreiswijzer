@@ -18,7 +18,7 @@ final readonly class TravelMemoryAlbumRenderer
      */
     public function render(string $albumTitle, ?string $albumIntro, array $photos): string
     {
-        return $this->twig->render('travel_plan/render/memory_album.html.twig', [
+        return $this->twig->render('travel_plan/web/memory_album.html.twig', [
             'albumTitle' => $albumTitle,
             'albumIntro' => $albumIntro,
             'photos' => $this->normalizePhotos($photos),

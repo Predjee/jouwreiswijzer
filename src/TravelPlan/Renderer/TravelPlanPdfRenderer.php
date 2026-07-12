@@ -24,15 +24,6 @@ use Twig\Environment;
  */
 final readonly class TravelPlanPdfRenderer
 {
-    /** Sectietypes die (nog) via de gedeelde templates renderen. */
-    private const SHARED_TEMPLATE_SECTIONS = [
-        SectionType::RouteOverview->value => 'travel_plan/render/sections/route_overview.html.twig',
-        SectionType::Checklist->value => 'travel_plan/render/sections/checklist.html.twig',
-        SectionType::BudgetNote->value => 'travel_plan/render/sections/budget_note.html.twig',
-        SectionType::PersonalNote->value => 'travel_plan/render/sections/personal_note.html.twig',
-        SectionType::Image->value => 'travel_plan/render/sections/image.html.twig',
-    ];
-
     public function __construct(
         private Environment $twig,
         private TravelPlanContentHelper $helper,
@@ -49,10 +40,10 @@ final readonly class TravelPlanPdfRenderer
         $tableOfContents = [];
 
         foreach ($this->viewFactory->destinations($content) as $destination) {
-            $sections[] = $this->destinationViewModel($destination, $tocDepth, $tableOfContents, $theme, $travelPlan);
+            $sections[] = $this->destinationViewModel($destination, $tocDepth, $tableOfContents, $theme);
 
             foreach ($destination->sections as $section) {
-                $renderedSection = $this->sectionViewModel($section, $tocDepth, $tableOfContents, $theme, $travelPlan);
+                $renderedSection = $this->sectionViewModel($section, $tocDepth, $tableOfContents, $theme);
 
                 if (null !== $renderedSection) {
                     $sections[] = $renderedSection;
@@ -84,11 +75,10 @@ final readonly class TravelPlanPdfRenderer
         int $tocDepth,
         array &$tableOfContents,
         ThemeView $theme,
-        TravelPlan $travelPlan,
     ): RenderedSection {
         $tocTitle = $this->registerTocEntry($tableOfContents, $destination->title, 0, $tocDepth);
         $html = SectionType::Image->value === $destination->type
-            ? $this->renderSharedDestination($destination, $travelPlan)
+            ? $this->renderPdfImage($destination)
             : $this->twig->render('travel_plan/pdf/destination.html.twig', [
                 'section' => $destination,
                 'theme' => $theme,
@@ -114,13 +104,12 @@ final readonly class TravelPlanPdfRenderer
         int $tocDepth,
         array &$tableOfContents,
         ThemeView $theme,
-        TravelPlan $travelPlan,
     ): ?RenderedSection {
         $tocTitle = $this->registerTocEntry($tableOfContents, $section->title, 1, $tocDepth);
         $html = match ($section->type) {
             SectionType::Day->value => $this->renderDayGroup($section, $theme),
             SectionType::FreeText->value, SectionType::PracticalInfo->value => $this->renderFrame($section, $theme),
-            default => $this->renderSharedSection($section, $travelPlan),
+            default => $this->renderPdfSection($section, $theme),
         };
 
         if (null === $html) {
@@ -173,30 +162,89 @@ final readonly class TravelPlanPdfRenderer
         ]);
     }
 
-    private function renderSharedSection(SectionView $section, TravelPlan $travelPlan): ?string
+    private function renderPdfSection(SectionView $section, ThemeView $theme): ?string
     {
-        $template = self::SHARED_TEMPLATE_SECTIONS[$section->type] ?? null;
-
-        if (null === $template) {
-            return null;
+        if (SectionType::RouteOverview->value === $section->type) {
+            return $this->renderPdfRouteOverview($section);
         }
 
-        return $this->twig->render($template, [
-            'section' => $section,
-            'accountView' => false,
-            'travelPlan' => $travelPlan,
-            'feedbackEnabled' => false,
-        ]);
+        if (\in_array($section->type, [
+            SectionType::Checklist->value,
+            SectionType::BudgetNote->value,
+            SectionType::PersonalNote->value,
+        ], true)) {
+            return $this->renderFrame($section, $theme);
+        }
+
+        return null;
     }
 
-    private function renderSharedDestination(DestinationView $destination, TravelPlan $travelPlan): string
+    private function renderPdfRouteOverview(SectionView $section): string
     {
-        return $this->twig->render(self::SHARED_TEMPLATE_SECTIONS[$destination->type], [
-            'section' => $destination,
-            'accountView' => false,
-            'travelPlan' => $travelPlan,
-            'feedbackEnabled' => false,
-        ]);
+        $html = '<div class="travel-plan-section travel-plan-section--route">';
+
+        if ('' !== $section->title) {
+            $html .= '<h2>' . $this->escape($section->title) . '</h2>';
+        }
+
+        if ('' !== $section->text) {
+            $html .= '<div class="travel-plan-section__content">' . $section->text . '</div>';
+        }
+
+        if ([] !== $section->routeStops) {
+            $html .= '<table class="travel-plan-route">';
+
+            foreach ($section->routeStops as $index => $stop) {
+                $html .= '<tr><td class="travel-plan-route__marker">';
+                $html .= '' !== ($stop['_iconMarkup'] ?? '') ? $stop['_iconMarkup'] : (string) ($index + 1);
+                $html .= '</td><td class="travel-plan-route__content">';
+
+                if ('' !== ($stop['title'] ?? '')) {
+                    $html .= '<h3>' . $this->escape($stop['title']) . '</h3>';
+                }
+
+                if ('' !== ($stop['location'] ?? '')) {
+                    $html .= '<p class="travel-plan-route__location">' . $this->escape($stop['location']) . '</p>';
+                }
+
+                if ('' !== ($stop['text'] ?? '')) {
+                    $html .= '<div class="travel-plan-section__content">' . $stop['text'] . '</div>';
+                }
+
+                $html .= '</td></tr>';
+            }
+
+            $html .= '</table>';
+        }
+
+        return $html . '</div>';
+    }
+
+    private function renderPdfImage(DestinationView $destination): string
+    {
+        $html = '<div class="travel-plan-section travel-plan-section--image">';
+
+        if ('' !== $destination->title) {
+            $html .= '<h2>' . $this->escape($destination->title) . '</h2>';
+        }
+
+        if (null !== $destination->imageSrc) {
+            $html .= '<figure class="travel-plan-image-block">';
+            $html .= '<img src="' . $this->escape($destination->imageSrc) . '" alt="' . $this->escape('' !== $destination->title ? $destination->title : 'Reisbeeld') . '">';
+
+            if ('' !== $destination->caption) {
+                $html .= '<figcaption>' . $this->escape($destination->caption) . '</figcaption>';
+            }
+
+            $html .= '</figure>';
+        }
+
+        return $html . '</div>';
+    }
+
+    private function escape(string $value): string
+    {
+        return \htmlspecialchars($value, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8');
     }
 
 }

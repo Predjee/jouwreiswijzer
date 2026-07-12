@@ -23,25 +23,25 @@ use Twig\Environment;
 final readonly class TravelPlanRenderer
 {
     private const SECTION_TEMPLATES = [
-        'destination' => 'travel_plan/render/sections/destination.html.twig',
-        'route_overview' => 'travel_plan/render/sections/route_overview.html.twig',
-        'day' => 'travel_plan/render/sections/day.html.twig',
-        'practical_info' => 'travel_plan/render/sections/practical_info.html.twig',
-        'checklist' => 'travel_plan/render/sections/checklist.html.twig',
-        'budget_note' => 'travel_plan/render/sections/budget_note.html.twig',
-        'personal_note' => 'travel_plan/render/sections/personal_note.html.twig',
-        'free_text' => 'travel_plan/render/sections/free_text.html.twig',
-        'image' => 'travel_plan/render/sections/image.html.twig',
+        'destination' => 'travel_plan/web/sections/destination.html.twig',
+        'route_overview' => 'travel_plan/web/sections/route_overview.html.twig',
+        'day' => 'travel_plan/web/sections/day.html.twig',
+        'practical_info' => 'travel_plan/web/sections/practical_info.html.twig',
+        'checklist' => 'travel_plan/web/sections/checklist.html.twig',
+        'budget_note' => 'travel_plan/web/sections/budget_note.html.twig',
+        'personal_note' => 'travel_plan/web/sections/personal_note.html.twig',
+        'free_text' => 'travel_plan/web/sections/free_text.html.twig',
+        'image' => 'travel_plan/web/sections/image.html.twig',
     ];
 
     private const DAY_BLOCK_TEMPLATES = [
-        'activity' => 'travel_plan/render/day_blocks/activity.html.twig',
-        'accommodation' => 'travel_plan/render/day_blocks/accommodation.html.twig',
-        'transport' => 'travel_plan/render/day_blocks/transport.html.twig',
-        'meal' => 'travel_plan/render/day_blocks/meal.html.twig',
-        'tip' => 'travel_plan/render/day_blocks/tip.html.twig',
-        'note' => 'travel_plan/render/day_blocks/note.html.twig',
-        'free_text' => 'travel_plan/render/day_blocks/free_text.html.twig',
+        'activity' => 'travel_plan/web/day_blocks/activity.html.twig',
+        'accommodation' => 'travel_plan/web/day_blocks/accommodation.html.twig',
+        'transport' => 'travel_plan/web/day_blocks/transport.html.twig',
+        'meal' => 'travel_plan/web/day_blocks/meal.html.twig',
+        'tip' => 'travel_plan/web/day_blocks/tip.html.twig',
+        'note' => 'travel_plan/web/day_blocks/note.html.twig',
+        'free_text' => 'travel_plan/web/day_blocks/free_text.html.twig',
     ];
 
     public function __construct(
@@ -89,7 +89,7 @@ final readonly class TravelPlanRenderer
             }
         }
 
-        return $this->twig->render('travel_plan/render/base.html.twig', [
+        return $this->twig->render('travel_plan/web/base.html.twig', [
             'travelPlan' => $travelPlan,
             'intro' => ['title' => $content->introTitle, 'text' => $content->introText],
             'tripProfile' => $content->tripProfile->raw,

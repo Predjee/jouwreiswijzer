@@ -1,13 +1,9 @@
-{% if accountView %}
 <section class="travel-plan-section travel-plan-section--content-blocks">
-{% else %}
-<div class="travel-plan-section travel-plan-section--content-blocks">
-{% endif %}
     {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
     {% if section.intro|default %}<p>{{ section.intro|nl2br }}</p>{% endif %}
     {% for renderedBlock in renderedBlocks %}
         {{ renderedBlock.html|raw }}
-        {% if accountView and feedbackEnabled|default(false) %}
+        {% if feedbackEnabled|default(false) %}
             {{ include('account/_travel_plan_feedback_form.html.twig', {
                 travelPlan: travelPlan,
                 blockPath: renderedBlock.blockPath,
@@ -17,8 +13,4 @@
             }) }}
         {% endif %}
     {% endfor %}
-{% if accountView %}
 </section>
-{% else %}
-</div>
-{% endif %}

@@ -7,7 +7,7 @@ namespace App\Controller\Account;
 use App\Entity\TravelPlan;
 use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelPlanRepository;
-use App\Service\FeedbackIndex;
+use App\TravelPlan\Feedback\FeedbackIndex;
 use App\Service\TravelCompanion\CompanionContentHelper;
 use App\TravelPlan\Pdf\TravelPlanPdfGenerator;
 use App\TravelPlan\Pdf\TravelPlanPdfStorage;

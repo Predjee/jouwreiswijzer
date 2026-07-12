@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\TravelPlan\Feedback;
 
 use App\Dto\SubmitFeedbackRoundRequest;
 use App\Event\FeedbackRoundSubmittedEvent;

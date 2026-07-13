@@ -24,6 +24,7 @@ final readonly class BlockView
         public string $timeRangeLabel,
         public string $timeLabel,
         public string $location,
+        public string $priceLabel,
         public string $text,
         public string $textHtml,
         public string $bookingUrl,

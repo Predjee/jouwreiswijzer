@@ -497,6 +497,12 @@
                                                                 <title>Tot optioneel</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="priceLabel" type="text_line" colspan="6">
+                                                            <meta>
+                                                                <title>Prijsindicatie</title>
+                                                                <info_text>Bijv. "va. €115 p.n." — wordt als prijskaartje naast de titel getoond.</info_text>
+                                                            </meta>
+                                                        </property>
                                                         <property name="bookingUrl" type="url">
                                                             <meta>
                                                                 <title>Boekingslink</title>
@@ -582,6 +588,12 @@
                                                         <property name="endTime" type="time" colspan="4">
                                                             <meta>
                                                                 <title>Tot optioneel</title>
+                                                            </meta>
+                                                        </property>
+                                                        <property name="priceLabel" type="text_line" colspan="6">
+                                                            <meta>
+                                                                <title>Prijsindicatie</title>
+                                                                <info_text>Bijv. "va. €115 p.n." — wordt als prijskaartje naast de titel getoond.</info_text>
                                                             </meta>
                                                         </property>
                                                         <property name="bookingUrl" type="url">
@@ -671,6 +683,12 @@
                                                                 <title>Tot optioneel</title>
                                                             </meta>
                                                         </property>
+                                                        <property name="priceLabel" type="text_line" colspan="6">
+                                                            <meta>
+                                                                <title>Prijsindicatie</title>
+                                                                <info_text>Bijv. "va. €115 p.n." — wordt als prijskaartje naast de titel getoond.</info_text>
+                                                            </meta>
+                                                        </property>
                                                         <property name="bookingUrl" type="url">
                                                             <meta>
                                                                 <title>Boekingslink</title>
@@ -756,6 +774,12 @@
                                                         <property name="endTime" type="time" colspan="4">
                                                             <meta>
                                                                 <title>Tot optioneel</title>
+                                                            </meta>
+                                                        </property>
+                                                        <property name="priceLabel" type="text_line" colspan="6">
+                                                            <meta>
+                                                                <title>Prijsindicatie</title>
+                                                                <info_text>Bijv. "va. €115 p.n." — wordt als prijskaartje naast de titel getoond.</info_text>
                                                             </meta>
                                                         </property>
                                                         <property name="bookingUrl" type="url">

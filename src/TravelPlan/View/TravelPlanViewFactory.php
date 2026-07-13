@@ -175,6 +175,7 @@ final readonly class TravelPlanViewFactory
             timeRangeLabel: \is_string($timed['timeRangeLabel'] ?? null) ? $timed['timeRangeLabel'] : '',
             timeLabel: $block->timeLabel,
             location: $block->location,
+            priceLabel: $block->priceLabel,
             text: $block->text,
             textHtml: $textHtml,
             bookingUrl: $block->bookingUrl,

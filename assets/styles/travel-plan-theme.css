@@ -458,3 +458,16 @@
         linear-gradient(180deg, color-mix(in srgb, var(--tpv-default-bg) 42%, transparent), color-mix(in srgb, var(--tpv-default-bg) 0%, transparent) 5rem),
         var(--tp-card-zone, var(--tp-card-zone));
 }
+
+/* Prijsindicatie rechts van de bloktitel (menukaart-patroon);
+   metakleur van het variant zodat hij ook op donkere kaarten leest. */
+.travel-plan-block__price {
+    float: right;
+    margin-left: 0.75rem;
+    color: var(--tp-variant-meta, #8a6a31);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    line-height: inherit;
+    white-space: nowrap;
+}

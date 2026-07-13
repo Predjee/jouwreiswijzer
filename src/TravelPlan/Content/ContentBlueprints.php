@@ -144,6 +144,7 @@ final readonly class ContentBlueprints
                 'text' => '',
                 'icon' => $this->defaultIcon($type),
                 'location' => '',
+                'priceLabel' => '',
                 'timeLabel' => '',
                 'time' => '',
                 'startTime' => '',

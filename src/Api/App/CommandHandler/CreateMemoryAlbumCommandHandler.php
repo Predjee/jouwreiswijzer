@@ -75,7 +75,7 @@ final class CreateMemoryAlbumCommandHandler
 
     /**
      * @param list<CreateMemoryAlbumPhotoRequest> $photos
-     * @param list<string>                        $temporaryFiles
+     * @param list<string> $temporaryFiles
      *
      * @return list<array{path: string, caption?: string|null, capturedAt?: string|null}>
      */

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Companion\TravelPlanChecklistStateProvider;
 use App\Entity\TravelPlan;
 use App\Entity\TravelPlanChecklistState;
-use App\Companion\TravelPlanChecklistStateProvider;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Sulu\Bundle\ContactBundle\Entity\Contact;

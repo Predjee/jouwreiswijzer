@@ -7,7 +7,6 @@ namespace App\PushMessage;
 use App\Entity\PushRule;
 use App\Entity\ScheduledPushMessage;
 use App\Entity\TravelPlan;
-use App\PushMessage\PushMessageTemplateRenderer;
 use App\Repository\TravelPlanRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;

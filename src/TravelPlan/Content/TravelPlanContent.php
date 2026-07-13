@@ -15,6 +15,8 @@ namespace App\TravelPlan\Content;
  */
 final readonly class TravelPlanContent
 {
+    public const VERSION = 1;
+
     /**
      * @param list<Destination> $destinations
      * @param array<string, mixed> $raw
@@ -33,6 +35,7 @@ final readonly class TravelPlanContent
      */
     public static function fromArray(array $content): self
     {
+        $content = ContentMigrations::apply($content);
         $intro = self::stringKeyedArray($content['intro'] ?? null);
         $destinations = [];
 

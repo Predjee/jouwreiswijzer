@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Service\TravelCompanion;
 
-use App\Entity\TravelPlan;
 use App\Companion\ReminderPlanBuilder;
+use App\Entity\TravelPlan;
 use PHPUnit\Framework\TestCase;
 
 final class ReminderPlanBuilderTest extends TestCase

@@ -6,8 +6,8 @@ namespace App\Api\App\CommandHandler;
 
 use App\Api\App\Command\MarkNotificationReadCommand;
 use App\Entity\Notification;
-use App\Repository\NotificationRepository;
 use App\Notification\NotificationService;
+use App\Repository\NotificationRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final readonly class MarkNotificationReadCommandHandler

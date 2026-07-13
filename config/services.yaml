@@ -25,6 +25,12 @@ services:
         tags:
             - { name: kernel.event_listener, event: sulu_form.handler.saved, method: onFormSaved }
 
+    App\EventListener\RequestFormRateLimitListener:
+        arguments:
+            $requestFormLimiter: '@limiter.request_form'
+        tags:
+            - { name: kernel.event_listener, event: sulu_form.handler.save, method: onFormSave }
+
     App\Sulu\RequestFormMetadataLoader:
         arguments:
             $inner: '@sulu_form.metadata.dynamic_form_metadata_loader'
@@ -35,6 +41,8 @@ services:
     App\Controller\:
         resource: '../src/Controller/'
         tags: [ 'controller.service_arguments' ]
+
+    App\TravelPlan\Feedback\FeedbackGateway: '@App\Repository\TravelPlanFeedbackRepository'
 
     App\Content\Select\TimezoneSelect:
         public: true

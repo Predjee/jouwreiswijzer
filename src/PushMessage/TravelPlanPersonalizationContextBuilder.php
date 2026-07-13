@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\PushMessage;
 
-use App\Entity\TravelPlan;
 use App\Companion\CompanionContentHelper;
+use App\Entity\TravelPlan;
 use App\TravelPlan\Content\BlockType;
 use App\TravelPlan\Content\DayBlock;
 use App\TravelPlan\Content\SectionType;
@@ -139,7 +139,7 @@ final readonly class TravelPlanPersonalizationContextBuilder
 
             foreach ($days as $day) {
                 if ($number === $day['number']) {
-                return \array_replace($day, $currentDay);
+                    return \array_replace($day, $currentDay);
                 }
             }
 

@@ -6,8 +6,8 @@ namespace App\Controller\Admin;
 
 use App\Admin\PushRuleAdmin;
 use App\Entity\PushRule;
-use App\Repository\PushRuleRepository;
 use App\PushMessage\PushRuleManager;
+use App\Repository\PushRuleRepository;
 use FOS\RestBundle\View\ViewHandlerInterface;
 use Sulu\Component\Rest\AbstractRestController;
 use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilderFactoryInterface;

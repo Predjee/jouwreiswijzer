@@ -6,9 +6,9 @@ namespace App\Api\App\QueryHandler;
 
 use App\Api\App\Query\GetTodayQuery;
 use App\Api\App\ReadModel\TodayReadModel;
-use App\Repository\TravelPlanRepository;
 use App\Companion\CompanionContentHelper;
 use App\Companion\TravelCompanionBuilder;
+use App\Repository\TravelPlanRepository;
 use App\ViewModel\TravelCompanion\CompanionBlock;
 use App\ViewModel\TravelCompanion\CompanionDay;
 

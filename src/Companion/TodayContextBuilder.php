@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Companion;
 
 use App\Entity\TravelPlan;
-use App\TravelPlan\Content\ContentValues;
 use App\Repository\TravelPlanRepository;
+use App\TravelPlan\Content\ContentValues;
 use App\ViewModel\TravelCompanion\TodayContext;
 use App\ViewModel\TravelCompanion\TodayTravelPlan;
 use Sulu\Bundle\ContactBundle\Entity\Contact;

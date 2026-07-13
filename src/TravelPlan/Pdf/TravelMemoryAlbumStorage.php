@@ -43,14 +43,14 @@ final readonly class TravelMemoryAlbumStorage
     ): TravelMemoryAlbum {
         $content = $this->albumGenerator->generate($albumTitle, $albumIntro, $photos);
         $filename = $this->createFilename($travelPlan);
-        $temporaryFile = tempnam(sys_get_temp_dir(), 'travel-memory-album-');
+        $temporaryFile = \tempnam(\sys_get_temp_dir(), 'travel-memory-album-');
 
         if (false === $temporaryFile) {
             throw new \RuntimeException('Unable to create a temporary TravelMemoryAlbum PDF.');
         }
 
-        if (false === file_put_contents($temporaryFile, $content)) {
-            unlink($temporaryFile);
+        if (false === \file_put_contents($temporaryFile, $content)) {
+            \unlink($temporaryFile);
 
             throw new \RuntimeException('Unable to write the temporary TravelMemoryAlbum PDF.');
         }
@@ -83,8 +83,8 @@ final readonly class TravelMemoryAlbumStorage
             $this->entityManager->persist($album);
             $this->entityManager->flush();
         } finally {
-            if (is_file($temporaryFile)) {
-                unlink($temporaryFile);
+            if (\is_file($temporaryFile)) {
+                \unlink($temporaryFile);
             }
         }
 
@@ -101,7 +101,7 @@ final readonly class TravelMemoryAlbumStorage
         $data = [
             'collection' => $this->systemCollectionManager->getSystemCollection(self::COLLECTION_KEY),
             'locale' => $locale,
-            'title' => pathinfo($filename, \PATHINFO_FILENAME),
+            'title' => \pathinfo($filename, \PATHINFO_FILENAME),
         ];
 
         if (null !== $album->getMediaId()) {
@@ -127,9 +127,9 @@ final readonly class TravelMemoryAlbumStorage
 
     public function createFilename(TravelPlan $travelPlan): string
     {
-        $titleSlug = strtolower((string) $this->slugger->slug($travelPlan->getTitle()));
+        $titleSlug = \strtolower((string) $this->slugger->slug($travelPlan->getTitle()));
 
-        return sprintf(
+        return \sprintf(
             'album-%s-%d.pdf',
             '' !== $titleSlug ? $titleSlug : 'reisplan',
             $travelPlan->getId(),

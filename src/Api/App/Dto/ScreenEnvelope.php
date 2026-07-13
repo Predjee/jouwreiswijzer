@@ -7,7 +7,7 @@ namespace App\Api\App\Dto;
 final readonly class ScreenEnvelope
 {
     /**
-     * @param list<ApiSection>     $sections
+     * @param list<ApiSection> $sections
      * @param array<string, mixed> $extra
      */
     public function __construct(

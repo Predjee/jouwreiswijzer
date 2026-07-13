@@ -6,10 +6,10 @@ namespace App\Api\App\QueryHandler;
 
 use App\Api\App\Query\GetTripChecklistQuery;
 use App\Api\App\ReadModel\ChecklistReadModel;
+use App\Companion\CompanionContentHelper;
 use App\Entity\TravelPlan;
 use App\Repository\TravelPlanChecklistStateRepository;
 use App\Repository\TravelPlanRepository;
-use App\Companion\CompanionContentHelper;
 
 final readonly class GetTripChecklistQueryHandler
 {

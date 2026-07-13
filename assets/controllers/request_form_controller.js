@@ -58,6 +58,10 @@ export default class extends Controller {
                 return;
             }
 
+            if (response.status === 429) {
+                throw new Error('Je hebt in korte tijd meerdere aanvragen verstuurd. Wacht even en probeer het later opnieuw.');
+            }
+
             throw new Error('Je aanvraag kon niet worden verstuurd. Probeer het opnieuw.');
         } catch (error) {
             this.showToast(error.message, 'error');

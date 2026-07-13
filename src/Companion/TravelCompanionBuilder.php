@@ -225,7 +225,7 @@ final readonly class TravelCompanionBuilder
 
     /**
      * @param array<string, mixed> $block
-     * @param array<string, bool>  $checkedItems
+     * @param array<string, bool> $checkedItems
      */
     private function block(array $block, string $path, array $checkedItems): CompanionBlock
     {
@@ -442,7 +442,7 @@ final readonly class TravelCompanionBuilder
 
     /**
      * @param list<CompanionBlock> $blocks
-     * @param list<CompanionDay>   $days
+     * @param list<CompanionDay> $days
      */
     private function hasChecklist(array $blocks, array $days): bool
     {
@@ -465,7 +465,7 @@ final readonly class TravelCompanionBuilder
 
     /**
      * @param list<CompanionBlock> $blocks
-     * @param list<CompanionDay>   $days
+     * @param list<CompanionDay> $days
      */
     private function hasNotes(array $blocks, array $days): bool
     {

@@ -7,6 +7,7 @@ namespace App\Tests\TravelPlan\Content;
 use App\TravelPlan\Content\BlockType;
 use App\TravelPlan\Content\ColorVariant;
 use App\TravelPlan\Content\SectionType;
+use App\TravelPlan\Content\StorageNormalizer;
 use App\TravelPlan\Content\TravelPlanContent;
 use PHPUnit\Framework\TestCase;
 
@@ -88,6 +89,29 @@ final class TravelPlanContentTest extends TestCase
             [],
             TravelPlanContent::fromArray(['destinations' => 'geen-array'])->destinations,
         );
+    }
+
+    public function testFromArrayAccepteertContentMetEnZonderVersieGelijk(): void
+    {
+        $content = [
+            'intro' => ['title' => 'Welkom!', 'text' => '<p>Fijne reis</p>'],
+            'tripProfile' => ['showTableOfContents' => 'two'],
+            'destinations' => [
+                [
+                    'type' => 'destination',
+                    'title' => 'Lima',
+                    'sections' => [
+                        ['type' => 'free_text', 'title' => 'Route', 'text' => '<p>Rustig aan</p>'],
+                    ],
+                ],
+            ],
+        ];
+
+        $withoutVersion = TravelPlanContent::fromArray($content);
+        $withVersion = TravelPlanContent::fromArray(['_version' => TravelPlanContent::VERSION] + $content);
+        $normalizer = new StorageNormalizer();
+
+        self::assertSame($normalizer->toStorageArray($withoutVersion), $normalizer->toStorageArray($withVersion));
     }
 
     public function testColorVariantParsingIsForgiving(): void

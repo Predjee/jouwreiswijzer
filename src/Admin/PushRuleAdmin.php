@@ -91,7 +91,7 @@ final class PushRuleAdmin extends Admin
             );
 
             $viewCollection->add(
-                $this->viewBuilderFactory->createFormViewBuilder(self::ADD_VIEW.'.details', '/details')
+                $this->viewBuilderFactory->createFormViewBuilder(self::ADD_VIEW . '.details', '/details')
                     ->setResourceKey(self::RESOURCE_KEY)
                     ->setFormKey(self::FORM_KEY)
                     ->setTabTitle('Details')
@@ -110,7 +110,7 @@ final class PushRuleAdmin extends Admin
                 ->setTitleProperty('name'),
         );
 
-        $formView = $this->viewBuilderFactory->createFormViewBuilder(self::EDIT_VIEW.'.details', '/details')
+        $formView = $this->viewBuilderFactory->createFormViewBuilder(self::EDIT_VIEW . '.details', '/details')
             ->setResourceKey(self::RESOURCE_KEY)
             ->setFormKey(self::FORM_KEY)
             ->setTabTitle('Details');
@@ -145,7 +145,7 @@ final class PushRuleAdmin extends Admin
             );
 
             $viewCollection->add(
-                $this->viewBuilderFactory->createFormViewBuilder(self::MANUAL_ADD_VIEW.'.details', '/details')
+                $this->viewBuilderFactory->createFormViewBuilder(self::MANUAL_ADD_VIEW . '.details', '/details')
                     ->setResourceKey(self::MANUAL_RESOURCE_KEY)
                     ->setFormKey(self::MANUAL_FORM_KEY)
                     ->setTabTitle('Bericht')
@@ -162,7 +162,7 @@ final class PushRuleAdmin extends Admin
                 ->setTitleProperty('travelPlanLabel'),
         );
 
-        $manualFormView = $this->viewBuilderFactory->createFormViewBuilder(self::MANUAL_EDIT_VIEW.'.details', '/details')
+        $manualFormView = $this->viewBuilderFactory->createFormViewBuilder(self::MANUAL_EDIT_VIEW . '.details', '/details')
             ->setResourceKey(self::MANUAL_RESOURCE_KEY)
             ->setFormKey(self::MANUAL_FORM_KEY)
             ->setTabTitle('Bericht');

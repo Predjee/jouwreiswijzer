@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\TravelPlan\View;
 
-use App\TravelPlan\IconResolver;
 use App\TravelPlan\BlockPath;
 use App\TravelPlan\Content\BlockType;
 use App\TravelPlan\Content\ColorVariant;
@@ -13,6 +12,7 @@ use App\TravelPlan\Content\Destination;
 use App\TravelPlan\Content\Section;
 use App\TravelPlan\Content\SectionType;
 use App\TravelPlan\Content\TravelPlanContent;
+use App\TravelPlan\IconResolver;
 use App\TravelPlan\Pdf\TravelPlanPdfRichTextNormalizer;
 use App\TravelPlan\Renderer\TravelPlanContentHelper;
 use App\TravelPlan\TravelPlanStyle;

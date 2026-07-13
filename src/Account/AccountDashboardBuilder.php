@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Account;
 
 use App\Entity\TravelPlan;
-use App\TravelPlan\Content\ContentValues;
 use App\Entity\TravelPlanFeedback;
 use App\Repository\TravelPlanFeedbackRepository;
+use App\TravelPlan\Content\ContentValues;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 
 final readonly class AccountDashboardBuilder
@@ -223,7 +223,7 @@ final readonly class AccountDashboardBuilder
     private function createDate(mixed $value): ?\DateTimeImmutable
     {
         if ($value instanceof \DateTimeInterface) {
-            return new \DateTimeImmutable($value->format('Y-m-d').' 00:00:00');
+            return new \DateTimeImmutable($value->format('Y-m-d') . ' 00:00:00');
         }
 
         if (!\is_scalar($value)) {

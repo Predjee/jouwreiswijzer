@@ -1,0 +1,31 @@
+framework:
+    rate_limiter:
+        # Reisaanvraagformulier (productie): ruim genoeg voor meerdere
+        # legitieme aanvragen achter elkaar (bijv. drie reizen voor een
+        # jaar), maar stopt eindeloos herhalen vanaf hetzelfde IP.
+        request_form:
+            policy: sliding_window
+            limit: 5
+            interval: '1 hour'
+
+# Acceptance (APP_ENV=stage): ruim, zodat testers — vaak vanaf één
+# kantoor-IP — niet tegen de limiet aanlopen. Het mechanisme zelf blijft
+# actief en is te testen door deze waarde tijdelijk te verlagen.
+when@stage:
+    framework:
+        rate_limiter:
+            request_form:
+                policy: sliding_window
+                limit: 100
+                interval: '1 hour'
+
+# Lokaal ontwikkelen en de testsuite: feitelijk onbeperkt.
+when@dev: &rate_limiter_unrestricted
+    framework:
+        rate_limiter:
+            request_form:
+                policy: sliding_window
+                limit: 1000
+                interval: '1 hour'
+
+when@test: *rate_limiter_unrestricted

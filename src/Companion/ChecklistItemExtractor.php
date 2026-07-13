@@ -42,7 +42,7 @@ final readonly class ChecklistItemExtractor
         $items = [];
 
         foreach (\array_values(\array_unique(\array_filter($labels))) as $index => $label) {
-            $key = \substr(\sha1($path.'|'.$index.'|'.$label), 0, 40);
+            $key = \substr(\sha1($path . '|' . $index . '|' . $label), 0, 40);
             $items[] = [
                 'key' => $key,
                 'label' => $label,

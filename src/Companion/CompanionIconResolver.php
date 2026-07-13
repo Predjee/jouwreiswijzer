@@ -42,12 +42,12 @@ final class CompanionIconResolver
             return $this->cache[$icon] = '';
         }
 
-        $path = $this->projectDir.'/assets/images/icons/'.$icon.'.svg';
+        $path = $this->projectDir . '/assets/images/icons/' . $icon . '.svg';
 
         if (!\is_file($path) || false === $contents = \file_get_contents($path)) {
             return $this->cache[$icon] = '';
         }
 
-        return $this->cache[$icon] = 'data:image/svg+xml;base64,'.\base64_encode($contents);
+        return $this->cache[$icon] = 'data:image/svg+xml;base64,' . \base64_encode($contents);
     }
 }

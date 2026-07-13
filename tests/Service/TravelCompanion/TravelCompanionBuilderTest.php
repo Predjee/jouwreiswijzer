@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Service\TravelCompanion;
 
-use App\Entity\TravelPlan;
-use App\Companion\TravelPlanChecklistStateProvider;
 use App\Companion\ChecklistItemExtractor;
 use App\Companion\CompanionIconResolver;
 use App\Companion\TravelCompanionBuilder;
+use App\Companion\TravelPlanChecklistStateProvider;
+use App\Entity\TravelPlan;
 use PHPUnit\Framework\TestCase;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 

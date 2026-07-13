@@ -57,7 +57,7 @@ final class DispatchDuePushMessagesCommand extends Command
             } catch (\Throwable $exception) {
                 $scheduledMessage
                     ->setStatus(ScheduledPushMessage::STATUS_PENDING)
-                    ->setLastError('Queue dispatch failed: '.$exception->getMessage());
+                    ->setLastError('Queue dispatch failed: ' . $exception->getMessage());
                 $this->entityManager->flush();
 
                 throw $exception;

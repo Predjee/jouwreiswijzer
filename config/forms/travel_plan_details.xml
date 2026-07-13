@@ -44,6 +44,23 @@
             </meta>
         </property>
 
+        <property name="maxFeedbackRounds" type="number" colspan="6">
+            <meta>
+                <title>Max. feedbackrondes</title>
+                <info_text>Leeg = standaard (2). Verhoog dit om de klant een extra ronde toe te kennen.</info_text>
+            </meta>
+            <params>
+                <param name="min" value="1"/>
+                <param name="step" value="1"/>
+            </params>
+        </property>
+
+        <property name="feedbackRoundsStatus" type="text_line" colspan="6" disabledCondition="true">
+            <meta>
+                <title>Feedbackrondes</title>
+            </meta>
+        </property>
+
         <property name="pdfReleaseStatus" type="text_line" colspan="12" disabledCondition="true">
             <meta>
                 <title>Vrijgavestatus</title>

@@ -10,11 +10,11 @@ use App\Entity\TravelPlanFeedback;
 use App\Entity\TravelRequest;
 use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelRequestRepository;
-use App\TravelPlan\TravelPlanPublisher;
 use App\TravelPlan\Content\TravelPlanContentFactory;
-use App\TravelPlan\TravelRequestRemover;
 use App\TravelPlan\Feedback\FeedbackContentAnnotator;
 use App\TravelPlan\Pdf\TravelPlanPdfStorage;
+use App\TravelPlan\TravelPlanPublisher;
+use App\TravelPlan\TravelRequestRemover;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;
 use Sulu\Component\Rest\AbstractRestController;
@@ -127,9 +127,15 @@ final class TravelRequestController extends AbstractRestController implements Se
             throw new BadRequestHttpException($exception->getMessage(), $exception);
         }
 
+        $maxFeedbackRounds = $data->get('maxFeedbackRounds');
+        $maxFeedbackRounds = \is_numeric($maxFeedbackRounds) && (int) $maxFeedbackRounds > 0
+            ? (int) $maxFeedbackRounds
+            : null;
+
         $travelPlan
             ->setTitle($title)
-            ->setContent($content);
+            ->setContent($content)
+            ->setMaxFeedbackRounds($maxFeedbackRounds);
 
         if (TravelPlan::STATUS_PUBLISHED === $status) {
             $this->travelPlanPublisher->publish($travelPlan);
@@ -223,6 +229,12 @@ final class TravelRequestController extends AbstractRestController implements Se
             'pdfGeneratedAt' => $travelPlan->getPdfGeneratedAt()?->format('d-m-Y H:i'),
             'pdfReleasedAt' => $travelPlan->getPdfReleasedAt()?->format('d-m-Y H:i'),
             'customerVisible' => $travelPlan->isVisibleForCustomer(),
+            'maxFeedbackRounds' => $travelPlan->getMaxFeedbackRounds(),
+            'feedbackRoundsStatus' => \sprintf(
+                '%d van %d gebruikt',
+                $travelPlan->getFeedbackRoundsUsed(),
+                $travelPlan->effectiveMaxFeedbackRounds(),
+            ),
         ], $this->contentFactory->toFormData($travelPlan->getContent()));
 
         $activeFeedback = $this->feedbackRepository->findActiveForTravelPlan($travelPlan);
@@ -256,7 +268,7 @@ final class TravelRequestController extends AbstractRestController implements Se
     private function pdfReleaseStatus(TravelPlan $travelPlan, array $blockingFeedback): string
     {
         if (null !== $travelPlan->getPdfReleasedAt()) {
-            return 'PDF vrijgegeven op '.$travelPlan->getPdfReleasedAt()->format('d-m-Y H:i');
+            return 'PDF vrijgegeven op ' . $travelPlan->getPdfReleasedAt()->format('d-m-Y H:i');
         }
 
         if (TravelPlan::STATUS_PUBLISHED !== $travelPlan->getStatus()) {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\PushMessage;
 
+use App\Companion\CompanionContentHelper;
 use App\Entity\PushRule;
 use App\Entity\TravelPlan;
-use App\Companion\CompanionContentHelper;
 use App\TravelPlan\Content\BlockType;
 use App\TravelPlan\Content\DayBlock;
 use App\TravelPlan\Content\Section;
@@ -56,7 +56,7 @@ final readonly class PushRuleOccurrenceFactory
 
         $timezone = $this->timezone($rule, null, $this->tripTimezone($tripProfile));
         $scheduledFor = new \DateTimeImmutable(
-            $date->format('Y-m-d').' '.($rule->getLocalTime() ?? self::DEFAULT_LOCAL_TIME),
+            $date->format('Y-m-d') . ' ' . ($rule->getLocalTime() ?? self::DEFAULT_LOCAL_TIME),
             $timezone,
         );
 
@@ -98,7 +98,7 @@ final readonly class PushRuleOccurrenceFactory
             $section = $sectionsByDayNumber[$dayNumber] ?? null;
             $dayDate = $startDate->modify(\sprintf('+%d days', $dayNumber - 1));
             $timezone = $this->timezone($rule, $this->dayTimezone(null !== $section ? $section->destinationTimezone : ''), $tripTimezone);
-            $scheduledFor = new \DateTimeImmutable($dayDate->format('Y-m-d').' '.$localTime, $timezone);
+            $scheduledFor = new \DateTimeImmutable($dayDate->format('Y-m-d') . ' ' . $localTime, $timezone);
 
             $occurrences[] = $this->createOccurrence(
                 $rule,
@@ -143,7 +143,7 @@ final readonly class PushRuleOccurrenceFactory
                 }
 
                 $dayNumber = \max(1, (int) ($section->dayNumber ?: 1));
-            $dayDate = $startDate->modify(\sprintf('+%d days', $dayNumber - 1));
+                $dayDate = $startDate->modify(\sprintf('+%d days', $dayNumber - 1));
                 $timezone = $this->timezone($rule, $this->dayTimezone($section->destinationTimezone), $tripTimezone);
 
                 foreach ($section->blocks as $block) {
@@ -157,7 +157,7 @@ final readonly class PushRuleOccurrenceFactory
                         continue;
                     }
 
-                    $scheduledFor = new \DateTimeImmutable($dayDate->format('Y-m-d').' '.$time, $timezone);
+                    $scheduledFor = new \DateTimeImmutable($dayDate->format('Y-m-d') . ' ' . $time, $timezone);
 
                     $occurrences[] = $this->createOccurrence(
                         $rule,

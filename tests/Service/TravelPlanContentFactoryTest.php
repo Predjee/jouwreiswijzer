@@ -4,11 +4,31 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
+use App\TravelPlan\Content\TravelPlanContent;
 use App\TravelPlan\Content\TravelPlanContentFactory;
 use PHPUnit\Framework\TestCase;
 
 final class TravelPlanContentFactoryTest extends TestCase
 {
+    public function testToFormDataLaatStorageVersieWeg(): void
+    {
+        $formData = (new TravelPlanContentFactory())->toFormData([
+            '_version' => TravelPlanContent::VERSION,
+            'destinations' => [
+                [
+                    '_version' => 99,
+                    'type' => 'destination',
+                    'title' => 'Lima',
+                ],
+            ],
+        ]);
+
+        self::assertArrayNotHasKey('_version', $formData);
+        self::assertIsArray($formData['destinations']);
+        self::assertIsArray($formData['destinations'][0]);
+        self::assertArrayNotHasKey('_version', $formData['destinations'][0]);
+    }
+
     public function testToFormDataKeepsNormalizedStructureFromTypedContent(): void
     {
         $factory = new TravelPlanContentFactory();
@@ -152,6 +172,7 @@ final class TravelPlanContentFactoryTest extends TestCase
         $factory = new TravelPlanContentFactory();
 
         self::assertSame([
+            '_version' => TravelPlanContent::VERSION,
             'intro' => [
                 'type' => 'travel_plan_intro',
                 'title' => 'Welkom',

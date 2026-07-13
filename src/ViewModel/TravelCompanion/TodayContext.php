@@ -9,7 +9,6 @@ final readonly class TodayContext
     public function __construct(
         public ?TodayTravelPlan $travelPlan,
         public bool $hasTravelPlan,
-    )
-    {
+    ) {
     }
 }

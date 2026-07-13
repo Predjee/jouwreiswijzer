@@ -104,7 +104,7 @@ final class CompanionContentHelper
     public static function createDate(mixed $value): ?\DateTimeImmutable
     {
         if ($value instanceof \DateTimeInterface) {
-            return new \DateTimeImmutable($value->format('Y-m-d').' 00:00:00');
+            return new \DateTimeImmutable($value->format('Y-m-d') . ' 00:00:00');
         }
 
         if (!\is_scalar($value)) {

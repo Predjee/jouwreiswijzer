@@ -37,7 +37,7 @@ final readonly class TravelMemoryAlbumRenderer
         foreach ($photos as $photo) {
             $src = $photo['path'] ?? $photo['url'] ?? $photo['src'] ?? null;
 
-            if (!\is_string($src) || '' === trim($src)) {
+            if (!\is_string($src) || '' === \trim($src)) {
                 continue;
             }
 
@@ -45,8 +45,8 @@ final readonly class TravelMemoryAlbumRenderer
             $capturedAt = $photo['capturedAt'] ?? null;
 
             $normalizedPhotos[] = [
-                'src' => trim($src),
-                'caption' => \is_string($caption) && '' !== trim($caption) ? trim($caption) : null,
+                'src' => \trim($src),
+                'caption' => \is_string($caption) && '' !== \trim($caption) ? \trim($caption) : null,
                 'capturedAt' => $this->formatCapturedAt($capturedAt),
             ];
         }
@@ -64,7 +64,7 @@ final readonly class TravelMemoryAlbumRenderer
             return null;
         }
 
-        $capturedAt = trim($capturedAt);
+        $capturedAt = \trim($capturedAt);
 
         return '' !== $capturedAt ? $capturedAt : null;
     }

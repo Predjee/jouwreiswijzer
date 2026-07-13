@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Account;
 
-use App\Repository\NotificationRepository;
 use App\Notification\NotificationService;
+use App\Repository\NotificationRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

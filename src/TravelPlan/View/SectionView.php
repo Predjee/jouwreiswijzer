@@ -8,6 +8,7 @@ use App\TravelPlan\BlockPath;
 
 /**
  * @phpstan-import-type RouteStop from DestinationView
+ *
  * @phpstan-type DayRow array{solo: bool, block: BlockView, isFirstOfSegment: bool, isLastOfSegment: bool}
  */
 final readonly class SectionView

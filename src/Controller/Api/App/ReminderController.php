@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller\Api\App;
 
 use App\Api\App\Mapper\ReminderMapper;
-use App\Repository\TravelPlanRepository;
 use App\Companion\ReminderPlanBuilder;
+use App\Repository\TravelPlanRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

@@ -332,6 +332,6 @@ final readonly class FormContentMapper
 
     private function createDate(string $date): \DateTimeImmutable
     {
-        return new \DateTimeImmutable($date.' 00:00:00');
+        return new \DateTimeImmutable($date . ' 00:00:00');
     }
 }

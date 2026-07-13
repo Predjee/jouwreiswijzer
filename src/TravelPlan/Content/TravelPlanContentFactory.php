@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\TravelPlan\Content;
 
-use App\TravelPlan\Content\ContentBlueprints;
-use App\TravelPlan\Content\FormContentMapper;
-
 /**
  * Facade over de contentlaag van het reisplan.
  *

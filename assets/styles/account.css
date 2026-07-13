@@ -1328,3 +1328,9 @@
         grid-column: auto;
     }
 }
+
+.account-feedback-round-bar__quota {
+    margin-top: 0.15rem;
+    color: #8d6d31;
+    font-size: 0.8rem;
+}

@@ -25,6 +25,7 @@ final readonly class StorageNormalizer
     public function toStorageArray(TravelPlanContent $content): array
     {
         return [
+            '_version' => TravelPlanContent::VERSION,
             'intro' => $this->blueprints->createBlock(ContentBlueprints::TYPE_TRAVEL_PLAN_INTRO, [
                 'title' => $content->introTitle,
                 'text' => $content->introText,

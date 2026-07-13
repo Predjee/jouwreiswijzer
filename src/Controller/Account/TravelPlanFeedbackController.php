@@ -12,33 +12,22 @@ use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelPlanRepository;
 use App\TravelPlan\Feedback\FeedbackPathResolver;
 use App\TravelPlan\Feedback\FeedbackRoundService;
-use App\Companion\CompanionContentHelper;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class TravelPlanFeedbackController extends AbstractController
 {
     use AccountCustomerTrait;
+    use TravelPlanFeedbackResponseTrait;
 
     #[Route('/account/travel-plans/{id}/feedback', name: 'account_travel_plan_feedback', methods: ['POST'])]
-    public function feedback(
-        int $id,
-        Request $request,
-        TravelPlanRepository $travelPlanRepository,
-        TravelPlanFeedbackRepository $feedbackRepository,
-        EntityManagerInterface $entityManager,
-        FeedbackPathResolver $feedbackPathResolver,
-        ValidatorInterface $validator,
-    ): Response {
+    public function feedback(int $id, Request $request, TravelPlanRepository $plans, FeedbackRoundService $feedback): Response
+    {
         [, $contact] = $this->getCustomer();
-        $travelPlan = $travelPlanRepository->findPublishedForContact($id, $contact);
-
+        $travelPlan = $plans->findPublishedForContact($id, $contact);
         if (!$travelPlan instanceof TravelPlan) {
             throw $this->createNotFoundException();
         }
@@ -48,277 +37,98 @@ final class TravelPlanFeedbackController extends AbstractController
             \trim($request->request->getString('blockPath')) ?: null,
             $request->request->getString('_csrf_token'),
         );
-
-        if (!$this->isCsrfTokenValid(
-            'travel_plan_feedback_' . $travelPlan->getId(),
-            $submitRequest->csrfToken,
-        )) {
+        if (!$this->isCsrfTokenValid('travel_plan_feedback_' . $travelPlan->getId(), $submitRequest->csrfToken)) {
             throw $this->createAccessDeniedException('Ongeldige formulierbeveiliging.');
         }
 
-        if (CompanionContentHelper::hasTripStarted($travelPlan->getContent())) {
+        $result = $feedback->submitFeedback($travelPlan, $contact, $submitRequest);
+        if (!$result->success) {
             return $this->feedbackErrorResponse(
                 $request,
                 $travelPlan,
-                'Deze reis is al begonnen, feedback op het reisplan is niet meer mogelijk. Neem voor wijzigingen tijdens je reis rechtstreeks contact op.',
-                Response::HTTP_CONFLICT,
-                errorCode: 'trip_started',
+                $result->message,
+                $result->status,
+                $result->feedback,
+                $result->blockPath,
+                $result->feedbackContext,
+                $result->feedbackLabel,
+                $result->errorCode,
             );
         }
 
-        $blockPath = $submitRequest->blockPath;
-        $blockType = $feedbackPathResolver->resolveBlockType($travelPlan, $blockPath);
-        $feedbackContext = $feedbackPathResolver->context($blockPath);
-        $feedbackLabel = $feedbackPathResolver->label($feedbackContext);
-
-        if ($activeFeedback = $feedbackRepository->findActiveForTarget(
-            $travelPlan,
-            $contact,
-            $blockPath,
-        )) {
-            return $this->feedbackErrorResponse(
-                $request,
-                $travelPlan,
-                'Voor dit onderdeel is al feedback ontvangen en nog in behandeling.',
-                Response::HTTP_CONFLICT,
-                $activeFeedback,
-                $blockPath,
-                $feedbackContext,
-                $feedbackLabel,
-            );
+        if ($request->isXmlHttpRequest() && $result->feedback instanceof TravelPlanFeedback) {
+            return $this->feedbackSuccessResponse($travelPlan, $result->feedback, $result);
         }
 
-        foreach ($validator->validate($submitRequest) as $violation) {
-            if ('message' !== $violation->getPropertyPath()) {
-                continue;
-            }
-
-            return $this->feedbackErrorResponse(
-                $request,
-                $travelPlan,
-                (string) $violation->getMessage(),
-                Response::HTTP_UNPROCESSABLE_ENTITY,
-            );
-        }
-
-        $feedback = (new TravelPlanFeedback())
-            ->setTravelPlan($travelPlan)
-            ->setContact($contact)
-            ->setBlockPath($blockPath)
-            ->setBlockType($blockType)
-            ->setMessage($submitRequest->message);
-
-        $travelPlan->setPdfReleasedAt(null);
-        $entityManager->persist($feedback);
-        $entityManager->flush();
-
-        $successMessage = 'Bedankt, je feedback is ontvangen.';
-
-        if ($request->isXmlHttpRequest()) {
-            return new JsonResponse([
-                'message' => $successMessage,
-                'activeFeedbackCount' => \count($feedbackRepository->findActiveForTravelPlan($travelPlan)),
-                'html' => $this->renderFeedbackFragment(
-                    $travelPlan,
-                    $feedback,
-                    $blockPath,
-                    $feedbackContext,
-                    $feedbackLabel,
-                ),
-            ]);
-        }
-
-        $this->addFlash('account_feedback_success', $successMessage);
+        $this->addFlash('account_feedback_success', $result->message);
 
         return $this->redirectToRoute('account_travel_plan', ['id' => $travelPlan->getId()]);
     }
 
     #[Route('/account/travel-plans/{id}/feedback-round', name: 'account_travel_plan_feedback_round', methods: ['POST'])]
-    public function submitFeedbackRound(
-        int $id,
-        Request $request,
-        ValidatorInterface $validator,
-        FeedbackRoundService $feedbackRoundService,
-        TravelPlanRepository $travelPlanRepository,
-    ): Response {
+    public function submitFeedbackRound(int $id, Request $request, FeedbackRoundService $feedback, TravelPlanRepository $plans): Response
+    {
         [, $contact] = $this->getCustomer();
-        $submitRequest = new SubmitFeedbackRoundRequest(
-            $id,
-            $request->request->getString('_csrf_token'),
-        );
-
-        if (\count($validator->validate($submitRequest)) > 0) {
+        $submitRequest = new SubmitFeedbackRoundRequest($id, $request->request->getString('_csrf_token'));
+        if (!$feedback->isValidRoundRequest($submitRequest)) {
             throw new BadRequestHttpException('Invalid feedback round request.');
         }
-
-        if (!$this->isCsrfTokenValid(
-            'travel_plan_feedback_round_'.$submitRequest->travelPlanId,
-            $submitRequest->csrfToken,
-        )) {
+        if (!$this->isCsrfTokenValid('travel_plan_feedback_round_' . $submitRequest->travelPlanId, $submitRequest->csrfToken)) {
             throw $this->createAccessDeniedException('Ongeldige formulierbeveiliging.');
         }
 
-        $travelPlan = $travelPlanRepository->findPublishedForContact($id, $contact);
-
+        $travelPlan = $plans->findPublishedForContact($id, $contact);
         if (!$travelPlan instanceof TravelPlan) {
             throw $this->createNotFoundException();
         }
 
-        if (CompanionContentHelper::hasTripStarted($travelPlan->getContent())) {
-            return $this->feedbackErrorResponse(
-                $request,
-                $travelPlan,
-                'Deze reis is al begonnen, feedback op het reisplan is niet meer mogelijk. Neem voor wijzigingen tijdens je reis rechtstreeks contact op.',
-                Response::HTTP_CONFLICT,
-                errorCode: 'trip_started',
-            );
+        $result = $feedback->submitRound($travelPlan);
+        if (!$result->success) {
+            return $this->feedbackErrorResponse($request, $travelPlan, $result->message, $result->status, errorCode: $result->errorCode);
         }
 
-        $feedbackCount = $feedbackRoundService->submit($submitRequest, $contact);
+        $this->addFlash(0 === $result->feedbackCount ? 'account_feedback_error' : 'account_feedback_success', $result->message);
 
-        if (null === $feedbackCount) {
-            throw $this->createNotFoundException();
-        }
-
-        if (0 === $feedbackCount) {
-            $this->addFlash('account_feedback_error', 'Er staan nog geen feedbackpunten klaar om te versturen.');
-        } else {
-            $this->addFlash(
-                'account_feedback_success',
-                \sprintf(
-                    'Je feedbackronde met %d %s is verstuurd.',
-                    $feedbackCount,
-                    1 === $feedbackCount ? 'feedbackpunt' : 'feedbackpunten',
-                ),
-            );
-        }
-
-        return $this->redirectToRoute('account_travel_plan', [
-            'id' => $submitRequest->travelPlanId,
-            'mode' => 'feedback',
-        ]);
+        return $this->redirectToRoute('account_travel_plan', ['id' => $submitRequest->travelPlanId, 'mode' => 'feedback']);
     }
 
-    #[Route(
-        '/account/travel-plans/{id}/feedback/{feedbackId}/accept',
-        name: 'account_travel_plan_feedback_accept',
-        methods: ['POST'],
-    )]
+    #[Route('/account/travel-plans/{id}/feedback/{feedbackId}/accept', name: 'account_travel_plan_feedback_accept', methods: ['POST'])]
     public function acceptFeedback(
         int $id,
         int $feedbackId,
         Request $request,
-        TravelPlanRepository $travelPlanRepository,
-        TravelPlanFeedbackRepository $feedbackRepository,
-        EntityManagerInterface $entityManager,
-        FeedbackPathResolver $feedbackPathResolver,
+        TravelPlanRepository $plans,
+        TravelPlanFeedbackRepository $feedbackItems,
+        FeedbackRoundService $feedback,
+        FeedbackPathResolver $paths,
     ): Response {
         [, $contact] = $this->getCustomer();
-        $travelPlan = $travelPlanRepository->findPublishedForContact($id, $contact);
-        $feedback = $feedbackRepository->find($feedbackId);
-
+        $travelPlan = $plans->findPublishedForContact($id, $contact);
+        $feedbackItem = $feedbackItems->find($feedbackId);
         if (
             !$travelPlan instanceof TravelPlan
-            || !$feedback instanceof TravelPlanFeedback
-            || $feedback->getTravelPlan()->getId() !== $travelPlan->getId()
-            || $feedback->getContact()->getId() !== $contact->getId()
+            || !$feedbackItem instanceof TravelPlanFeedback
+            || !$feedback->ownsFeedback($travelPlan, $contact, $feedbackItem)
         ) {
             throw $this->createNotFoundException();
         }
-
-        if (!$this->isCsrfTokenValid(
-            'travel_plan_feedback_accept_' . $feedback->getId(),
-            $request->request->getString('_csrf_token'),
-        )) {
+        if (!$this->isCsrfTokenValid('travel_plan_feedback_accept_' . $feedbackItem->getId(), $request->request->getString('_csrf_token'))) {
             throw $this->createAccessDeniedException('Ongeldige formulierbeveiliging.');
         }
 
-        if (
-            TravelPlanFeedback::STATUS_RESOLVED !== $feedback->getStatus()
-            || null !== $feedback->getAcceptedAt()
-        ) {
-            return $this->feedbackErrorResponse(
-                $request,
-                $travelPlan,
-                'Deze feedback kan niet meer worden bevestigd.',
-                Response::HTTP_CONFLICT,
-            );
+        $result = $feedback->acceptFeedback($travelPlan, $contact, $feedbackItem);
+        if (null === $result) {
+            throw $this->createNotFoundException();
         }
-
-        $feedback->setAcceptedAt(new \DateTimeImmutable());
-        $entityManager->flush();
-
-        $successMessage = 'Bedankt, je akkoord is opgeslagen.';
-
+        if (!$result->success) {
+            return $this->feedbackErrorResponse($request, $travelPlan, $result->message, $result->status);
+        }
         if ($request->isXmlHttpRequest()) {
-            $feedbackContext = $feedbackPathResolver->context($feedback->getBlockPath());
-
-            return new JsonResponse([
-                'message' => $successMessage,
-                'html' => $this->renderFeedbackFragment(
-                    $travelPlan,
-                    $feedback,
-                    $feedback->getBlockPath(),
-                    $feedbackContext,
-                    $feedbackPathResolver->label($feedbackContext),
-                ),
-            ]);
+            return $this->acceptSuccessResponse($travelPlan, $feedbackItem, $result->message, $paths);
         }
 
-        $this->addFlash('account_feedback_success', $successMessage);
+        $this->addFlash('account_feedback_success', $result->message);
 
         return $this->redirectToRoute('account_travel_plan', ['id' => $travelPlan->getId()]);
-    }
-
-    private function feedbackErrorResponse(
-        Request $request,
-        TravelPlan $travelPlan,
-        string $message,
-        int $status,
-        ?TravelPlanFeedback $feedback = null,
-        ?string $blockPath = null,
-        ?string $feedbackContext = null,
-        ?string $feedbackLabel = null,
-        ?string $errorCode = null,
-    ): Response {
-        if ($request->isXmlHttpRequest()) {
-            $response = ['message' => $message];
-
-            if (null !== $errorCode) {
-                $response['code'] = $errorCode;
-            }
-
-            if ($feedback instanceof TravelPlanFeedback && null !== $feedbackContext) {
-                $response['html'] = $this->renderFeedbackFragment(
-                    $travelPlan,
-                    $feedback,
-                    $blockPath,
-                    $feedbackContext,
-                    $feedbackLabel ?? $feedbackContext,
-                );
-            }
-
-            return new JsonResponse($response, $status);
-        }
-
-        $this->addFlash('account_feedback_error', $message);
-
-        return $this->redirectToRoute('account_travel_plan', ['id' => $travelPlan->getId()]);
-    }
-
-    private function renderFeedbackFragment(
-        TravelPlan $travelPlan,
-        ?TravelPlanFeedback $feedback,
-        ?string $blockPath,
-        string $feedbackContext,
-        string $feedbackLabel,
-    ): string {
-        return $this->renderView('account/_travel_plan_feedback_form.html.twig', [
-            'travelPlan' => $travelPlan,
-            'feedback' => $feedback,
-            'blockPath' => $blockPath,
-            'feedbackContext' => $feedbackContext,
-            'feedbackLabel' => $feedbackLabel,
-        ]);
     }
 }

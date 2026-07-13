@@ -13,7 +13,7 @@ use App\ViewModel\TravelCompanion\CompanionTrip;
 final class TripDetailMapper
 {
     /**
-     * @return array<string, mixed> Envelope-structuur: screen, version, trip, sections.
+     * @return array<string, mixed> envelope-structuur: screen, version, trip, sections
      */
     public function map(CompanionTrip $trip): array
     {

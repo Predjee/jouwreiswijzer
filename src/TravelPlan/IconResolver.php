@@ -20,7 +20,7 @@ final readonly class IconResolver
             return '';
         }
 
-        $path = $this->projectDir.'/assets/images/icons/'.$type.'.svg';
+        $path = $this->projectDir . '/assets/images/icons/' . $type . '.svg';
 
         if (!\is_file($path) || false === $contents = \file_get_contents($path)) {
             return '';
@@ -47,7 +47,7 @@ final readonly class IconResolver
         }
 
         return $this->assetDataUri(
-            'assets/images/pdf/icons/'.$type.'.png',
+            'assets/images/pdf/icons/' . $type . '.png',
             'image/png',
         );
     }
@@ -70,7 +70,7 @@ final readonly class IconResolver
             return $cache[$type];
         }
 
-        $iconPath = $this->projectDir.'/assets/images/pdf/icons/'.$type.'.png';
+        $iconPath = $this->projectDir . '/assets/images/pdf/icons/' . $type . '.png';
 
         if (!\is_file($iconPath) || false === $icon = @\imagecreatefrompng($iconPath)) {
             return $this->getPdfIconDataUri($type);
@@ -81,7 +81,7 @@ final readonly class IconResolver
         \imagealphablending($badge, false);
         \imagesavealpha($badge, true);
         $transparent = \imagecolorallocatealpha($badge, 0, 0, 0, 127);
-        $gold = \imagecolorallocate($badge, 0xd4, 0xaf, 0x37);
+        $gold = \imagecolorallocate($badge, 0xD4, 0xAF, 0x37);
 
         if (false === $transparent || false === $gold) {
             \imagedestroy($badge);
@@ -126,7 +126,7 @@ final readonly class IconResolver
             return $this->getPdfIconDataUri($type);
         }
 
-        return $cache[$type] = 'data:image/png;base64,'.\base64_encode($png);
+        return $cache[$type] = 'data:image/png;base64,' . \base64_encode($png);
     }
 
     private function isSafeIconName(string $type): bool
@@ -136,12 +136,12 @@ final readonly class IconResolver
 
     private function assetDataUri(string $relativePath, string $mimeType): string
     {
-        $path = $this->projectDir.'/'.$relativePath;
+        $path = $this->projectDir . '/' . $relativePath;
 
         if (!\is_file($path) || false === $contents = \file_get_contents($path)) {
             return '';
         }
 
-        return 'data:'.$mimeType.';base64,'.\base64_encode($contents);
+        return 'data:' . $mimeType . ';base64,' . \base64_encode($contents);
     }
 }

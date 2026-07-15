@@ -1,10 +1,12 @@
 {% set block_index = loop.index0|default(0) %}
 {% set instance_id = 'request-form-' ~ resource.id ~ '-' ~ block_index %}
-{% set form_name = 'request_form_' ~ block_index %}
 {% set display_mode = block.display_mode|default('inline') %}
 {% set selected_form = block.form|default(null) %}
+{% set selected_form_id = selected_form.vars is defined ? selected_form.children.formId.vars.value|default(null) : selected_form %}
+{% set form_type = selected_form.vars is defined ? selected_form.children.type.vars.value|default('pages') : 'pages' %}
+{% set form_name = selected_form_id ? 'request_form_' ~ resource.id ~ '_' ~ block_index ~ '_' ~ selected_form_id : null %}
 {% set block_view = view.blocks[block_index]|default({}) %}
-{% set form_view = selected_form ? (selected_form.vars is defined ? selected_form : sulu_form_get_by_id(selected_form, 'page', resource.id, null, form_name)) : null %}
+{% set form_view = selected_form_id ? sulu_form_get_by_id(selected_form_id, form_type, resource.id, null, form_name) : null %}
 {% set success_text = block_view.form.entity.successText|default(null) %}
 
 {% if form_view %}

@@ -30,14 +30,16 @@
                     {% set card_index = loop.index0 %}
                     {% set button_type = card.button_type|default('link') %}
                     {% set form_instance = 'request-form-' ~ resource.id ~ '-packages-' ~ package_block_index ~ '-' ~ card_index %}
-                    {% set form_name = 'package_request_form_' ~ package_block_index ~ '_' ~ card_index %}
                     {% set form_view = null %}
                     {% set success_text = null %}
                     {% set selected_form = card.request_form|default(null) %}
+                    {% set selected_form_id = selected_form.vars is defined ? selected_form.children.formId.vars.value|default(null) : selected_form %}
+                    {% set form_type = selected_form.vars is defined ? selected_form.children.type.vars.value|default('pages') : 'pages' %}
+                    {% set form_name = selected_form_id ? 'package_request_form_' ~ resource.id ~ '_' ~ package_block_index ~ '_' ~ card_index ~ '_' ~ selected_form_id : null %}
                     {% set card_view = package_block_view.cards[card_index]|default({}) %}
 
-                    {% if button_type == 'request_form_modal' and selected_form %}
-                        {% set form_view = selected_form.vars is defined ? selected_form : sulu_form_get_by_id(selected_form, 'page', resource.id, null, form_name) %}
+                    {% if button_type == 'request_form_modal' and selected_form_id and form_name %}
+                        {% set form_view = sulu_form_get_by_id(selected_form_id, form_type, resource.id, null, form_name) %}
                         {% if form_view %}
                             {% form_theme form_view 'form/theme.html.twig' %}
                             {% set success_text = card_view.request_form.entity.successText|default(null) %}

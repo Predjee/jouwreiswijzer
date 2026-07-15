@@ -13,7 +13,8 @@
             <div class="aanvraag-form">
                 {% if content.form %}
                     {% if app.request.get('send') != 'true' %}
-                        {% set form_view = content.form.vars is defined ? content.form : sulu_form_get_by_id(content.form, 'page', resource.id) %}
+                        {% set form_type = content.form.vars is defined ? content.form.children.type.vars.value|default('pages') : 'pages' %}
+                        {% set form_view = content.form.vars is defined ? content.form : sulu_form_get_by_id(content.form, form_type, resource.id) %}
                         {% form_theme form_view 'form/theme.html.twig' %}
                         {{ form(form_view) }}
                     {% else %}

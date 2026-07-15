@@ -1,4 +1,5 @@
 {% set package_block_index = loop.index0|default(0) %}
+{% set package_block_view = view.blocks[package_block_index]|default({}) %}
 
 <section class="section block-packages relative overflow-hidden">
 
@@ -31,11 +32,15 @@
                     {% set form_instance = 'request-form-' ~ resource.id ~ '-packages-' ~ package_block_index ~ '-' ~ card_index %}
                     {% set form_name = 'package_request_form_' ~ package_block_index ~ '_' ~ card_index %}
                     {% set form_view = null %}
+                    {% set success_text = null %}
+                    {% set selected_form = card.request_form|default(null) %}
+                    {% set card_view = package_block_view.cards[card_index]|default({}) %}
 
-                    {% if button_type == 'request_form_modal' and card.request_form|default %}
-                        {% set form_view = sulu_form_build(card.request_form, 'page', resource.id, null, form_name) %}
+                    {% if button_type == 'request_form_modal' and selected_form %}
+                        {% set form_view = selected_form.vars is defined ? selected_form : sulu_form_get_by_id(selected_form, 'page', resource.id, null, form_name) %}
                         {% if form_view %}
                             {% form_theme form_view 'form/theme.html.twig' %}
+                            {% set success_text = card_view.request_form.entity.successText|default(null) %}
                         {% endif %}
                     {% endif %}
 
@@ -120,7 +125,10 @@
                                         </div>
 
                                         <div class="request-form-panel"
-                                             data-request-form-target="formContainer">
+                                             data-request-form-target="formContainer"
+                                             {% if success_text|default %}
+                                                 data-request-form-success-text="{{ success_text|e('html_attr') }}"
+                                             {% endif %}>
                                             {{ form(form_view, {
                                                 attr: {
                                                     'data-action': 'submit->request-form#submit',

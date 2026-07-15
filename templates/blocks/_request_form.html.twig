@@ -2,7 +2,10 @@
 {% set instance_id = 'request-form-' ~ resource.id ~ '-' ~ block_index %}
 {% set form_name = 'request_form_' ~ block_index %}
 {% set display_mode = block.display_mode|default('inline') %}
-{% set form_view = block.form ? sulu_form_build(block.form, 'page', resource.id, null, form_name) : null %}
+{% set selected_form = block.form|default(null) %}
+{% set block_view = view.blocks[block_index]|default({}) %}
+{% set form_view = selected_form ? (selected_form.vars is defined ? selected_form : sulu_form_get_by_id(selected_form, 'page', resource.id, null, form_name)) : null %}
+{% set success_text = block_view.form.entity.successText|default(null) %}
 
 {% if form_view %}
     {% form_theme form_view 'form/theme.html.twig' %}
@@ -51,7 +54,10 @@
                         </div>
 
                         <div class="request-form-panel"
-                             data-request-form-target="formContainer">
+                             data-request-form-target="formContainer"
+                             {% if success_text %}
+                                 data-request-form-success-text="{{ success_text|e('html_attr') }}"
+                             {% endif %}>
                             {{ form(form_view, {
                                 attr: {
                                     'data-action': 'submit->request-form#submit',
@@ -66,7 +72,10 @@
                 </dialog>
             {% else %}
                 <div class="request-form-panel"
-                     data-request-form-target="formContainer">
+                     data-request-form-target="formContainer"
+                     {% if success_text %}
+                         data-request-form-success-text="{{ success_text|e('html_attr') }}"
+                     {% endif %}>
                     {{ form(form_view, {
                         attr: {
                             'data-action': 'submit->request-form#submit',

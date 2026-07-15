@@ -112,6 +112,16 @@ php bin/console importmap:install
 php bin/console asset-map:compile
 ```
 
+Gebruik `asset-map:compile` niet voor gewone lokale website-ontwikkeling. In `dev` moet de website de
+bronbestanden uit `assets/` gebruiken; compiled bestanden in `public/assets` kunnen anders oudere JS/CSS
+blijven serveren. Ruim lokale website-assets op met:
+
+```bash
+composer dev-assets-reset
+```
+
+De Sulu admin build staat los hiervan en mag wel compiled assets onder `public/build/admin` gebruiken.
+
 ## Database Sync
 
 Doctrine-migraties worden niet op de GitHub Actions runner uitgevoerd. De runner bouwt alleen het

@@ -84,6 +84,7 @@ jobs:
           SEAL_DSN: loupe://%kernel.project_dir%/var/indexes
         run: |
           rm -f .env.local
+          rm -rf public/assets
           php bin/console tailwind:build --minify --env="${{ inputs.app_env }}"
           php bin/console importmap:install --no-interaction --env="${{ inputs.app_env }}"
           php bin/console asset-map:compile --no-interaction --env="${{ inputs.app_env }}"

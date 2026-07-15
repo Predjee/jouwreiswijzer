@@ -76,10 +76,11 @@ mkdir -p \
 chmod -R 775 "${SHARED_DIR}/var/log"
 
 echo "==> JWT keypair koppelen (eenmalig handmatig aangemaakt, nooit door deploy overschreven)"
-if [ ! -f "${SHARED_DIR}/jwt/private.pem" ]; then
-    echo "    WAARSCHUWING: geen keypair in ${SHARED_DIR}/jwt — genereer met:"
+if [ ! -f "${SHARED_DIR}/jwt/private.pem" ] || [ ! -f "${SHARED_DIR}/jwt/public.pem" ]; then
+    echo "    FOUT: geen volledige JWT keypair in ${SHARED_DIR}/jwt — genereer met:" >&2
     echo "    php ${RELEASE_DIR}/bin/console lexik:jwt:generate-keypair"
-    echo "    en verplaats private.pem/public.pem naar ${SHARED_DIR}/jwt/"
+    echo "    en verplaats private.pem/public.pem naar ${SHARED_DIR}/jwt/" >&2
+    exit 1
 fi
 rm -rf "${RELEASE_DIR}/config/jwt"
 ln -s "${SHARED_DIR}/jwt" "${RELEASE_DIR}/config/jwt"
@@ -97,9 +98,6 @@ rm -rf var/log
 ln -s "${SHARED_DIR}/var/log" var/log
 
 chmod +x bin/console bin/websiteconsole bin/adminconsole
-
-echo "==> Database preflight"
-php deploy/preflight-migrations.php "${APP_ENV}"
 
 echo "==> Database migreren"
 php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration --env="${APP_ENV}"

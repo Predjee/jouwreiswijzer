@@ -57,7 +57,8 @@ Secrets (zie "GitHub Secrets" hieronder). Niet handmatig aanmaken op de server �
 hem bij elke deploy.
 
 Genereer **eenmalig per omgeving** (niet bij elke deploy) een JWT keypair, en zet die in de `shared`-map
-zodat bestaande tokens een deploy overleven:
+zodat bestaande tokens een deploy overleven. De deploy faalt bewust als deze keypair ontbreekt, zodat een
+release met kapotte JWT-afhankelijke routes niet live kan gaan:
 
 ```bash
 php bin/console lexik:jwt:generate-keypair
@@ -124,12 +125,6 @@ APP_ENV=prod php bin/console doctrine:migrations:migrate --no-interaction --allo
 `--allow-no-migration` zorgt dat dit niet faalt als er voor een deploy niets nieuws te migreren is. Als
 een migratie faalt, wordt `current` niet naar de nieuwe release gezet en blijft de bestaande release actief.
 
-Voor de algemene Doctrine-migrations draaien, voert `deploy/preflight-migrations.php` server-side een
-kleine correctie uit voor `Sulu\Bundle\FormBundle\Migrations\Version20260702120000`. Die vendor-migration
-kan op MySQL falen bij het aanpassen van `fo_dynamics.formId` naar `NOT NULL` als de bestaande kolomdefault
-nog als `NULL` wordt geïnterpreteerd. De preflight voert dezelfde schemawijziging expliciet uit, verwijdert
-orphaned form submissions en markeert daarna alleen die Sulu-migration als uitgevoerd.
-
 **Allereerste deploy per omgeving** (productie en acceptance hebben elk een lege database): vóór de
 eerste push naar `main`/`acceptance`, eenmalig handmatig op de server:
 
@@ -156,6 +151,22 @@ en commit het resultaat in `migrations/`. Vanaf dat moment voert de deploy-workf
 
 Gebeurt automatisch na elke deploy, voor alle drie de Sulu-consoles (`console`, `websiteconsole`,
 `adminconsole`).
+
+## Logs
+
+Productie en acceptance schrijven applicatiefouten naar de shared logmap:
+
+```bash
+# Website requests
+tail -f /home/derei1602/production/current/var/log/website/prod.log
+tail -f /home/derei1602/acceptance/current/var/log/website/stage.log
+
+# Admin requests
+tail -f /home/derei1602/production/current/var/log/admin/prod.log
+tail -f /home/derei1602/acceptance/current/var/log/admin/stage.log
+```
+
+Omdat `current/var/log` naar `{omgeving}/shared/var/log` wijst, blijven logs over releases heen bewaard.
 
 ## Permissions
 

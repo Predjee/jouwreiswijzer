@@ -7,10 +7,11 @@ namespace App\Controller\Admin;
 use App\Admin\TravelRequestAdmin;
 use App\Entity\TravelPlan;
 use App\Entity\TravelPlanFeedback;
-use App\Repository\TravelPlanRepository;
+use App\Notification\NotificationService;
 use App\Repository\TravelPlanFeedbackRepository;
+use App\Repository\TravelPlanRepository;
 use App\Repository\TravelRequestRepository;
-use App\Service\NotificationService;
+use App\TravelPlan\BlockPath;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;
 use Sulu\Component\Rest\AbstractRestController;
@@ -63,7 +64,7 @@ final class TravelPlanFeedbackController extends AbstractRestController implemen
             $feedback->setStatus(TravelPlanFeedback::STATUS_IN_PROGRESS);
         } else {
             $note = \trim($data->getString('adminResolutionNote'));
-            $snapshot = $data->all('resolvedContentSnapshot');
+            $snapshot = $this->stringKeyedArray($data->all('resolvedContentSnapshot'));
 
             if ([] === $snapshot) {
                 $snapshot = $this->resolveStoredContentSnapshot($feedback);
@@ -139,29 +140,60 @@ final class TravelPlanFeedbackController extends AbstractRestController implemen
             return $content;
         }
 
-        if (1 === \preg_match('/^destinations\[(\d+)]$/D', $blockPath, $matches)) {
-            $snapshot = $content['destinations'][(int) $matches[1]] ?? null;
-        } elseif (1 === \preg_match(
-            '/^destinations\[(\d+)]\.sections\[(\d+)]$/D',
-            $blockPath,
-            $matches,
-        )) {
-            $snapshot = $content['destinations'][(int) $matches[1]]['sections'][(int) $matches[2]] ?? null;
-        } elseif (1 === \preg_match(
-            '/^destinations\[(\d+)]\.sections\[(\d+)]\.blocks\[(\d+)]$/D',
-            $blockPath,
-            $matches,
-        )) {
-            $snapshot = $content['destinations'][(int) $matches[1]]['sections'][(int) $matches[2]]['blocks'][(int) $matches[3]] ?? null;
-        } else {
-            $snapshot = null;
-        }
+        $path = BlockPath::parse($blockPath);
+        $destinations = \is_array($content['destinations'] ?? null) ? $content['destinations'] : [];
 
-        if (!\is_array($snapshot)) {
+        if (null === $path) {
             throw new BadRequestHttpException('The feedback target no longer exists.');
         }
 
-        return $snapshot;
+        $destination = $destinations[$path->destinationIndex] ?? null;
+
+        if (!\is_array($destination)) {
+            throw new BadRequestHttpException('The feedback target no longer exists.');
+        }
+
+        if ($path->isDestination()) {
+            return $this->stringKeyedArray($destination);
+        }
+
+        $sections = \is_array($destination['sections'] ?? null) ? $destination['sections'] : [];
+        $section = null !== $path->sectionIndex ? ($sections[$path->sectionIndex] ?? null) : null;
+
+        if (!\is_array($section)) {
+            throw new BadRequestHttpException('The feedback target no longer exists.');
+        }
+
+        if ($path->isSection()) {
+            return $this->stringKeyedArray($section);
+        }
+
+        $blocks = \is_array($section['blocks'] ?? null) ? $section['blocks'] : [];
+        $block = null !== $path->blockIndex ? ($blocks[$path->blockIndex] ?? null) : null;
+
+        if (!\is_array($block)) {
+            throw new BadRequestHttpException('The feedback target no longer exists.');
+        }
+
+        return $this->stringKeyedArray($block);
+    }
+
+    /**
+     * @param array<mixed> $data
+     *
+     * @return array<string, mixed>
+     */
+    private function stringKeyedArray(array $data): array
+    {
+        $result = [];
+
+        foreach ($data as $key => $value) {
+            if (\is_string($key)) {
+                $result[$key] = $value;
+            }
+        }
+
+        return $result;
     }
 
     /**

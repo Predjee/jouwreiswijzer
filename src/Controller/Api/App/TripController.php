@@ -15,11 +15,11 @@ use App\Api\App\Query\GetTodayQuery;
 use App\Api\App\Query\GetTripChecklistQuery;
 use App\Api\App\QueryHandler\GetTodayQueryHandler;
 use App\Api\App\QueryHandler\GetTripChecklistQueryHandler;
+use App\Companion\CompanionContentHelper;
+use App\Companion\TravelCompanionBuilder;
 use App\Entity\TravelPlan;
 use App\Repository\TravelPlanRepository;
-use App\Service\TravelCompanion\CompanionContentHelper;
-use App\Service\TravelCompanion\TravelCompanionBuilder;
-use Psr\Log\LoggerInterface;
+use App\TravelPlan\Content\ContentValues;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,10 +32,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class TripController extends AbstractController
 {
     use ApiAppCustomerTrait;
-
-    public function __construct(private readonly LoggerInterface $logger)
-    {
-    }
 
     #[Route('/api/app/trips/active', name: 'api_app_trip_active', methods: ['GET'])]
     public function active(TravelPlanRepository $travelPlanRepository): JsonResponse
@@ -124,9 +120,7 @@ final class TripController extends AbstractController
      */
     private function tripProfile(TravelPlan $travelPlan): array
     {
-        $tripProfile = $travelPlan->getContent()['tripProfile'] ?? [];
-
-        return \is_array($tripProfile) ? $tripProfile : [];
+        return ContentValues::stringKeyed($travelPlan->getContent()['tripProfile'] ?? null);
     }
 
     #[Route('/api/app/trips/{id}', name: 'api_app_trip_detail', requirements: ['id' => '\d+'], methods: ['GET'])]

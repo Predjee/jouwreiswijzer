@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-@import "./travel-plan-theme.css";
 @import "./_base.css";
 @import "./_components.css";
 @import "./_blocks.css";
@@ -16,6 +15,7 @@
 @import "./blocks/_faq.css";
 @import "./blocks/_form.css";
 @import "./_animations.css";
+@import "./travel-plan-theme.css";
 @import "./account.css";
 
 @theme {

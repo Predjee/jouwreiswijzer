@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Service\TravelCompanion;
 
+use App\Companion\ChecklistItemExtractor;
+use App\Companion\CompanionIconResolver;
+use App\Companion\TravelCompanionBuilder;
+use App\Companion\TravelPlanChecklistStateProvider;
 use App\Entity\TravelPlan;
-use App\Service\TravelCompanion\TravelPlanChecklistStateProvider;
-use App\Service\TravelCompanion\TravelCompanionBuilder;
 use PHPUnit\Framework\TestCase;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 
@@ -59,7 +61,12 @@ final class TravelCompanionBuilderTest extends TestCase
                 ],
             ]);
 
-        $trip = (new TravelCompanionBuilder($repository, \dirname(__DIR__, 3)))->build($travelPlan, new Contact());
+        $builder = new TravelCompanionBuilder(
+            $repository,
+            new ChecklistItemExtractor(),
+            new CompanionIconResolver(\dirname(__DIR__, 3)),
+        );
+        $trip = $builder->build($travelPlan, new Contact());
 
         self::assertSame('Peru', $trip->title);
         self::assertSame('1 mei t/m 2 mei', $trip->periodLabel);

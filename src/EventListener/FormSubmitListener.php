@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\EventListener;
 
-use App\Entity\RequestFormConfiguration;
+use App\Account\ContactOnboardingService;
 use App\Entity\TravelRequest;
-use App\Service\ContactOnboardingService;
+use App\Form\RequestFormResolver;
 use Doctrine\ORM\EntityManagerInterface;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\ContactRepositoryInterface;
@@ -24,6 +24,7 @@ final readonly class FormSubmitListener
         private EntityManagerInterface $entityManager,
         private ContactRepositoryInterface $contactRepository,
         private ContactOnboardingService $contactOnboardingService,
+        private RequestFormResolver $requestFormResolver,
     ) {
     }
 
@@ -37,10 +38,11 @@ final readonly class FormSubmitListener
 
         $form = $dynamic->getForm();
 
-        if (!$this->isRequestForm($form)) {
+        if (!$this->requestFormResolver->isRequestForm($form)) {
             return;
         }
 
+        /** @var array<string, mixed> $data Sulu-formulierdata heeft stringkeys. */
         $data = $dynamic->getData();
         $email = $this->findStringValue($form, $data, 'email');
 
@@ -78,16 +80,6 @@ final readonly class FormSubmitListener
         $this->entityManager->flush();
     }
 
-    private function isRequestForm(Form $form): bool
-    {
-        $configuration = $this->entityManager
-            ->getRepository(RequestFormConfiguration::class)
-            ->findOneBy(['form' => $form]);
-
-        return $configuration instanceof RequestFormConfiguration
-            && $configuration->isRequestForm();
-    }
-
     /**
      * @param array<string, mixed> $data
      */
@@ -100,6 +92,11 @@ final readonly class FormSubmitListener
         }
 
         $contact = $this->contactRepository->createNew();
+
+        if (!$contact instanceof Contact) {
+            throw new \LogicException('Contact repository gaf een onverwachte implementatie terug.');
+        }
+
         $contact
             ->setFirstName($this->findStringValue($form, $data, 'firstName') ?? '')
             ->setLastName($this->findStringValue($form, $data, 'lastName') ?? '')

@@ -1,0 +1,11 @@
+<section class="travel-plan-section travel-plan-section--checklist {{ section.variantClass|default('travel-plan-variant--default') }}{{ section.pageBreakClass ? ' ' ~ section.pageBreakClass : '' }}">{% if section.iconSvg %}<span class="travel-plan-icon-slot" aria-hidden="true">{{ section.iconSvg|raw }}</span>{% endif %}
+    {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
+    {% if section.text|default %}
+        <ul class="travel-plan-checklist">
+            {% for item in section.text|split("
+")|filter(item => item|trim) %}
+                <li>{{ item|trim }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</section>

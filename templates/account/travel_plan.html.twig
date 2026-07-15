@@ -54,6 +54,13 @@
             {{ travel_plan_view_html|raw }}
         </div>
 
+        {% if feedback_rounds_exhausted|default(false) %}
+            <div class="account-feedback-notice account-feedback-notice--error" role="status">
+                Alle feedbackrondes voor dit reisplan zijn gebruikt.
+                Neem contact met ons op als er toch nog iets aangepast moet worden.
+            </div>
+        {% endif %}
+
         {% if feedback_enabled %}
             <div
                 class="account-travel-plan-panel account-travel-plan-panel--feedback"
@@ -85,6 +92,10 @@
                         <span data-feedback-round-label>
                             {{ feedback_round_count == 1 ? 'open feedbackpunt' : 'open feedbackpunten' }}
                         </span>
+                    </p>
+                    <p class="account-feedback-round-bar__quota">
+                        Nog {{ feedback_rounds_remaining }} van {{ feedback_rounds_total }}
+                        {{ feedback_rounds_total == 1 ? 'feedbackronde' : 'feedbackrondes' }} beschikbaar
                     </p>
                 </div>
                 <form method="post" action="{{ path('account_travel_plan_feedback_round', {id: travel_plan.id}) }}">

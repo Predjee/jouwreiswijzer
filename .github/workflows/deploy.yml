@@ -52,7 +52,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: intl, pdo, pdo_mysql, mbstring, zip, xml, gd, curl, json, tokenizer, dom, iconv, fileinfo, sodium, ctype
+          extensions: intl, pdo, pdo_mysql, pdo_sqlite, mbstring, zip, xml, gd, curl, json, tokenizer, dom, iconv, fileinfo, sodium, ctype
           ini-values: memory_limit=-1
 
       - name: 📦 Get Composer cache dir
@@ -72,6 +72,23 @@ jobs:
       - name: 🕓 Generate release name
         run: echo "RELEASE_NAME=$(date +%Y%m%d%H%M%S)" >> "$GITHUB_ENV"
 
+      - name: 🧱 Build frontend assets (Tailwind + AssetMapper)
+        env:
+          APP_ENV: ${{ inputs.app_env }}
+          APP_SECRET: build-only-secret
+          DATABASE_URL: sqlite:///%kernel.project_dir%/var/build.sqlite
+          DEFAULT_URI: https://example.invalid
+          LOCK_DSN: flock
+          MAILER_DSN: 'null://null'
+          MESSENGER_TRANSPORT_DSN: 'in-memory://'
+          SEAL_DSN: loupe://%kernel.project_dir%/var/indexes
+        run: |
+          rm -f .env.local
+          rm -rf public/assets
+          php bin/console tailwind:build --minify --env="${{ inputs.app_env }}"
+          php bin/console importmap:install --no-interaction --env="${{ inputs.app_env }}"
+          php bin/console asset-map:compile --no-interaction --env="${{ inputs.app_env }}"
+
       - name: 📝 Write .env.local
         env:
           APP_ENV: ${{ inputs.app_env }}
@@ -84,12 +101,6 @@ jobs:
           FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
           JWT_PASSPHRASE: ${{ secrets.JWT_PASSPHRASE }}
         run: bash deploy/write-env-local.sh
-
-      - name: 🧱 Build frontend assets (Tailwind + AssetMapper)
-        run: |
-          php bin/console tailwind:build --minify --env="${{ inputs.app_env }}"
-          php bin/console importmap:install --no-interaction --env="${{ inputs.app_env }}"
-          php bin/console asset-map:compile --no-interaction --env="${{ inputs.app_env }}"
 
       - name: 📦 Build release archive
         run: |

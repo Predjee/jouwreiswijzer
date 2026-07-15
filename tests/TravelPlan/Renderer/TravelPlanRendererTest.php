@@ -5,108 +5,183 @@ declare(strict_types=1);
 namespace App\Tests\TravelPlan\Renderer;
 
 use App\Entity\TravelPlan;
-use App\Service\IconResolver;
+use App\Entity\TravelRequest;
+use App\TravelPlan\IconResolver;
+use App\TravelPlan\Pdf\TravelPlanPdfRichTextNormalizer;
 use App\TravelPlan\Renderer\TravelPlanContentHelper;
+use App\TravelPlan\Renderer\TravelPlanPdfRenderer;
 use App\TravelPlan\Renderer\TravelPlanRenderer;
+use App\TravelPlan\View\TravelPlanViewFactory;
 use PHPUnit\Framework\TestCase;
+use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\MediaBundle\Media\Manager\MediaManagerInterface;
 use Twig\Environment;
-use Twig\Loader\ArrayLoader;
+use Twig\Loader\FilesystemLoader;
 
 final class TravelPlanRendererTest extends TestCase
 {
-    public function testRenderForAccountUsesTypedContentWithoutChangingRenderedContract(): void
+    public function testRenderForAccountMatchesSnapshot(): void
     {
-        $travelPlan = (new TravelPlan())
-            ->setTitle('Peru')
+        $renderer = new TravelPlanRenderer(
+            $this->twig(),
+            $this->viewFactory(new IconResolver($this->projectDir())),
+        );
+
+        $html = $renderer->renderForAccount($this->travelPlan(), feedbackEnabled: false);
+
+        $this->assertMatchesSnapshot('account-render.html', $html);
+    }
+
+    public function testPdfRenderMatchesSnapshotBeforeMpdf(): void
+    {
+        $renderer = new TravelPlanPdfRenderer(
+            $this->twig(),
+            $this->helper(),
+            $this->viewFactory(new IconResolver('/tmp')),
+        );
+
+        $html = $renderer->render($this->travelPlan());
+
+        $this->assertMatchesSnapshot('pdf-render.html', $html);
+    }
+
+    private function assertMatchesSnapshot(string $name, string $actual): void
+    {
+        $snapshotPath = __DIR__ . '/__snapshots__/' . $name;
+        $normalized = $this->normalizeHtml($actual);
+
+        if ('1' === \getenv('UPDATE_TRAVEL_PLAN_SNAPSHOTS')) {
+            if (!\is_dir(\dirname($snapshotPath))) {
+                \mkdir(\dirname($snapshotPath), 0777, true);
+            }
+
+            \file_put_contents($snapshotPath, $normalized);
+        }
+
+        self::assertFileExists($snapshotPath);
+        self::assertSame(\file_get_contents($snapshotPath), $normalized);
+    }
+
+    private function normalizeHtml(string $html): string
+    {
+        return \str_replace("\r\n", "\n", \trim($html)) . "\n";
+    }
+
+    private function twig(): Environment
+    {
+        return new Environment(new FilesystemLoader($this->projectDir() . '/templates'));
+    }
+
+    private function helper(): TravelPlanContentHelper
+    {
+        return new TravelPlanContentHelper(
+            $this->createStub(MediaManagerInterface::class),
+            $this->projectDir(),
+        );
+    }
+
+    private function viewFactory(IconResolver $iconResolver): TravelPlanViewFactory
+    {
+        return new TravelPlanViewFactory(
+            $iconResolver,
+            $this->helper(),
+            new TravelPlanPdfRichTextNormalizer(),
+        );
+    }
+
+    private function travelPlan(): TravelPlan
+    {
+        $contact = (new Contact())
+            ->setFirstName('Mila')
+            ->setLastName('Jansen');
+
+        $travelRequest = (new TravelRequest())
+            ->setContact($contact);
+
+        return (new TravelPlan())
+            ->setTravelRequest($travelRequest)
+            ->setTitle('Peru familiereis')
             ->setContent([
-                'intro' => ['title' => 'Welkom', 'text' => '<p>Intro</p>'],
-                'tripProfile' => ['period' => 'Mei', 'duration' => '10 dagen'],
+                'intro' => [
+                    'title' => 'Welkom in Peru',
+                    'text' => '<p>Een rustige route met cultuur, natuur en tijd om te landen.</p>',
+                ],
+                'tripProfile' => [
+                    'period' => '26 augustus t/m 9 september',
+                    'duration' => '15 dagen',
+                    'showTableOfContents' => 'two',
+                ],
                 'destinations' => [
-                    'skip-me',
                     [
                         'type' => 'destination',
                         'startOnNewPage' => true,
                         'colorVariant' => 'gold',
-                        'title' => 'Lima',
-                        'icon' => '',
+                        'title' => 'Even landen in Lima',
+                        'text' => '<p>Lima geeft jullie een zachte start met goede restaurants en de oceaan dichtbij.</p>',
+                        'icon' => 'location-pin',
+                        'city' => 'Lima',
+                        'country' => 'Peru',
                         'sections' => [
-                            ['type' => 'unknown'],
                             [
                                 'type' => 'route_overview',
-                                'title' => 'Route',
+                                'title' => 'Route in het kort',
                                 'routeStops' => [
-                                    ['type' => 'route_stop', 'title' => 'Start', 'icon' => ''],
+                                    ['type' => 'route_stop', 'title' => 'Lima', 'icon' => 'location-pin'],
+                                    ['type' => 'route_stop', 'title' => 'Heilige Vallei', 'icon' => 'mountain'],
                                 ],
                             ],
                             [
                                 'type' => 'day',
                                 'startOnNewPage' => true,
-                                'colorVariant' => 'PRIMARY',
-                                'title' => 'Dag 1',
-                                'icon' => '',
+                                'colorVariant' => 'primary',
+                                'title' => 'Aankomst en acclimatiseren',
+                                'intro' => '<p>Vandaag houden we het bewust licht.</p>',
+                                'icon' => 'sun',
+                                'dayNumber' => '1',
+                                'dateLabel' => 'Woensdag 26 augustus',
                                 'blocks' => [
-                                    ['type' => 'unknown'],
                                     [
                                         'type' => 'activity',
                                         'startOnNewPage' => true,
                                         'colorVariant' => 'secondary',
-                                        'title' => 'Fietsen',
-                                        'icon' => '',
-                                        'time' => '09:00',
+                                        'title' => 'Fietsen langs de kust',
+                                        'text' => '<p>Een ontspannen rit over de malecon.</p>',
+                                        'icon' => 'bike',
+                                        'location' => 'Miraflores',
+                                        'startTime' => '09:00',
+                                        'endTime' => '11:30',
+                                        'bookingUrl' => 'https://example.com/fiets',
+                                    ],
+                                    [
+                                        'type' => 'tip',
+                                        'colorVariant' => 'gold',
+                                        'title' => 'Eerste ceviche',
+                                        'text' => '<p>Kies een tafel buiten en bestel rustig meerdere kleine gerechten.</p>',
+                                        'icon' => 'restaurant',
                                     ],
                                 ],
+                            ],
+                            [
+                                'type' => 'practical_info',
+                                'title' => 'Praktisch',
+                                'text' => '<p>Neem laagjes mee; de avonden zijn fris.</p>',
+                                'icon' => 'info',
+                                'colorVariant' => 'secondary',
                             ],
                         ],
                     ],
                     [
                         'type' => 'image',
-                        'startOnNewPage' => false,
-                        'title' => 'Foto',
-                        'image' => ['url' => '/uploads/foto.jpg'],
+                        'title' => 'Sfeerbeeld Andes',
+                        'caption' => 'Zonsopkomst in de Heilige Vallei',
+                        'image' => ['url' => '/uploads/andes.jpg'],
                     ],
                 ],
             ]);
+    }
 
-        $renderer = new TravelPlanRenderer(
-            new Environment(new ArrayLoader([
-                'travel_plan/render/base.html.twig' => <<<'TWIG'
-intro={{ intro.title }}|profile={{ tripProfile.period }}
-{% for renderedSection in renderedSections %}
-{{ renderedSection.blockPath }}|{{ renderedSection.blockType }}|{{ renderedSection.html|raw }}
-{% endfor %}
-TWIG,
-                'travel_plan/render/sections/destination.html.twig' => '<section class="destination">{{ section.title }}</section>',
-                'travel_plan/render/sections/route_overview.html.twig' => '<section class="route">{{ section.routeStops[0]._iconMarkup is defined ? "route-icon" : "missing" }}</section>',
-                'travel_plan/render/sections/day.html.twig' => <<<'TWIG'
-<section class="day">{{ section.title }}{% for block in renderedBlocks %}[{{ block.blockPath }}|{{ block.blockType }}|{{ block.html|raw }}]{% endfor %}</section>
-TWIG,
-                'travel_plan/render/sections/practical_info.html.twig' => '<section class="info">{{ section.title }}</section>',
-                'travel_plan/render/sections/checklist.html.twig' => '<section class="checklist">{{ section.title }}</section>',
-                'travel_plan/render/sections/budget_note.html.twig' => '<section class="budget">{{ section.title }}</section>',
-                'travel_plan/render/sections/personal_note.html.twig' => '<section class="personal">{{ section.title }}</section>',
-                'travel_plan/render/sections/free_text.html.twig' => '<section class="free">{{ section.title }}</section>',
-                'travel_plan/render/sections/image.html.twig' => '<section class="image">{{ section.title }} {{ section.imageSrc }}</section>',
-                'travel_plan/render/day_blocks/activity.html.twig' => '<article class="block">{{ block.title }} {{ block.timeRangeLabel|default("") }}</article>',
-                'travel_plan/render/day_blocks/accommodation.html.twig' => '<article class="block">{{ block.title }}</article>',
-                'travel_plan/render/day_blocks/transport.html.twig' => '<article class="block">{{ block.title }}</article>',
-                'travel_plan/render/day_blocks/meal.html.twig' => '<article class="block">{{ block.title }}</article>',
-                'travel_plan/render/day_blocks/tip.html.twig' => '<article class="block">{{ block.title }}</article>',
-                'travel_plan/render/day_blocks/note.html.twig' => '<article class="block">{{ block.title }}</article>',
-                'travel_plan/render/day_blocks/free_text.html.twig' => '<article class="block">{{ block.title }}</article>',
-            ])),
-            new IconResolver(\dirname(__DIR__, 3)),
-            new TravelPlanContentHelper($this->createStub(MediaManagerInterface::class), \dirname(__DIR__, 3)),
-        );
-
-        $html = $renderer->renderForAccount($travelPlan);
-
-        self::assertStringContainsString('intro=Welkom|profile=Mei', $html);
-        self::assertStringContainsString('destinations[1]|destination|<section class="destination travel-plan-page-break-before">', $html);
-        self::assertStringContainsString('destinations[1].sections[1]|route_overview|<section class="route">', $html);
-        self::assertStringContainsString('route-icon</section>', $html);
-        self::assertStringContainsString('destinations[1].sections[2]|day|<section class="day travel-plan-page-break-before travel-plan-variant--primary">', $html);
-        self::assertStringContainsString('[destinations[1].sections[2].blocks[1]|activity|<article class="block travel-plan-page-break-before travel-plan-variant--secondary">', $html);
-        self::assertStringContainsString('destinations[2]|image|<section class="image">Foto /uploads/foto.jpg</section>', $html);
+    private function projectDir(): string
+    {
+        return \dirname(__DIR__, 3);
     }
 }

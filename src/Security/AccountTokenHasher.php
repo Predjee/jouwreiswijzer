@@ -16,6 +16,6 @@ final readonly class AccountTokenHasher
 
     public function hash(string $token): string
     {
-        return \hash('sha256', $this->secret.'%'.$token);
+        return \hash('sha256', $this->secret . '%' . $token);
     }
 }

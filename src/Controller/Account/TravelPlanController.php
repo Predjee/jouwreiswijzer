@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller\Account;
 
+use App\Companion\CompanionContentHelper;
 use App\Entity\TravelPlan;
 use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelPlanRepository;
-use App\Service\FeedbackIndex;
-use App\Service\TravelCompanion\CompanionContentHelper;
+use App\TravelPlan\Feedback\FeedbackIndex;
 use App\TravelPlan\Pdf\TravelPlanPdfGenerator;
 use App\TravelPlan\Pdf\TravelPlanPdfStorage;
 use App\TravelPlan\Renderer\TravelPlanRenderer;
@@ -39,13 +39,18 @@ final class TravelPlanController extends AbstractController
 
         $feedbackItems = $feedbackRepository->findForPlanAndContact($travelPlan, $contact);
         $feedbackByPath = $feedbackIndex->byPath($feedbackItems);
-        $feedbackEnabled = !CompanionContentHelper::hasTripStarted($travelPlan->getContent());
+        $tripStarted = CompanionContentHelper::hasTripStarted($travelPlan->getContent());
+        $roundsRemaining = $travelPlan->remainingFeedbackRounds();
+        $feedbackEnabled = !$tripStarted && $roundsRemaining > 0;
 
         return $this->render('account/travel_plan.html.twig', [
             'travel_plan' => $travelPlan,
             'feedback_enabled' => $feedbackEnabled,
             'travel_plan_feedback' => $feedbackByPath[''] ?? null,
             'feedback_round_count' => $feedbackIndex->countActive($feedbackItems),
+            'feedback_rounds_remaining' => $roundsRemaining,
+            'feedback_rounds_total' => $travelPlan->effectiveMaxFeedbackRounds(),
+            'feedback_rounds_exhausted' => !$tripStarted && 0 === $roundsRemaining,
             'travel_plan_view_html' => $renderer->renderForAccount($travelPlan, [], false),
             'travel_plan_feedback_html' => $feedbackEnabled
                 ? $renderer->renderForAccount($travelPlan, $feedbackByPath)

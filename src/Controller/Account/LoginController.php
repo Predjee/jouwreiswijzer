@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Account;
 
-use App\Service\ForgotPasswordService;
-use Symfony\Component\HttpFoundation\Request;
+use App\Account\ForgotPasswordService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;

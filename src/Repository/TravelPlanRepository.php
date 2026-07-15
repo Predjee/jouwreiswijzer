@@ -38,7 +38,7 @@ final class TravelPlanRepository extends ServiceEntityRepository
 
     public function findPublishedForContact(int $id, Contact $contact): ?TravelPlan
     {
-        return $this->createQueryBuilder('travelPlan')
+        $result = $this->createQueryBuilder('travelPlan')
             ->innerJoin('travelPlan.travelRequest', 'travelRequest')
             ->andWhere('travelPlan.id = :id')
             ->andWhere('travelRequest.contact = :contact')
@@ -48,6 +48,8 @@ final class TravelPlanRepository extends ServiceEntityRepository
             ->setParameter('status', TravelPlan::STATUS_PUBLISHED)
             ->getQuery()
             ->getOneOrNullResult();
+
+        return $result instanceof TravelPlan ? $result : null;
     }
 
     /**

@@ -7,7 +7,7 @@ namespace App\ViewModel\TravelCompanion;
 final readonly class CompanionTrip
 {
     /**
-     * @param list<CompanionDay>   $days
+     * @param list<CompanionDay> $days
      * @param list<CompanionBlock> $blocks
      */
     public function __construct(

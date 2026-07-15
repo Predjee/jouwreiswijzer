@@ -6,10 +6,10 @@ namespace App\Api\App\QueryHandler;
 
 use App\Api\App\Query\GetTripChecklistQuery;
 use App\Api\App\ReadModel\ChecklistReadModel;
+use App\Companion\CompanionContentHelper;
 use App\Entity\TravelPlan;
 use App\Repository\TravelPlanChecklistStateRepository;
 use App\Repository\TravelPlanRepository;
-use App\Service\TravelCompanion\CompanionContentHelper;
 
 final readonly class GetTripChecklistQueryHandler
 {
@@ -64,7 +64,7 @@ final readonly class GetTripChecklistQueryHandler
         foreach (CompanionContentHelper::destinationSections($content) as $sectionData) {
             $section = $sectionData['section'];
 
-            if (!\is_array($section) || 'checklist' !== ($section['type'] ?? null)) {
+            if ('checklist' !== ($section['type'] ?? null)) {
                 continue;
             }
 

@@ -14,6 +14,12 @@ class TravelPlan
     public const STATUS_DRAFT = 'draft';
     public const STATUS_PUBLISHED = 'published';
 
+    /**
+     * Standaard aantal feedbackrondes per reisplan; per plan te verhogen
+     * via maxFeedbackRounds (admin, "extra ronde toekennen").
+     */
+    public const DEFAULT_MAX_FEEDBACK_ROUNDS = 2;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -31,6 +37,12 @@ class TravelPlan
      */
     #[ORM\Column(type: 'json')]
     private array $content = [];
+
+    #[ORM\Column(options: ['default' => 0])]
+    private int $feedbackRoundsUsed = 0;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $maxFeedbackRounds = null;
 
     #[ORM\Column(length: 30, options: ['default' => self::STATUS_DRAFT])]
     private string $status = self::STATUS_DRAFT;
@@ -140,6 +152,48 @@ class TravelPlan
         return self::STATUS_PUBLISHED === $this->status
             && null !== $this->publishedAt
             && null !== $this->pdfMediaId;
+    }
+
+    public function getFeedbackRoundsUsed(): int
+    {
+        return $this->feedbackRoundsUsed;
+    }
+
+    public function incrementFeedbackRoundsUsed(): self
+    {
+        ++$this->feedbackRoundsUsed;
+
+        return $this;
+    }
+
+    public function getMaxFeedbackRounds(): ?int
+    {
+        return $this->maxFeedbackRounds;
+    }
+
+    public function setMaxFeedbackRounds(?int $maxFeedbackRounds): self
+    {
+        $this->maxFeedbackRounds = $maxFeedbackRounds;
+
+        return $this;
+    }
+
+    /**
+     * De geldende limiet: de per-plan-override of anders de standaard.
+     */
+    public function effectiveMaxFeedbackRounds(): int
+    {
+        return $this->maxFeedbackRounds ?? self::DEFAULT_MAX_FEEDBACK_ROUNDS;
+    }
+
+    public function remainingFeedbackRounds(): int
+    {
+        return \max(0, $this->effectiveMaxFeedbackRounds() - $this->feedbackRoundsUsed);
+    }
+
+    public function hasFeedbackRoundsRemaining(): bool
+    {
+        return $this->remainingFeedbackRounds() > 0;
     }
 
     public function getPdfMediaId(): ?int

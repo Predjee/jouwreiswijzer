@@ -19,6 +19,13 @@ travel_request.put:
     defaults:
         _format: json
 
+travel_request.delete:
+    path: /admin/api/travel-requests/{id}
+    controller: App\Controller\Admin\TravelRequestController::deleteAction
+    methods: [DELETE]
+    defaults:
+        _format: json
+
 travel_request_plan.get:
     path: /admin/api/travel-request-plans/{id}
     controller: App\Controller\Admin\TravelRequestController::getPlanAction

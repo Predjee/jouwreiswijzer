@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Api\App\CommandHandler;
 
 use App\Api\App\Command\ToggleChecklistItemCommand;
+use App\Companion\CompanionContentHelper;
 use App\Entity\TravelPlan;
 use App\Entity\TravelPlanChecklistState;
 use App\Event\ChecklistItemToggledEvent;
 use App\Repository\TravelPlanChecklistStateRepository;
 use App\Repository\TravelPlanRepository;
-use App\Service\TravelCompanion\CompanionContentHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -100,7 +100,7 @@ final readonly class ToggleChecklistItemCommandHandler
         foreach (CompanionContentHelper::destinationSections($content) as $sectionData) {
             $section = $sectionData['section'];
 
-            if (!\is_array($section) || 'checklist' !== ($section['type'] ?? null)) {
+            if ('checklist' !== ($section['type'] ?? null)) {
                 continue;
             }
 
@@ -127,8 +127,8 @@ final readonly class ToggleChecklistItemCommandHandler
     }
 
     /**
-     * @param list<string>         $itemIds
-     * @param array<string, bool>  $checkedItems
+     * @param list<string> $itemIds
+     * @param array<string, bool> $checkedItems
      *
      * @return array{completed: int, total: int}
      */

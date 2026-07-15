@@ -6,9 +6,9 @@ namespace App\Api\App\QueryHandler;
 
 use App\Api\App\Query\GetTodayQuery;
 use App\Api\App\ReadModel\TodayReadModel;
+use App\Companion\CompanionContentHelper;
+use App\Companion\TravelCompanionBuilder;
 use App\Repository\TravelPlanRepository;
-use App\Service\TravelCompanion\CompanionContentHelper;
-use App\Service\TravelCompanion\TravelCompanionBuilder;
 use App\ViewModel\TravelCompanion\CompanionBlock;
 use App\ViewModel\TravelCompanion\CompanionDay;
 
@@ -76,7 +76,7 @@ final readonly class GetTodayQueryHandler
         }
 
         foreach ($day->blocks as $block) {
-            if (!$block instanceof CompanionBlock || !$this->isActivity($block)) {
+            if (!$this->isActivity($block)) {
                 continue;
             }
 

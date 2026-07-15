@@ -35,7 +35,7 @@ final readonly class TravelPlanPreviewController
         $travelPlan = $this->repository->find($id);
 
         if (!$travelPlan instanceof TravelPlan) {
-            throw new NotFoundHttpException(sprintf('TravelPlan "%d" was not found.', $id));
+            throw new NotFoundHttpException(\sprintf('TravelPlan "%d" was not found.', $id));
         }
 
         return new Response(

@@ -6,10 +6,10 @@ namespace App\Controller\Admin;
 
 use App\Admin\TravelRequestAdmin;
 use App\Entity\TravelPlan;
+use App\Notification\NotificationService;
 use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelPlanRepository;
 use App\Repository\TravelRequestRepository;
-use App\Service\NotificationService;
 use App\TravelPlan\Pdf\TravelPlanPdfGenerator;
 use App\TravelPlan\Pdf\TravelPlanPdfStorage;
 use Doctrine\ORM\EntityManagerInterface;

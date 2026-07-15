@@ -6,6 +6,7 @@ namespace App\TravelPlan\Pdf;
 
 use App\Entity\TravelPlan;
 use Doctrine\ORM\EntityManagerInterface;
+use Sulu\Bundle\MediaBundle\Entity\MediaInterface;
 use Sulu\Bundle\MediaBundle\Media\Exception\MediaNotFoundException;
 use Sulu\Bundle\MediaBundle\Media\Manager\MediaManagerInterface;
 use Sulu\Component\Media\SystemCollections\SystemCollectionManagerInterface;
@@ -32,14 +33,14 @@ final readonly class TravelPlanPdfStorage
     {
         $content = $this->pdfGenerator->generate($travelPlan);
         $filename = $this->createFilename($travelPlan);
-        $temporaryFile = tempnam(sys_get_temp_dir(), 'travel-plan-');
+        $temporaryFile = \tempnam(\sys_get_temp_dir(), 'travel-plan-');
 
         if (false === $temporaryFile) {
             throw new \RuntimeException('Unable to create a temporary TravelPlan PDF.');
         }
 
-        if (false === file_put_contents($temporaryFile, $content)) {
-            unlink($temporaryFile);
+        if (false === \file_put_contents($temporaryFile, $content)) {
+            \unlink($temporaryFile);
 
             throw new \RuntimeException('Unable to write the temporary TravelPlan PDF.');
         }
@@ -56,7 +57,7 @@ final readonly class TravelPlanPdfStorage
             $mediaEntity = $media->getEntity();
             $contact = $travelPlan->getTravelRequest()->getContact();
 
-            if (!$contact->getMedias()->contains($mediaEntity)) {
+            if ($mediaEntity instanceof MediaInterface && !$contact->getMedias()->contains($mediaEntity)) {
                 $contact->addMedia($mediaEntity);
             }
 
@@ -67,8 +68,8 @@ final readonly class TravelPlanPdfStorage
 
             $this->entityManager->flush();
         } finally {
-            if (is_file($temporaryFile)) {
-                unlink($temporaryFile);
+            if (\is_file($temporaryFile)) {
+                \unlink($temporaryFile);
             }
         }
 
@@ -85,7 +86,7 @@ final readonly class TravelPlanPdfStorage
         $data = [
             'collection' => $this->systemCollectionManager->getSystemCollection(self::COLLECTION_KEY),
             'locale' => $locale,
-            'title' => pathinfo($filename, \PATHINFO_FILENAME),
+            'title' => \pathinfo($filename, \PATHINFO_FILENAME),
         ];
 
         if (null !== $travelPlan->getPdfMediaId()) {
@@ -111,9 +112,9 @@ final readonly class TravelPlanPdfStorage
 
     public function createFilename(TravelPlan $travelPlan): string
     {
-        $titleSlug = strtolower((string) $this->slugger->slug($travelPlan->getTitle()));
+        $titleSlug = \strtolower((string) $this->slugger->slug($travelPlan->getTitle()));
 
-        return sprintf(
+        return \sprintf(
             '%s-%d.pdf',
             '' !== $titleSlug ? $titleSlug : 'reisplan',
             $travelPlan->getId(),

@@ -34,7 +34,7 @@ final readonly class CreateMemoryAlbumPhotoRequest
         $maxFilesize = UploadedFile::getMaxFilesize();
         $size = $this->image->getSize();
 
-        if (null !== $size && $size > $maxFilesize) {
+        if (false !== $size && $size > $maxFilesize) {
             $context
                 ->buildViolation('De foto is groter dan de toegestane uploadlimiet.')
                 ->atPath('image')

@@ -132,6 +132,7 @@
             "Composer\\Config::disableProcessTimeout",
             "@php -S 127.0.0.1:8000 -t public config/router.php"
         ],
+        "dev-assets-reset": "rm -rf public/assets var/cache/website/dev",
         "bootstrap-test-environment": [
             "@php bin/adminconsole doctrine:database:drop --if-exists --force --env test",
             "@php bin/adminconsole doctrine:database:create --env test",

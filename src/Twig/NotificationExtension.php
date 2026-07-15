@@ -6,7 +6,7 @@ namespace App\Twig;
 
 use App\Repository\NotificationRepository;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Component\Security\Authentication\UserInterface as SuluUserInterface;
+use Sulu\Bundle\SecurityBundle\Entity\User as SuluUser;
 use Symfony\Bundle\SecurityBundle\Security;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -29,7 +29,7 @@ final class NotificationExtension extends AbstractExtension
     public function getUnreadCount(): int
     {
         $user = $this->security->getUser();
-        $contact = $user instanceof SuluUserInterface ? $user->getContact() : null;
+        $contact = $user instanceof SuluUser ? $user->getContact() : null;
 
         if (!$contact instanceof Contact) {
             return 0;

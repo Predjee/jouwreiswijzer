@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Account;
 
+use App\Account\ContactProfileUpdater;
 use App\Dto\UpdateProfileRequest;
-use App\Service\ContactProfileUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

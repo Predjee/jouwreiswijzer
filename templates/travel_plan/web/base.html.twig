@@ -1,0 +1,49 @@
+{% set request = travelPlan.travelRequest|default(null) %}
+{% set contact = request ? request.contact|default(null) : null %}
+{% set customerName = contact
+    ? [contact.firstName|default, contact.lastName|default]|filter(value => value)|join(' ')
+    : ''
+%}
+{{ include('travel_plan/web/_style_tokens.html.twig', { styleVariants: styleVariants|default({}) }) }}
+<article class="travel-plan">
+    <header class="travel-plan__header">
+        <p class="travel-plan-cover__eyebrow">Persoonlijke reisgids</p>
+        <h1>{{ travelPlan.title }}</h1>
+        {% if intro.title|default and intro.title != travelPlan.title %}
+            <p class="travel-plan-cover__subtitle">{{ intro.title }}</p>
+        {% endif %}
+        {% if customerName %}
+            <p class="travel-plan-cover__customer">Samengesteld voor {{ customerName }}</p>
+        {% endif %}
+        {% if intro.text|default %}
+            <div class="travel-plan__intro">{{ intro.text|raw }}</div>
+        {% endif %}
+        {% set profileRows = {
+            'Periode': tripProfile.period|default,
+            'Duur': tripProfile.duration|default,
+            'Reisstijl': tripProfile.travelStyle|default,
+            'Budgetindicatie': tripProfile.budget|default,
+            'Pakket': tripProfile.packageType|default
+        }|filter(value => value) %}
+        {% if profileRows %}
+            <table class="travel-plan__profile">
+                {% for label, value in profileRows %}
+                    <tr><th>{{ label }}</th><td>{{ value }}</td></tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </header>
+
+    {% for renderedSection in renderedSections %}
+        {{ renderedSection.html|raw }}
+        {% if feedbackEnabled|default(false) %}
+            {{ include('account/_travel_plan_feedback_form.html.twig', {
+                travelPlan: travelPlan,
+                blockPath: renderedSection.blockPath,
+                feedback: renderedSection.feedback,
+                feedbackLabel: 'Feedback op dit onderdeel',
+                feedbackContext: 'section'
+            }) }}
+        {% endif %}
+    {% endfor %}
+</article>

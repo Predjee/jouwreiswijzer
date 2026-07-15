@@ -7,6 +7,7 @@ namespace App\Sulu;
 use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\FieldMetadata;
 use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\FormMetadata;
 use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\FormMetadataLoaderInterface;
+use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\ItemMetadata;
 use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\SectionMetadata;
 use Sulu\Bundle\AdminBundle\Metadata\MetadataInterface;
 use Sulu\Bundle\FormBundle\Metadata\DynamicFormMetadataLoader;
@@ -54,7 +55,7 @@ final class RequestFormMetadataLoader implements FormMetadataLoaderInterface
     }
 
     /**
-     * @param array<string, FieldMetadata|SectionMetadata> $items
+     * @param array<ItemMetadata> $items
      */
     private function setMailTextEditorType(array $items): bool
     {

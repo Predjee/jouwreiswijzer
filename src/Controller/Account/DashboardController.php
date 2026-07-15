@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Account;
 
+use App\Account\AccountDashboardBuilder;
 use App\Repository\NotificationRepository;
 use App\Repository\TravelPlanRepository;
-use App\Service\AccountDashboardBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;

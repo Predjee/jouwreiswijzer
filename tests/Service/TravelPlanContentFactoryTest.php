@@ -4,11 +4,31 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
-use App\Service\TravelPlanContentFactory;
+use App\TravelPlan\Content\TravelPlanContent;
+use App\TravelPlan\Content\TravelPlanContentFactory;
 use PHPUnit\Framework\TestCase;
 
 final class TravelPlanContentFactoryTest extends TestCase
 {
+    public function testToFormDataLaatStorageVersieWeg(): void
+    {
+        $formData = (new TravelPlanContentFactory())->toFormData([
+            '_version' => TravelPlanContent::VERSION,
+            'destinations' => [
+                [
+                    '_version' => 99,
+                    'type' => 'destination',
+                    'title' => 'Lima',
+                ],
+            ],
+        ]);
+
+        self::assertArrayNotHasKey('_version', $formData);
+        self::assertIsArray($formData['destinations']);
+        self::assertIsArray($formData['destinations'][0]);
+        self::assertArrayNotHasKey('_version', $formData['destinations'][0]);
+    }
+
     public function testToFormDataKeepsNormalizedStructureFromTypedContent(): void
     {
         $factory = new TravelPlanContentFactory();
@@ -68,6 +88,7 @@ final class TravelPlanContentFactoryTest extends TestCase
                                     'text' => '<p>Door de stad</p>',
                                     'icon' => 'compass',
                                     'location' => 'Centrum',
+                                    'priceLabel' => '',
                                     'timeLabel' => '',
                                     'time' => '09:05',
                                     'startTime' => '09:00',
@@ -131,6 +152,7 @@ final class TravelPlanContentFactoryTest extends TestCase
                                     'text' => '<p>Door de stad</p>',
                                     'icon' => '',
                                     'location' => 'Centrum',
+                                    'priceLabel' => '',
                                     'time' => '9:05',
                                     'startTime' => '09:00',
                                     'endTime' => '11:00',
@@ -152,6 +174,7 @@ final class TravelPlanContentFactoryTest extends TestCase
         $factory = new TravelPlanContentFactory();
 
         self::assertSame([
+            '_version' => TravelPlanContent::VERSION,
             'intro' => [
                 'type' => 'travel_plan_intro',
                 'title' => 'Welkom',
@@ -198,6 +221,7 @@ final class TravelPlanContentFactoryTest extends TestCase
                                     'text' => '',
                                     'icon' => 'utensils',
                                     'location' => 'Markt',
+                                    'priceLabel' => '',
                                     'timeLabel' => '',
                                     'time' => '12:05',
                                     'startTime' => '',

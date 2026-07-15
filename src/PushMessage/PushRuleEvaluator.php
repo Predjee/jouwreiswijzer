@@ -45,10 +45,6 @@ final readonly class PushRuleEvaluator
         $created = 0;
 
         foreach ($this->travelPlanRepository->findPublishedForPushRuleEvaluation() as $travelPlan) {
-            if (!$travelPlan instanceof TravelPlan) {
-                continue;
-            }
-
             try {
                 $created += $this->evaluateRuleForTravelPlan($rule, $travelPlan);
             } catch (\Throwable $exception) {

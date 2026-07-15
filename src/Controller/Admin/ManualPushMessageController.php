@@ -7,11 +7,11 @@ namespace App\Controller\Admin;
 use App\Admin\PushRuleAdmin;
 use App\Entity\ScheduledPushMessage;
 use App\Entity\TravelPlan;
+use App\PushMessage\ManualPushMessageManager;
 use App\PushMessage\PushMessageTemplateRenderer;
 use App\PushMessage\TravelPlanPersonalizationContextBuilder;
 use App\Repository\ScheduledPushMessageRepository;
 use App\Repository\TravelPlanRepository;
-use App\Service\ManualPushMessageManager;
 use FOS\RestBundle\View\ViewHandlerInterface;
 use Sulu\Component\Rest\AbstractRestController;
 use Sulu\Component\Rest\ListBuilder\PaginatedRepresentation;
@@ -89,12 +89,12 @@ final class ManualPushMessageController extends AbstractRestController implement
         if ('' !== $query) {
             $qb
                 ->andWhere('LOWER(travelPlan.title) LIKE :query OR LOWER(contact.firstName) LIKE :query OR LOWER(contact.lastName) LIKE :query')
-                ->setParameter('query', '%'.\strtolower($query).'%');
+                ->setParameter('query', '%' . \strtolower($query) . '%');
         }
 
         $travelPlans = $qb->getQuery()->getResult();
 
-        if ((\is_int($selectedId) || (\is_string($selectedId) && 1 === \preg_match('/^\d+$/D', $selectedId)))) {
+        if (\is_string($selectedId) && 1 === \preg_match('/^\d+$/D', $selectedId)) {
             $selected = $this->travelPlanRepository->find((int) $selectedId);
 
             if ($selected instanceof TravelPlan && !\in_array($selected, $travelPlans, true)) {
@@ -212,7 +212,7 @@ final class ManualPushMessageController extends AbstractRestController implement
         $contactName = \trim($contact->getFullName());
 
         if ('' === $contactName) {
-            $contactName = \trim($contact->getFirstName().' '.$contact->getLastName());
+            $contactName = \trim($contact->getFirstName() . ' ' . $contact->getLastName());
         }
 
         return '' === $contactName

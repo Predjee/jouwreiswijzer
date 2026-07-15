@@ -1,0 +1,9 @@
+<section class="travel-plan-section travel-plan-section--image{{ section.pageBreakClass ? ' ' ~ section.pageBreakClass : '' }}">
+    {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
+    {% if section.imageSrc|default %}
+        <figure class="travel-plan-image-block">
+            <img src="{{ section.imageSrc }}" alt="{{ section.title|default('Reisbeeld') }}">
+            {% if section.caption|default %}<figcaption>{{ section.caption }}</figcaption>{% endif %}
+        </figure>
+    {% endif %}
+</section>

@@ -10,9 +10,11 @@ use App\Entity\TravelPlanFeedback;
 use App\Entity\TravelRequest;
 use App\Repository\TravelPlanFeedbackRepository;
 use App\Repository\TravelRequestRepository;
-use App\Service\TravelPlanPublisher;
-use App\Service\TravelPlanContentFactory;
+use App\TravelPlan\Content\TravelPlanContentFactory;
+use App\TravelPlan\Feedback\FeedbackContentAnnotator;
 use App\TravelPlan\Pdf\TravelPlanPdfStorage;
+use App\TravelPlan\TravelPlanPublisher;
+use App\TravelPlan\TravelRequestRemover;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;
 use Sulu\Component\Rest\AbstractRestController;
@@ -39,6 +41,8 @@ final class TravelRequestController extends AbstractRestController implements Se
         private readonly TravelPlanPublisher $travelPlanPublisher,
         private readonly TravelPlanPdfStorage $pdfStorage,
         private readonly TravelPlanFeedbackRepository $feedbackRepository,
+        private readonly FeedbackContentAnnotator $feedbackAnnotator,
+        private readonly TravelRequestRemover $travelRequestRemover,
     ) {
         parent::__construct($viewHandler);
     }
@@ -49,7 +53,7 @@ final class TravelRequestController extends AbstractRestController implements Se
             TravelRequestAdmin::LIST_KEY,
         );
         $listBuilder = $this->listBuilderFactory->create(TravelRequest::class);
-        $this->restHelper->initializeListBuilder($listBuilder, $fieldDescriptors);
+        $this->restHelper->initializeListBuilder($listBuilder, $fieldDescriptors ?? []);
 
         $list = new PaginatedRepresentation(
             $listBuilder->execute(),
@@ -123,9 +127,15 @@ final class TravelRequestController extends AbstractRestController implements Se
             throw new BadRequestHttpException($exception->getMessage(), $exception);
         }
 
+        $maxFeedbackRounds = $data->get('maxFeedbackRounds');
+        $maxFeedbackRounds = \is_numeric($maxFeedbackRounds) && (int) $maxFeedbackRounds > 0
+            ? (int) $maxFeedbackRounds
+            : null;
+
         $travelPlan
             ->setTitle($title)
-            ->setContent($content);
+            ->setContent($content)
+            ->setMaxFeedbackRounds($maxFeedbackRounds);
 
         if (TravelPlan::STATUS_PUBLISHED === $status) {
             $this->travelPlanPublisher->publish($travelPlan);
@@ -142,6 +152,13 @@ final class TravelRequestController extends AbstractRestController implements Se
         }
 
         return $this->handleView($this->view($this->serializeTravelPlan($travelPlan)));
+    }
+
+    public function deleteAction(int $id): Response
+    {
+        $this->travelRequestRemover->remove($this->findTravelRequest($id));
+
+        return new Response(status: Response::HTTP_NO_CONTENT);
     }
 
     public function getSecurityContext(): string
@@ -212,6 +229,12 @@ final class TravelRequestController extends AbstractRestController implements Se
             'pdfGeneratedAt' => $travelPlan->getPdfGeneratedAt()?->format('d-m-Y H:i'),
             'pdfReleasedAt' => $travelPlan->getPdfReleasedAt()?->format('d-m-Y H:i'),
             'customerVisible' => $travelPlan->isVisibleForCustomer(),
+            'maxFeedbackRounds' => $travelPlan->getMaxFeedbackRounds(),
+            'feedbackRoundsStatus' => \sprintf(
+                '%d van %d gebruikt',
+                $travelPlan->getFeedbackRoundsUsed(),
+                $travelPlan->effectiveMaxFeedbackRounds(),
+            ),
         ], $this->contentFactory->toFormData($travelPlan->getContent()));
 
         $activeFeedback = $this->feedbackRepository->findActiveForTravelPlan($travelPlan);
@@ -223,7 +246,7 @@ final class TravelRequestController extends AbstractRestController implements Se
         $data['feedbackSummary'] = \array_map(
             fn (TravelPlanFeedback $feedback): array => [
                 'id' => $feedback->getId(),
-                'label' => $this->feedbackTargetLabel($data, $feedback),
+                'label' => $this->feedbackAnnotator->targetLabel($data, $feedback),
                 'status' => $feedback->getStatus(),
                 'anchorId' => 'travel-plan-feedback-' . $feedback->getId(),
                 'blockPath' => $feedback->getBlockPath(),
@@ -233,7 +256,7 @@ final class TravelRequestController extends AbstractRestController implements Se
         );
 
         foreach ($activeFeedback as $feedback) {
-            $this->attachFeedback($data, $feedback);
+            $this->feedbackAnnotator->attach($data, $feedback);
         }
 
         return $data;
@@ -245,7 +268,7 @@ final class TravelRequestController extends AbstractRestController implements Se
     private function pdfReleaseStatus(TravelPlan $travelPlan, array $blockingFeedback): string
     {
         if (null !== $travelPlan->getPdfReleasedAt()) {
-            return 'PDF vrijgegeven op '.$travelPlan->getPdfReleasedAt()->format('d-m-Y H:i');
+            return 'PDF vrijgegeven op ' . $travelPlan->getPdfReleasedAt()->format('d-m-Y H:i');
         }
 
         if (TravelPlan::STATUS_PUBLISHED !== $travelPlan->getStatus()) {
@@ -272,137 +295,6 @@ final class TravelRequestController extends AbstractRestController implements Se
             $activeCount,
             $awaitingAcceptanceCount,
         );
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function attachFeedback(array &$data, TravelPlanFeedback $feedback): void
-    {
-        $blockPath = $feedback->getBlockPath();
-        $serialized = [
-            'id' => $feedback->getId(),
-            'status' => $feedback->getStatus(),
-            'message' => $feedback->getMessage(),
-            'blockPath' => $blockPath,
-            'blockType' => $feedback->getBlockType(),
-            'contactName' => $feedback->getContact()->getFullName(),
-            'createdAt' => $feedback->getCreatedAt()->format('d-m-Y H:i'),
-        ];
-
-        if (null === $blockPath) {
-            $data['planFeedback'] ??= $serialized;
-
-            return;
-        }
-
-        if (1 === \preg_match('/^destinations\[(\d+)]$/D', $blockPath, $matches)) {
-            $destinationIndex = (int) $matches[1];
-
-            if (isset($data['destinations'][$destinationIndex]) && \is_array($data['destinations'][$destinationIndex])) {
-                $data['destinations'][$destinationIndex]['_feedback'] ??= $serialized;
-            }
-
-            return;
-        }
-
-        if (1 === \preg_match(
-            '/^destinations\[(\d+)]\.sections\[(\d+)]$/D',
-            $blockPath,
-            $matches,
-        )) {
-            $destinationIndex = (int) $matches[1];
-            $sectionIndex = (int) $matches[2];
-
-            if (isset($data['destinations'][$destinationIndex]['sections'][$sectionIndex]) && \is_array($data['destinations'][$destinationIndex]['sections'][$sectionIndex])) {
-                $data['destinations'][$destinationIndex]['sections'][$sectionIndex]['_feedback'] ??= $serialized;
-            }
-
-            return;
-        }
-
-        if (1 !== \preg_match(
-            '/^destinations\[(\d+)]\.sections\[(\d+)]\.blocks\[(\d+)]$/D',
-            $blockPath,
-            $matches,
-        )) {
-            return;
-        }
-
-        $destinationIndex = (int) $matches[1];
-        $sectionIndex = (int) $matches[2];
-        $blockIndex = (int) $matches[3];
-
-        if (
-            isset($data['destinations'][$destinationIndex]['sections'][$sectionIndex]['blocks'][$blockIndex])
-            && \is_array($data['destinations'][$destinationIndex]['sections'][$sectionIndex]['blocks'][$blockIndex])
-        ) {
-            $data['destinations'][$destinationIndex]['sections'][$sectionIndex]['blocks'][$blockIndex]['_feedback'] ??= $serialized;
-        }
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function feedbackTargetLabel(array $data, TravelPlanFeedback $feedback): string
-    {
-        $blockPath = $feedback->getBlockPath();
-
-        if (null === $blockPath) {
-            return 'Hele reisplan';
-        }
-
-        if (1 === \preg_match('/^destinations\[(\d+)]$/D', $blockPath, $matches)) {
-            $destinationIndex = (int) $matches[1];
-            $destination = $data['destinations'][$destinationIndex] ?? [];
-            $title = \trim((string) ($destination['title'] ?? ''));
-
-            return \sprintf(
-                'Bestemming %d: %s',
-                $destinationIndex + 1,
-                '' !== $title ? $title : 'Bestemming',
-            );
-        }
-
-        if (1 === \preg_match('/^destinations\[(\d+)]\.sections\[(\d+)]$/D', $blockPath, $matches)) {
-            $destinationIndex = (int) $matches[1];
-            $sectionIndex = (int) $matches[2];
-            $section = $data['destinations'][$destinationIndex]['sections'][$sectionIndex] ?? [];
-            $title = \trim((string) ($section['title'] ?? ''));
-
-            return \sprintf(
-                'Bestemming %d, sectie %d: %s',
-                $destinationIndex + 1,
-                $sectionIndex + 1,
-                '' !== $title ? $title : ($feedback->getBlockType() ?? 'Onderdeel'),
-            );
-        }
-
-        if (1 === \preg_match(
-            '/^destinations\[(\d+)]\.sections\[(\d+)]\.blocks\[(\d+)]$/D',
-            $blockPath,
-            $matches,
-        )) {
-            $destinationIndex = (int) $matches[1];
-            $sectionIndex = (int) $matches[2];
-            $blockIndex = (int) $matches[3];
-            $section = $data['destinations'][$destinationIndex]['sections'][$sectionIndex] ?? [];
-            $block = $section['blocks'][$blockIndex] ?? [];
-            $dayNumber = \trim((string) ($section['dayNumber'] ?? ''));
-            $dayLabel = '' !== $dayNumber
-                ? \sprintf('dag %d', (int) $dayNumber)
-                : \sprintf('sectie %d', $sectionIndex + 1);
-            $title = \trim((string) ($block['title'] ?? ''));
-
-            return \sprintf(
-                'Bestemming %d, %s: %s',
-                $destinationIndex + 1,
-                $dayLabel,
-                '' !== $title ? $title : ($feedback->getBlockType() ?? 'Dagonderdeel'),
-            );
-        }
-
-        return $feedback->getBlockType() ?? 'Reisplanonderdeel';
     }
 
     /**

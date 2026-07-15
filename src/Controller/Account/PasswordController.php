@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Account;
 
+use App\Account\PasswordResetService;
 use App\Dto\ChangePasswordRequest;
 use App\Dto\ResetPasswordRequest;
-use App\Service\PasswordResetService;
 use Doctrine\ORM\EntityManagerInterface;
 use Sulu\Bundle\SecurityBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,10 +29,6 @@ final class PasswordController extends AbstractController
         ValidatorInterface $validator,
     ): Response {
         [$user] = $this->getCustomer();
-
-        if (!$user instanceof User) {
-            throw $this->createAccessDeniedException('Ongeldig gebruikerstype.');
-        }
 
         $errors = [];
 

@@ -20,7 +20,8 @@ final class PushSubscriptionController extends AbstractController
 
     #[Route('/api/app/push-subscriptions', name: 'api_app_push_subscriptions_register', methods: ['POST'])]
     public function register(
-        #[MapRequestPayload] RegisterPushSubscriptionRequest $request,
+        #[MapRequestPayload]
+        RegisterPushSubscriptionRequest $request,
         PushSubscriptionRepository $pushSubscriptionRepository,
         EntityManagerInterface $entityManager,
     ): JsonResponse {
@@ -51,7 +52,8 @@ final class PushSubscriptionController extends AbstractController
 
     #[Route('/api/app/push-subscriptions/preferences', name: 'api_app_push_preferences_update', methods: ['PATCH'])]
     public function updatePreferences(
-        #[MapRequestPayload] PushPreferencesRequest $request,
+        #[MapRequestPayload]
+        PushPreferencesRequest $request,
         PushSubscriptionRepository $pushSubscriptionRepository,
         EntityManagerInterface $entityManager,
     ): JsonResponse {

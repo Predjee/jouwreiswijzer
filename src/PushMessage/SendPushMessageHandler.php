@@ -48,7 +48,7 @@ final readonly class SendPushMessageHandler
         $subscriptions = $this->pushSubscriptionRepository->findForContact($contact);
         $eligibleSubscriptions = \array_filter(
             $subscriptions,
-            fn ($subscription) => $subscription->isEnabledForChannel($scheduledMessage->getChannel()),
+            static fn ($subscription) => $subscription->isEnabledForChannel($scheduledMessage->getChannel()),
         );
 
         if ([] === $eligibleSubscriptions) {

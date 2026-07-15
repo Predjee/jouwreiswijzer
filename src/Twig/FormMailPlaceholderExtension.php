@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Twig;
 
-use App\Service\FormMailPlaceholderRenderer;
+use App\Form\FormMailPlaceholderRenderer;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 

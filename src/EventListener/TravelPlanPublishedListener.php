@@ -6,8 +6,8 @@ namespace App\EventListener;
 
 use App\Entity\Notification;
 use App\Event\TravelPlanPublishedEvent;
-use App\Service\MailNotifier;
-use App\Service\NotificationService;
+use App\Notification\MailNotifier;
+use App\Notification\NotificationService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 

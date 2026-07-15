@@ -37,9 +37,6 @@ final readonly class CreateMemoryAlbumRequest
         $photoData = $request->request->all('photos');
         $photoFiles = $request->files->all('photos');
 
-        $photoData = \is_array($photoData) ? $photoData : [];
-        $photoFiles = \is_array($photoFiles) ? $photoFiles : [];
-
         $indexes = \array_values(\array_unique([
             ...\array_keys($photoData),
             ...\array_keys($photoFiles),

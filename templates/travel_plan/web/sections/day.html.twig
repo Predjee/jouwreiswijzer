@@ -1,0 +1,36 @@
+<section class="travel-plan-section travel-plan-section--day {{ section.variantClass|default('travel-plan-variant--default') }}{{ section.pageBreakClass ? ' ' ~ section.pageBreakClass : '' }}">{% if section.iconSvg %}<span class="travel-plan-icon-slot" aria-hidden="true">{{ section.iconSvg|raw }}</span>{% endif %}
+        <div class="travel-plan-day__header">
+            {% set dayMeta = [] %}
+            {% if section.dayNumber|default('') is not empty %}
+                {% set dayMeta = dayMeta|merge(['Dag ' ~ section.dayNumber]) %}
+            {% endif %}
+            {% if section.dateLabel|default('') is not empty %}
+                {% set dayMeta = dayMeta|merge([section.dateLabel]) %}
+            {% endif %}
+            {% if dayMeta is not empty %}
+                <p class="travel-plan-day__meta">{{ dayMeta|join(' · ') }}</p>
+            {% endif %}
+            {% if section.title|default %}<h2>{{ section.title }}</h2>{% endif %}
+            {% if section.intro|default %}
+                <div class="travel-plan-section__content travel-plan-day__intro">{{ section.intro|raw }}</div>
+            {% endif %}
+        </div>
+        {% if renderedBlocks|default([]) is not empty %}
+            <div class="travel-plan-day__blocks">
+                {% for renderedBlock in renderedBlocks %}
+                    <div class="travel-plan-day__block-item">
+                        {{ renderedBlock.html|raw }}
+                        {% if feedbackEnabled|default(false) %}
+                            {{ include('account/_travel_plan_feedback_form.html.twig', {
+                                travelPlan: travelPlan,
+                                blockPath: renderedBlock.blockPath,
+                                feedback: renderedBlock.feedback,
+                                feedbackLabel: 'Feedback op dit dagonderdeel',
+                                feedbackContext: 'block'
+                            }) }}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+</section>

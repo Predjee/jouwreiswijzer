@@ -51,12 +51,14 @@ final readonly class ExpoPushClient
             }
 
             $data = $response->toArray(false);
-            $ticketStatus = $data['data']['status'] ?? null;
+            $ticket = \is_array($data['data'] ?? null) ? $data['data'] : [];
 
-            if ('error' === $ticketStatus) {
-                $message = $data['data']['message'] ?? 'Onbekende fout van Expo Push API.';
+            if ('error' === ($ticket['status'] ?? null)) {
+                $message = $ticket['message'] ?? null;
 
-                throw new ExpoPushDeliveryException((string) $message);
+                throw new ExpoPushDeliveryException(
+                    \is_scalar($message) ? (string) $message : 'Onbekende fout van Expo Push API.',
+                );
             }
         } catch (TransportExceptionInterface $exception) {
             $this->logger->error('Expo Push API was niet bereikbaar.', ['exception' => $exception]);

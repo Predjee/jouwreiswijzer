@@ -46,8 +46,7 @@ export default class extends Controller {
 
             if (response.ok && submitted) {
                 this.resetForm(form);
-                this.close();
-                this.showToast('Bedankt! Je aanvraag is ontvangen.', 'success');
+                this.showSuccess();
                 return;
             }
 
@@ -56,6 +55,10 @@ export default class extends Controller {
             if (response.status === 422 && this.replaceInvalidForm(html)) {
                 this.showToast('Controleer de gemarkeerde velden.', 'error');
                 return;
+            }
+
+            if (response.status === 429) {
+                throw new Error('Je hebt in korte tijd meerdere aanvragen verstuurd. Wacht even en probeer het later opnieuw.');
             }
 
             throw new Error('Je aanvraag kon niet worden verstuurd. Probeer het opnieuw.');
@@ -109,6 +112,39 @@ export default class extends Controller {
         buttons.forEach((button) => {
             button.disabled = loading;
         });
+    }
+
+    showSuccess() {
+        if (!this.hasFormContainerTarget) {
+            window.alert('Aanvraag ontvangen.');
+            return;
+        }
+
+        const success = document.createElement('div');
+        success.className = 'request-form-success';
+        success.setAttribute('role', 'status');
+        success.setAttribute('aria-live', 'polite');
+        success.setAttribute('tabindex', '-1');
+        const successText = this.formContainerTarget.dataset.requestFormSuccessText;
+        success.innerHTML = `
+            ${successText ? `<div class="request-form-success__content type-body">${successText}</div>` : ''}
+        `;
+
+        if (this.hasModalTarget) {
+            const closeButton = document.createElement('button');
+            closeButton.type = 'button';
+            closeButton.className = 'btn-primary request-form-success__button';
+            closeButton.textContent = 'Sluiten';
+            closeButton.addEventListener('click', () => this.close());
+            success.append(closeButton);
+        }
+
+        this.formContainerTarget.replaceChildren(success);
+        success.focus({ preventScroll: true });
+
+        if (!this.hasModalTarget) {
+            success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
     }
 
     showToast(message, state) {

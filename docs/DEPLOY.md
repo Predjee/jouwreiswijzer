@@ -27,9 +27,11 @@ De server-side logica staat in losse, leesbare bash-scripts (`deploy/*.sh`) in p
 YAML — die kun je los lezen, los testen, en los aanpassen zonder de workflow-structuur te raken.
 
 Release-strategie: elke deploy krijgt een eigen timestamp-map onder `releases/`, gedeelde data (uploads,
-logs, JWT-keypair) staat in `shared/` en blijft buiten elke release, en `current` wordt na een succesvolle
-deploy atomisch verlegd. Rollback kan via `workflow_dispatch` met een `rollback_release`-timestamp, op
-zowel productie als acceptance.
+logs, JWT-keypair) staat in `shared/` en blijft buiten elke release, en `current` wordt pas na een
+succesvolle server-side migratie en cache-warmup atomisch verlegd. Mislukt een release, dan zet
+`release.sh` de symlinks terug naar de vorige `current`-release en ruimt het de mislukte release-map op.
+Rollback kan via `workflow_dispatch` met een `rollback_release`-timestamp, op zowel productie als
+acceptance.
 
 Werkwijze: ontwikkelen tegen `acceptance`, na akkoord mergen naar `main` voor productie. Tot er een
 expliciete reden is voor afwijking (bijv. een hotfix die niet via acceptance kan), is `main` altijd
@@ -96,7 +98,12 @@ Genereer per omgeving losse VAPID- en JWT-keypairs; deel ze niet tussen producti
 
 ## Composer Install & Assets Builden
 
-Gebeurt automatisch in de GitHub Actions workflow. Handmatig (bijv. lokaal testen van een build):
+Gebeurt automatisch in de GitHub Actions workflow. De asset-build draait op de GitHub runner met een
+build-only SQLite `DATABASE_URL`, zodat de runner nooit met de acceptance- of productiedatabase hoeft te
+verbinden. Pas na de asset-build schrijft de workflow de echte `.env.local` uit GitHub Secrets en stopt
+die in het releasepakket voor de server.
+
+Handmatig (bijv. lokaal testen van een build):
 
 ```bash
 composer install --no-dev --optimize-autoloader --classmap-authoritative
@@ -106,14 +113,16 @@ php bin/console asset-map:compile
 
 ## Database Sync
 
-Het project heeft op dit moment nog geen Doctrine-migraties (`migrations/` is leeg). De deploy-workflow
-draait daarom standaard:
+Doctrine-migraties worden niet op de GitHub Actions runner uitgevoerd. De runner bouwt alleen het
+releasepakket en uploadt `deploy/release.sh`; dat script draait daarna via SSH op de server en voert daar
+de migraties uit, met de databaseverbinding van die omgeving:
 
 ```bash
 APP_ENV=prod php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 ```
 
-`--allow-no-migration` zorgt dat dit niet faalt zolang er nog niets te migreren is.
+`--allow-no-migration` zorgt dat dit niet faalt als er voor een deploy niets nieuws te migreren is. Als
+een migratie faalt, wordt `current` niet naar de nieuwe release gezet en blijft de bestaande release actief.
 
 **Allereerste deploy per omgeving** (productie en acceptance hebben elk een lege database): vóór de
 eerste push naar `main`/`acceptance`, eenmalig handmatig op de server:

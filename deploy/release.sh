@@ -22,8 +22,45 @@ APP_ENV="$4"
 
 RELEASE_DIR="${BASE_PATH}/releases/${RELEASE_NAME}"
 SHARED_DIR="${BASE_PATH}/shared"
+CURRENT_LINK="${BASE_PATH}/current"
+PUBLIC_LINK="${DOMAIN_PATH}/public_html"
+PREVIOUS_RELEASE=""
+DEPLOY_ACTIVATED=0
 
 echo "==> Releasing ${RELEASE_NAME} (env: ${APP_ENV})"
+
+if [ -L "${CURRENT_LINK}" ]; then
+    PREVIOUS_RELEASE="$(readlink "${CURRENT_LINK}")"
+fi
+
+rollback_on_error() {
+    local exit_code=$?
+
+    if [ "${exit_code}" -eq 0 ]; then
+        return
+    fi
+
+    trap - EXIT
+
+    echo "FOUT: release ${RELEASE_NAME} is mislukt; bestaande release blijft actief" >&2
+
+    if [ -n "${PREVIOUS_RELEASE}" ] && [ -d "${PREVIOUS_RELEASE}" ]; then
+        ln -sfn "${PREVIOUS_RELEASE}" "${CURRENT_LINK}"
+        ln -sfn "${CURRENT_LINK}/public" "${PUBLIC_LINK}"
+        echo "==> Rollback naar bestaande release: ${PREVIOUS_RELEASE}" >&2
+    else
+        echo "WAARSCHUWING: geen bestaande current-release gevonden om naar terug te wijzen" >&2
+    fi
+
+    if [ "${DEPLOY_ACTIVATED}" -eq 0 ]; then
+        rm -rf "${RELEASE_DIR}"
+        echo "==> Mislukte release-map opgeruimd: ${RELEASE_DIR}" >&2
+    fi
+
+    exit "${exit_code}"
+}
+
+trap rollback_on_error EXIT
 
 cd "${RELEASE_DIR}"
 tar xzf deploy.tar.gz
@@ -70,12 +107,14 @@ for CONSOLE in console websiteconsole adminconsole; do
     php "bin/${CONSOLE}" cache:warmup --no-interaction --env="${APP_ENV}"
 done
 
-echo "==> Symlinks omzetten naar nieuwe release"
-ln -sfn "${RELEASE_DIR}" "${BASE_PATH}/current"
-ln -sfn "${BASE_PATH}/current/public" "${DOMAIN_PATH}/public_html"
+echo "==> Symlinks omzetten naar nieuwe release (pas na succesvolle migratie en cache warmup)"
+ln -sfn "${RELEASE_DIR}" "${CURRENT_LINK}"
+ln -sfn "${CURRENT_LINK}/public" "${PUBLIC_LINK}"
+DEPLOY_ACTIVATED=1
 
 echo "==> Oude releases opruimen (laatste 4 behouden)"
 cd "${BASE_PATH}/releases"
 ls -1t | tail -n +5 | xargs -r rm -rf
 
+trap - EXIT
 echo "==> Release ${RELEASE_NAME} (${APP_ENV}) voltooid"

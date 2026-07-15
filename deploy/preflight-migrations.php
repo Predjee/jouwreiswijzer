@@ -42,34 +42,46 @@ if ($alreadyExecuted > 0) {
 
 echo "==> Preflight: Sulu Form migration voorbereiden\n";
 
-$connection->transactional(static function (Connection $connection) use ($schemaManager, $suluFormMigration): void {
-    $platform = $connection->getDatabasePlatform();
-    $foDynamics = $platform->quoteIdentifier('fo_dynamics');
-    $foForms = $platform->quoteIdentifier('fo_forms');
-    $formId = $platform->quoteIdentifier('formId');
-    $id = $platform->quoteIdentifier('id');
+$platform = $connection->getDatabasePlatform();
+$foDynamics = $platform->quoteIdentifier('fo_dynamics');
+$foForms = $platform->quoteIdentifier('fo_forms');
+$formId = $platform->quoteIdentifier('formId');
+$id = $platform->quoteIdentifier('id');
 
-    $connection->executeStatement(
-        "DELETE d FROM {$foDynamics} d LEFT JOIN {$foForms} f ON d.{$formId} = f.{$id} WHERE d.{$formId} IS NULL OR f.{$id} IS NULL",
-    );
+$connection->executeStatement(
+    "DELETE d FROM {$foDynamics} d LEFT JOIN {$foForms} f ON d.{$formId} = f.{$id} WHERE d.{$formId} IS NULL OR f.{$id} IS NULL",
+);
 
-    $table = $schemaManager->introspectTable('fo_dynamics');
+$table = $schemaManager->introspectTable('fo_dynamics');
 
-    foreach ($table->getForeignKeys() as $foreignKey) {
-        if (['formId'] === $foreignKey->getLocalColumns()) {
-            $connection->executeStatement(
-                'ALTER TABLE ' . $foDynamics . ' DROP FOREIGN KEY ' . $platform->quoteIdentifier($foreignKey->getName()),
-            );
-        }
+foreach ($table->getForeignKeys() as $foreignKey) {
+    if (['formId'] === $foreignKey->getLocalColumns()) {
+        $connection->executeStatement(
+            'ALTER TABLE ' . $foDynamics . ' DROP FOREIGN KEY ' . $platform->quoteIdentifier($foreignKey->getName()),
+        );
     }
+}
 
-    $connection->executeStatement("ALTER TABLE {$foDynamics} MODIFY {$formId} INT NOT NULL");
+$connection->executeStatement("ALTER TABLE {$foDynamics} MODIFY {$formId} INT NOT NULL");
+
+$schemaManager = $connection->createSchemaManager();
+$table = $schemaManager->introspectTable('fo_dynamics');
+
+if (!hasFormIdForeignKey($table)) {
     $connection->executeStatement("ALTER TABLE {$foDynamics} ADD CONSTRAINT {$platform->quoteIdentifier('FK_FO_DYNAMICS_FORM')} FOREIGN KEY ({$formId}) REFERENCES {$foForms} ({$id}) ON DELETE CASCADE");
+}
+
+$alreadyExecuted = (int) $connection->fetchOne(
+    'SELECT COUNT(*) FROM doctrine_migration_versions WHERE version = ?',
+    [$suluFormMigration],
+);
+
+if (0 === $alreadyExecuted) {
     $connection->executeStatement(
         'INSERT INTO doctrine_migration_versions (version, executed_at, execution_time) VALUES (?, CURRENT_TIMESTAMP, 0)',
         [$suluFormMigration],
     );
-});
+}
 
 echo "==> Preflight: Sulu Form migration gemarkeerd als uitgevoerd\n";
 
@@ -80,4 +92,15 @@ function tableExists(object $schemaManager, string $tableName): bool
     } catch (TableNotFoundException) {
         return false;
     }
+}
+
+function hasFormIdForeignKey(object $table): bool
+{
+    foreach ($table->getForeignKeys() as $foreignKey) {
+        if (['formId'] === $foreignKey->getLocalColumns()) {
+            return true;
+        }
+    }
+
+    return false;
 }

@@ -36,7 +36,9 @@ jobs:
         run: vendor/bin/php-cs-fixer fix --dry-run --diff
 
       - name: Statische analyse (PHPStan, level max)
-        run: vendor/bin/phpstan analyse --no-progress --error-format=github
+        run: |
+          php bin/websiteconsole cache:warmup --env=dev
+          vendor/bin/phpstan analyse --no-progress --error-format=github
 
       - name: Tests (PHPUnit)
         run: vendor/bin/phpunit

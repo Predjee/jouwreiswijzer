@@ -98,6 +98,9 @@ ln -s "${SHARED_DIR}/var/log" var/log
 
 chmod +x bin/console bin/websiteconsole bin/adminconsole
 
+echo "==> Database preflight"
+php deploy/preflight-migrations.php "${APP_ENV}"
+
 echo "==> Database migreren"
 php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration --env="${APP_ENV}"
 

@@ -45,6 +45,25 @@ final class TravelPlanRendererTest extends TestCase
         $this->assertMatchesSnapshot('pdf-render.html', $html);
     }
 
+    public function testPdfImageCaptionRendersRichText(): void
+    {
+        $renderer = new TravelPlanPdfRenderer(
+            $this->twig(),
+            $this->helper(),
+            $this->viewFactory(new IconResolver('/tmp')),
+        );
+
+        $html = $renderer->render($this->travelPlan(
+            imageCaption: '<h4>Zonsopkomst in de Heilige Vallei</h4><p>Rustig licht boven de bergen.</p>',
+        ));
+
+        self::assertStringContainsString(
+            '<figcaption><h4>Zonsopkomst in de Heilige Vallei</h4><p>Rustig licht boven de bergen.</p></figcaption>',
+            $html,
+        );
+        self::assertStringNotContainsString('&lt;h4&gt;Zonsopkomst in de Heilige Vallei&lt;/h4&gt;', $html);
+    }
+
     private function assertMatchesSnapshot(string $name, string $actual): void
     {
         $snapshotPath = __DIR__ . '/__snapshots__/' . $name;
@@ -89,7 +108,7 @@ final class TravelPlanRendererTest extends TestCase
         );
     }
 
-    private function travelPlan(): TravelPlan
+    private function travelPlan(string $imageCaption = 'Zonsopkomst in de Heilige Vallei'): TravelPlan
     {
         $contact = (new Contact())
             ->setFirstName('Mila')
@@ -173,7 +192,7 @@ final class TravelPlanRendererTest extends TestCase
                     [
                         'type' => 'image',
                         'title' => 'Sfeerbeeld Andes',
-                        'caption' => '<h4>Zonsopkomst in de Heilige Vallei</h4><p>Rustig licht boven de bergen.</p>',
+                        'caption' => $imageCaption,
                         'image' => ['url' => '/uploads/andes.jpg'],
                     ],
                 ],

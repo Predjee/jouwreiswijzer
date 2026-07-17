@@ -173,7 +173,7 @@ final class TravelPlanRendererTest extends TestCase
                     [
                         'type' => 'image',
                         'title' => 'Sfeerbeeld Andes',
-                        'caption' => 'Zonsopkomst in de Heilige Vallei',
+                        'caption' => '<h4>Zonsopkomst in de Heilige Vallei</h4><p>Rustig licht boven de bergen.</p>',
                         'image' => ['url' => '/uploads/andes.jpg'],
                     ],
                 ],

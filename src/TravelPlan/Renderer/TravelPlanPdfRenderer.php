@@ -232,8 +232,8 @@ final readonly class TravelPlanPdfRenderer
             $html .= '<figure class="travel-plan-image-block">';
             $html .= '<img src="' . $this->escape($destination->imageSrc) . '" alt="' . $this->escape('' !== $destination->title ? $destination->title : 'Reisbeeld') . '">';
 
-            if ('' !== $destination->caption) {
-                $html .= '<figcaption>' . $this->escape($destination->caption) . '</figcaption>';
+            if ('' !== $destination->captionHtml) {
+                $html .= '<figcaption>' . $destination->captionHtml . '</figcaption>';
             }
 
             $html .= '</figure>';

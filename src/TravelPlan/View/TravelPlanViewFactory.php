@@ -78,6 +78,7 @@ final readonly class TravelPlanViewFactory
             country: $destination->country,
             location: $destination->locationLabel(),
             caption: $destination->caption,
+            captionHtml: $this->richTextNormalizer->normalize($destination->caption),
             imageSrc: $this->helper->mediaImageSrc($destination->image, false),
             startOnNewPage: $destination->startOnNewPage,
             pageBreakClass: $this->pageBreakClass($destination->startOnNewPage),

@@ -28,6 +28,7 @@ final readonly class DestinationView
         public string $country,
         public string $location,
         public string $caption,
+        public string $captionHtml,
         public ?string $imageSrc,
         public bool $startOnNewPage,
         public string $pageBreakClass,

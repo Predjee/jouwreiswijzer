@@ -684,6 +684,24 @@ table.travel-plan-block--primary td {
     font-size: 9pt;
 }
 
+.travel-plan-image-block figcaption p {
+    margin: 0 0 1.5mm;
+    line-height: 1.45;
+}
+
+.travel-plan-image-block figcaption h4 {
+    margin: 0 0 1mm;
+    color: #12213d;
+    font-family: "JostRegular", "Jost", sans-serif;
+    font-size: 9.4pt;
+    font-weight: bold;
+    line-height: 1.25;
+}
+
+.travel-plan-image-block figcaption > *:last-child {
+    margin-bottom: 0;
+}
+
 /* Notes */
 .travel-plan-section--personal-note p,
 .travel-plan-section--personal-note .travel-plan-section__content {

@@ -3,7 +3,7 @@
     {% if section.imageSrc|default %}
         <figure class="travel-plan-image-block">
             <img src="{{ section.imageSrc }}" alt="{{ section.title|default('Reisbeeld') }}">
-            {% if section.caption|default %}<figcaption>{{ section.caption|raw }}</figcaption>{% endif %}
+            {% if section.caption|default %}<figcaption>{{ section.caption }}</figcaption>{% endif %}
         </figure>
     {% endif %}
 </section>

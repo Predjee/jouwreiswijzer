@@ -47,6 +47,17 @@
         </options>
     </format>
 
+    <format key="text-media-landscape-sm">
+        <meta>
+            <title lang="nl">Tekst media landschap klein</title>
+        </meta>
+        <scale x="720" y="480"/>
+        <options>
+            <option name="jpeg_quality">80</option>
+            <option name="webp_quality">80</option>
+        </options>
+    </format>
+
     <format key="text-media-landscape">
         <meta>
             <title lang="nl">Tekst media landschap</title>
@@ -58,6 +69,28 @@
         </options>
     </format>
 
+    <format key="text-media-landscape-lg">
+        <meta>
+            <title lang="nl">Tekst media landschap groot</title>
+        </meta>
+        <scale x="1440" y="960"/>
+        <options>
+            <option name="jpeg_quality">82</option>
+            <option name="webp_quality">82</option>
+        </options>
+    </format>
+
+    <format key="text-media-grid-sm">
+        <meta>
+            <title lang="nl">Tekst media raster klein</title>
+        </meta>
+        <scale x="480" y="360"/>
+        <options>
+            <option name="jpeg_quality">80</option>
+            <option name="webp_quality">80</option>
+        </options>
+    </format>
+
     <format key="text-media-grid">
         <meta>
             <title lang="nl">Tekst media raster</title>
@@ -66,6 +99,17 @@
         <options>
             <option name="jpeg_quality">80</option>
             <option name="webp_quality">80</option>
+        </options>
+    </format>
+
+    <format key="text-media-grid-lg">
+        <meta>
+            <title lang="nl">Tekst media raster groot</title>
+        </meta>
+        <scale x="960" y="720"/>
+        <options>
+            <option name="jpeg_quality">82</option>
+            <option name="webp_quality">82</option>
         </options>
     </format>
 

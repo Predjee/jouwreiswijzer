@@ -17,8 +17,14 @@
                             {{ images|length == 3 ? 'text-media__grid--three' : '' }}">
                     {% for image in images %}
                         {% set grid_image = image.thumbnails['text-media-grid']|default(image.url|default('')) %}
+                        {% set grid_image_sm = image.thumbnails['text-media-grid-sm']|default(grid_image) %}
+                        {% set grid_image_lg = image.thumbnails['text-media-grid-lg']|default(grid_image) %}
                         <figure class="text-media__grid-item">
                             <img src="{{ grid_image }}"
+                                 srcset="{{ grid_image_sm }} 480w,
+                                         {{ grid_image }} 640w,
+                                         {{ grid_image_lg }} 960w"
+                                 sizes="(min-width: 1216px) 608px, 50vw"
                                  alt="{{ image.title|default('') }}"
                                  width="640"
                                  height="480"
@@ -38,8 +44,14 @@
 
             {% if has_image %}
                 {% set landscape_image = block.image.thumbnails['text-media-landscape']|default(block.image.url|default('')) %}
+                {% set landscape_image_sm = block.image.thumbnails['text-media-landscape-sm']|default(landscape_image) %}
+                {% set landscape_image_lg = block.image.thumbnails['text-media-landscape-lg']|default(landscape_image) %}
                 <figure class="text-media__media">
                     <img src="{{ landscape_image }}"
+                         srcset="{{ landscape_image_sm }} 720w,
+                                 {{ landscape_image }} 960w,
+                                 {{ landscape_image_lg }} 1440w"
+                         sizes="(min-width: 1024px) 50vw, 100vw"
                          alt="{{ block.image.title|default('') }}"
                          width="960"
                          height="640"

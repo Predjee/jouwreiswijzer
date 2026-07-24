@@ -2,14 +2,15 @@ name: 🩺 Diagnose media cache (production)
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   diagnose:
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout
         uses: actions/checkout@v4
-        with:
-          ref: diag/media-cache-check-v5
 
       - name: 🔐 Setup SSH
         run: |
@@ -45,10 +46,10 @@ jobs:
           } > DIAG_OUTPUT.md 2>&1
           cat DIAG_OUTPUT.md
 
-      - name: 📝 Commit diagnose-output terug naar de branch
+      - name: 📝 Commit diagnose-output terug
         run: |
           git config user.name "diag-bot"
           git config user.email "noreply@example.com"
           git add DIAG_OUTPUT.md
           git commit -m "diag: media-cache inspectie output" || echo "niets om te committen"
-          git push origin HEAD:diag/media-cache-check-v5
+          git push origin HEAD:${{ github.ref_name }}

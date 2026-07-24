@@ -19,27 +19,16 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} -t rsa ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
-      - name: 🔎 Inspect var/storage (read-only)
+      - name: 🔎 Bevestig var/storage symlink
         run: |
           REMOTE="${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}"
           BASE=/home/derei1602/production
           {
-            echo "== is var/storage een symlink of gewone map in de huidige release? =="
+            echo "== var/ in de huidige release (moet storage nu als symlink tonen) =="
             ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "ls -la '$BASE/current/var/' 2>&1"
-
             echo ""
-            echo "== inhoud var/storage/default in de huidige release =="
-            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "find '$BASE/current/var/storage' -maxdepth 3 2>&1 | head -50"
-
-            echo ""
-            echo "== bestaat er een shared/var/storage (persistente map)? =="
+            echo "== shared/var/ (moet nu ook storage bevatten) =="
             ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "ls -la '$BASE/shared/var/' 2>&1"
-            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "find '$BASE/shared/var/storage' -maxdepth 3 2>&1 | head -80"
-
-            echo ""
-            echo "== zoek 22-Jouw ReisWijzer.png / weekend.png ergens op de server =="
-            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "find '$BASE' -iname '*jouw*reiswijzer*' -o -iname '*weekend.png*' 2>/dev/null | grep -v '/releases/' | head -30"
-            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "find '$BASE/shared' -iname '*jouw*reiswijzer*' -o -iname '*weekend*' 2>/dev/null | head -30"
           } > DIAG_OUTPUT.md 2>&1
           cat DIAG_OUTPUT.md
 
@@ -48,5 +37,5 @@ jobs:
           git config user.name "diag-bot"
           git config user.email "noreply@example.com"
           git add DIAG_OUTPUT.md
-          git commit -m "diag: var/storage inspectie" || echo "niets om te committen"
+          git commit -m "diag: bevestig var/storage symlink" || echo "niets om te committen"
           git push origin HEAD:${{ github.ref_name }}

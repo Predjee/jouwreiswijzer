@@ -1,0 +1,41 @@
+name: 🩺 Diagnose media cache (production)
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔐 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} -t rsa ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+
+      - name: 🔎 Inspect server (read-only, geen wijzigingen)
+        run: |
+          REMOTE="${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}"
+          BASE=/home/derei1602/production
+          ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" '
+            set -x
+            echo "== schijfruimte =="
+            df -h "'"$BASE"'" 2>&1 || true
+
+            echo ""
+            echo "== media/cache/hero-bg-md (bestaat het? inhoud/grootte) =="
+            ls -la "'"$BASE"'/shared/media/cache/hero-bg-md" 2>&1 || echo "map bestaat niet of leeg"
+            find "'"$BASE"'/shared/media/cache/hero-bg-md" -type f -exec ls -la {} \; 2>&1 | head -20
+
+            echo ""
+            echo "== permissies van media/cache root =="
+            ls -la "'"$BASE"'/shared/media/cache" 2>&1 | head -20
+
+            echo ""
+            echo "== laatste regels van website prod log (errors/exceptions) =="
+            tail -n 500 "'"$BASE"'/shared/var/log/website/prod.log" 2>&1 | grep -i -A 5 "error\|exception\|hero-bg" | tail -150 || echo "geen prod.log gevonden of geen matches"
+
+            echo ""
+            echo "== PHP GD / Imagick extensies op de server =="
+            php -m 2>&1 | grep -i "gd\|imagick" || echo "geen output"
+          '

@@ -19,30 +19,27 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} -t rsa ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
-      - name: 🔎 Inspect server (read-only, geen wijzigingen)
+      - name: 🔎 Inspect var/storage (read-only)
         run: |
           REMOTE="${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}"
           BASE=/home/derei1602/production
           {
-            echo "== schijfruimte =="
-            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "df -h '$BASE'" 2>&1 || true
+            echo "== is var/storage een symlink of gewone map in de huidige release? =="
+            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "ls -la '$BASE/current/var/' 2>&1"
 
             echo ""
-            echo "== media/cache/hero-bg-md =="
-            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "ls -la '$BASE/shared/media/cache/hero-bg-md' 2>&1 || echo 'map bestaat niet of leeg'"
-            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "find '$BASE/shared/media/cache/hero-bg-md' -type f -exec ls -la {} \; 2>&1 | head -20"
+            echo "== inhoud var/storage/default in de huidige release =="
+            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "find '$BASE/current/var/storage' -maxdepth 3 2>&1 | head -50"
 
             echo ""
-            echo "== permissies van media/cache root (top 20) =="
-            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "ls -la '$BASE/shared/media/cache' 2>&1 | head -20"
+            echo "== bestaat er een shared/var/storage (persistente map)? =="
+            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "ls -la '$BASE/shared/var/' 2>&1"
+            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "find '$BASE/shared/var/storage' -maxdepth 3 2>&1 | head -80"
 
             echo ""
-            echo "== laatste errors/exceptions/hero-bg in prod log =="
-            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "tail -n 800 '$BASE/shared/var/log/website/prod.log' 2>&1 | grep -i -A 6 'error\|exception\|hero-bg' | tail -200 || echo 'geen prod.log gevonden of geen matches'"
-
-            echo ""
-            echo "== PHP GD / Imagick extensies op de server =="
-            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "php -m 2>&1 | grep -i 'gd\|imagick' || echo 'geen output'"
+            echo "== zoek 22-Jouw ReisWijzer.png / weekend.png ergens op de server =="
+            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "find '$BASE' -iname '*jouw*reiswijzer*' -o -iname '*weekend.png*' 2>/dev/null | grep -v '/releases/' | head -30"
+            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "find '$BASE/shared' -iname '*jouw*reiswijzer*' -o -iname '*weekend*' 2>/dev/null | head -30"
           } > DIAG_OUTPUT.md 2>&1
           cat DIAG_OUTPUT.md
 
@@ -51,5 +48,5 @@ jobs:
           git config user.name "diag-bot"
           git config user.email "noreply@example.com"
           git add DIAG_OUTPUT.md
-          git commit -m "diag: media-cache inspectie output" || echo "niets om te committen"
+          git commit -m "diag: var/storage inspectie" || echo "niets om te committen"
           git push origin HEAD:${{ github.ref_name }}

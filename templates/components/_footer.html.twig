@@ -68,12 +68,14 @@
                     {% endif %}
                     <ul class="flex flex-col gap-3" role="list">
                         {% for item in footer_column_1 %}
-                            <li>
-                                <a href="{{ sulu_content_path(item.url) }}"
-                                   class="footer-link">
-                                    {{ item.title }}
-                                </a>
-                            </li>
+                            {% if item.url|default %}
+                                <li>
+                                    <a href="{{ sulu_content_path(item.url) }}"
+                                       class="footer-link">
+                                        {{ item.title }}
+                                    </a>
+                                </li>
+                            {% endif %}
                         {% endfor %}
                     </ul>
                 </div>
@@ -89,12 +91,14 @@
                     {% if footer_column_2 %}
                         <ul class="flex flex-col gap-3" role="list">
                             {% for item in footer_column_2 %}
-                                <li>
-                                    <a href="{{ sulu_content_path(item.url) }}"
-                                       class="footer-link">
-                                        {{ item.title }}
-                                    </a>
-                                </li>
+                                {% if item.url|default %}
+                                    <li>
+                                        <a href="{{ sulu_content_path(item.url) }}"
+                                           class="footer-link">
+                                            {{ item.title }}
+                                        </a>
+                                    </li>
+                                {% endif %}
                             {% endfor %}
                         </ul>
                     {% elseif footer.legal_links|default %}
@@ -162,12 +166,14 @@
                 </li>
                 {% if footer_legal %}
                     {% for item in footer_legal %}
-                        <li>
-                            <a href="{{ sulu_content_path(item.url) }}"
-                               class="footer-link">
-                                {{ item.title }}
-                            </a>
-                        </li>
+                        {% if item.url|default %}
+                            <li>
+                                <a href="{{ sulu_content_path(item.url) }}"
+                                   class="footer-link">
+                                    {{ item.title }}
+                                </a>
+                            </li>
+                        {% endif %}
                     {% endfor %}
                 {% endif %}
             </ul>

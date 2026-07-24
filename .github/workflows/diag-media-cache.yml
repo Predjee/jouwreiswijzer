@@ -24,7 +24,7 @@ jobs:
             ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "df -h '$BASE'" 2>&1 || true
 
             echo ""
-            echo "== media/cache/hero-bg-md (bestaat het? inhoud/grootte) =="
+            echo "== media/cache/hero-bg-md =="
             ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "ls -la '$BASE/shared/media/cache/hero-bg-md' 2>&1 || echo 'map bestaat niet of leeg'"
             ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "find '$BASE/shared/media/cache/hero-bg-md' -type f -exec ls -la {} \; 2>&1 | head -20"
 
@@ -44,12 +44,34 @@ jobs:
 
       - name: 📝 Post uitkomst als issue comment
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
-          BODY=$(cat /tmp/diag_output.txt | head -c 60000)
-          JSON=$(python3 -c "import json,sys; print(json.dumps({'body': '## Diagnose media-cache\n\n\`\`\`\n' + sys.stdin.read() + '\n\`\`\`'}))" <<< "$BODY")
-          curl -s -X POST \
-            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${{ github.repository }}/issues/15/comments" \
-            -d "$JSON"
+          python3 << 'PYEOF'
+          import json
+          import os
+          import urllib.request
+
+          with open('/tmp/diag_output.txt', 'r', errors='replace') as f:
+              content = f.read()[:60000]
+
+          body = "## Diagnose media-cache\n\n```\n" + content + "\n```"
+          payload = json.dumps({"body": body}).encode("utf-8")
+
+          repo = os.environ["REPO"]
+          token = os.environ["GH_TOKEN"]
+          url = f"https://api.github.com/repos/{repo}/issues/15/comments"
+
+          req = urllib.request.Request(url, data=payload, method="POST")
+          req.add_header("Authorization", f"Bearer {token}")
+          req.add_header("Accept", "application/vnd.github+json")
+          req.add_header("Content-Type", "application/json")
+
+          try:
+              with urllib.request.urlopen(req) as resp:
+                  print("STATUS:", resp.status)
+                  print(resp.read().decode()[:500])
+          except urllib.error.HTTPError as e:
+              print("HTTP ERROR:", e.code)
+              print(e.read().decode()[:2000])
+          PYEOF

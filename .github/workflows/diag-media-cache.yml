@@ -1,4 +1,4 @@
-name: 🩺 Warm alle media formats (production)
+name: 🩺 Zoek oude releases met var/storage inhoud
 on:
   workflow_dispatch:
 
@@ -6,7 +6,7 @@ permissions:
   contents: write
 
 jobs:
-  warm:
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout
@@ -19,68 +19,25 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} -t rsa ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
-      - name: 📋 Vind alle unieke media-bestanden (folder/bestandsnaam)
+      - name: 🔎 Check alle release-mappen op inhoud in var/storage
         run: |
           REMOTE="${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}"
           BASE=/home/derei1602/production
-          ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" \
-            "find '$BASE/shared/uploads/media' -mindepth 3 -maxdepth 3 -type f 2>/dev/null | sed -E 's#.*/media/[^/]+/##'" \
-            | sort -u > media_paths.txt
-          echo "Aantal unieke media-bestanden gevonden:"
-          wc -l media_paths.txt
-          cat media_paths.txt
+          {
+            echo "== beschikbare releases (nieuw naar oud) =="
+            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "ls -1t '$BASE/releases' 2>&1"
 
-      - name: 📋 Verzamel format-keys uit image-formats.xml
-        run: |
-          grep -oP '(?<=key=")[^"]+' config/image-formats.xml > format_keys.txt
-          echo "Formats:"
-          cat format_keys.txt
+            echo ""
+            echo "== var/storage inhoud per release =="
+            for rel in $(ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "ls -1t '$BASE/releases' 2>&1"); do
+              echo "--- release $rel ---"
+              ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "find '$BASE/releases/$rel/var/storage' -type f 2>/dev/null | wc -l"
+            done
 
-      - name: 🔥 Warm elke combinatie van formaat x bestand
-        run: |
-          python3 << 'PYEOF'
-          import urllib.parse
-          import urllib.request
-          import time
-
-          with open('media_paths.txt') as f:
-              paths = [line.strip() for line in f if line.strip()]
-          with open('format_keys.txt') as f:
-              formats = [line.strip() for line in f if line.strip()]
-
-          results = []
-          total = len(paths) * len(formats)
-          done = 0
-          for fmt in formats:
-              for path in paths:
-                  folder, filename = path.split('/', 1)
-                  encoded_filename = urllib.parse.quote(filename)
-                  url = f"https://jouwreiswijzer.nl/uploads/media/{fmt}/{folder}/{encoded_filename}?v=1-0"
-                  done += 1
-                  try:
-                      req = urllib.request.Request(url, method="GET")
-                      with urllib.request.urlopen(req, timeout=30) as resp:
-                          status = resp.status
-                  except urllib.error.HTTPError as e:
-                      status = e.code
-                  except Exception as e:
-                      status = f"ERROR: {e}"
-                  results.append((status, fmt, path))
-                  if done % 10 == 0:
-                      print(f"... {done}/{total} gedaan")
-                  time.sleep(0.15)
-
-          with open('DIAG_OUTPUT.md', 'w') as out:
-              out.write("## Warm-resultaten alle formats x media\n\n")
-              ok = [r for r in results if r[0] == 200]
-              bad = [r for r in results if r[0] != 200]
-              out.write(f"Totaal: {len(results)}, OK (200): {len(ok)}, NIET OK: {len(bad)}\n\n")
-              out.write("### Nog steeds falend\n\n```\n")
-              for status, fmt, path in bad:
-                  out.write(f"{status}  {fmt}/{path}\n")
-              out.write("```\n")
-          print("Klaar. Zie DIAG_OUTPUT.md voor details.")
-          PYEOF
+            echo ""
+            echo "== eventuele backup-mappen elders op de server =="
+            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "find /home/derei1602 -maxdepth 3 -iname '*backup*' 2>/dev/null"
+          } > DIAG_OUTPUT.md 2>&1
           cat DIAG_OUTPUT.md
 
       - name: 📝 Commit resultaat terug
@@ -88,5 +45,5 @@ jobs:
           git config user.name "diag-bot"
           git config user.email "noreply@example.com"
           git add DIAG_OUTPUT.md
-          git commit -m "diag: warm-resultaten alle formats" || echo "niets om te committen"
+          git commit -m "diag: zoek naar intacte var/storage in oude releases" || echo "niets om te committen"
           git push origin HEAD:${{ github.ref_name }}

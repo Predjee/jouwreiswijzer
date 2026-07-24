@@ -5,6 +5,8 @@ on:
 jobs:
   diagnose:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     steps:
       - name: 🔐 Setup SSH
         run: |
@@ -17,25 +19,37 @@ jobs:
         run: |
           REMOTE="${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}"
           BASE=/home/derei1602/production
-          ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" '
-            set -x
+          {
             echo "== schijfruimte =="
-            df -h "'"$BASE"'" 2>&1 || true
+            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "df -h '$BASE'" 2>&1 || true
 
             echo ""
             echo "== media/cache/hero-bg-md (bestaat het? inhoud/grootte) =="
-            ls -la "'"$BASE"'/shared/media/cache/hero-bg-md" 2>&1 || echo "map bestaat niet of leeg"
-            find "'"$BASE"'/shared/media/cache/hero-bg-md" -type f -exec ls -la {} \; 2>&1 | head -20
+            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "ls -la '$BASE/shared/media/cache/hero-bg-md' 2>&1 || echo 'map bestaat niet of leeg'"
+            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "find '$BASE/shared/media/cache/hero-bg-md' -type f -exec ls -la {} \; 2>&1 | head -20"
 
             echo ""
-            echo "== permissies van media/cache root =="
-            ls -la "'"$BASE"'/shared/media/cache" 2>&1 | head -20
+            echo "== permissies van media/cache root (top 20) =="
+            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "ls -la '$BASE/shared/media/cache' 2>&1 | head -20"
 
             echo ""
-            echo "== laatste regels van website prod log (errors/exceptions) =="
-            tail -n 500 "'"$BASE"'/shared/var/log/website/prod.log" 2>&1 | grep -i -A 5 "error\|exception\|hero-bg" | tail -150 || echo "geen prod.log gevonden of geen matches"
+            echo "== laatste errors/exceptions/hero-bg in prod log =="
+            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "tail -n 800 '$BASE/shared/var/log/website/prod.log' 2>&1 | grep -i -A 6 'error\|exception\|hero-bg' | tail -200 || echo 'geen prod.log gevonden of geen matches'"
 
             echo ""
             echo "== PHP GD / Imagick extensies op de server =="
-            php -m 2>&1 | grep -i "gd\|imagick" || echo "geen output"
-          '
+            ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "php -m 2>&1 | grep -i 'gd\|imagick' || echo 'geen output'"
+          } > /tmp/diag_output.txt 2>&1
+          cat /tmp/diag_output.txt
+
+      - name: 📝 Post uitkomst als issue comment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BODY=$(cat /tmp/diag_output.txt | head -c 60000)
+          JSON=$(python3 -c "import json,sys; print(json.dumps({'body': '## Diagnose media-cache\n\n\`\`\`\n' + sys.stdin.read() + '\n\`\`\`'}))" <<< "$BODY")
+          curl -s -X POST \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/15/comments" \
+            -d "$JSON"

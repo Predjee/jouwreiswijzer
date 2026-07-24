@@ -71,6 +71,7 @@ mkdir -p \
     "${SHARED_DIR}/uploads" \
     "${SHARED_DIR}/var/log/website" \
     "${SHARED_DIR}/var/log/admin" \
+    "${SHARED_DIR}/var/storage" \
     "${SHARED_DIR}/media/cache" \
     "${SHARED_DIR}/jwt"
 chmod -R 775 "${SHARED_DIR}/var/log"
@@ -96,6 +97,9 @@ ln -s "${SHARED_DIR}/media/cache" public/media/cache
 mkdir -p var
 rm -rf var/log
 ln -s "${SHARED_DIR}/var/log" var/log
+
+rm -rf var/storage
+ln -s "${SHARED_DIR}/var/storage" var/storage
 
 chmod +x bin/console bin/websiteconsole bin/adminconsole
 

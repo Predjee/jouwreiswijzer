@@ -8,6 +8,9 @@ jobs:
     permissions:
       issues: write
     steps:
+      - name: 📥 Checkout (nodig voor gh cli context)
+        uses: actions/checkout@v4
+
       - name: 🔐 Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -40,38 +43,20 @@ jobs:
             echo "== PHP GD / Imagick extensies op de server =="
             ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "php -m 2>&1 | grep -i 'gd\|imagick' || echo 'geen output'"
           } > /tmp/diag_output.txt 2>&1
+          echo "-- lokale kopie van de output --"
           cat /tmp/diag_output.txt
+          echo "-- einde lokale kopie --"
+          wc -l /tmp/diag_output.txt
 
-      - name: 📝 Post uitkomst als issue comment
+      - name: 📝 Post uitkomst als issue comment (gh cli)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
         run: |
-          python3 << 'PYEOF'
-          import json
-          import os
-          import urllib.request
-
-          with open('/tmp/diag_output.txt', 'r', errors='replace') as f:
-              content = f.read()[:60000]
-
-          body = "## Diagnose media-cache\n\n```\n" + content + "\n```"
-          payload = json.dumps({"body": body}).encode("utf-8")
-
-          repo = os.environ["REPO"]
-          token = os.environ["GH_TOKEN"]
-          url = f"https://api.github.com/repos/{repo}/issues/15/comments"
-
-          req = urllib.request.Request(url, data=payload, method="POST")
-          req.add_header("Authorization", f"Bearer {token}")
-          req.add_header("Accept", "application/vnd.github+json")
-          req.add_header("Content-Type", "application/json")
-
-          try:
-              with urllib.request.urlopen(req) as resp:
-                  print("STATUS:", resp.status)
-                  print(resp.read().decode()[:500])
-          except urllib.error.HTTPError as e:
-              print("HTTP ERROR:", e.code)
-              print(e.read().decode()[:2000])
-          PYEOF
+          {
+            echo "## Diagnose media-cache"
+            echo ""
+            echo '```'
+            cat /tmp/diag_output.txt
+            echo '```'
+          } > /tmp/comment_body.md
+          gh issue comment 15 --repo "${{ github.repository }}" --body-file /tmp/comment_body.md

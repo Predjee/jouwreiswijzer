@@ -21,6 +21,7 @@ jobs:
 
       - name: 🔎 Check alle release-mappen op inhoud in var/storage
         run: |
+          set +e
           REMOTE="${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}"
           BASE=/home/derei1602/production
           {
@@ -28,22 +29,26 @@ jobs:
             ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "ls -1t '$BASE/releases' 2>&1"
 
             echo ""
-            echo "== var/storage inhoud per release =="
-            for rel in $(ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "ls -1t '$BASE/releases' 2>&1"); do
-              echo "--- release $rel ---"
-              ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "find '$BASE/releases/$rel/var/storage' -type f 2>/dev/null | wc -l"
+            echo "== var/storage bestandsaantal per release =="
+            RELEASES=$(ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "ls -1t '$BASE/releases'" 2>/dev/null)
+            for rel in $RELEASES; do
+              COUNT=$(ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "find '$BASE/releases/$rel/var/storage' -type f 2>/dev/null | wc -l" 2>/dev/null)
+              echo "release $rel : $COUNT bestand(en)"
             done
 
             echo ""
             echo "== eventuele backup-mappen elders op de server =="
             ssh -p ${{ secrets.DEPLOY_PORT }} "$REMOTE" "find /home/derei1602 -maxdepth 3 -iname '*backup*' 2>/dev/null"
+            echo "(einde zoekopdracht backups)"
           } > DIAG_OUTPUT.md 2>&1
           cat DIAG_OUTPUT.md
+          exit 0
 
       - name: 📝 Commit resultaat terug
+        if: always()
         run: |
           git config user.name "diag-bot"
           git config user.email "noreply@example.com"
           git add DIAG_OUTPUT.md
-          git commit -m "diag: zoek naar intacte var/storage in oude releases" || echo "niets om te committen"
+          git commit -m "diag: zoek naar intacte var/storage in oude releases (v2)" || echo "niets om te committen"
           git push origin HEAD:${{ github.ref_name }}

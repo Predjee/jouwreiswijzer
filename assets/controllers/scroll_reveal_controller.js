@@ -2,7 +2,6 @@ import { Controller } from '@hotwired/stimulus';
 
 const REVEAL_SELECTOR = 'main section, main [data-scroll-reveal]';
 const FAILSAFE_DELAY_MS = 1500;
-const VISIBLE_THRESHOLD = 0.16;
 const BOTTOM_MARGIN_RATIO = 0.12;
 
 export default class extends Controller {
@@ -23,8 +22,13 @@ export default class extends Controller {
             this.observer = new IntersectionObserver(
                 (entries) => this.handleEntries(entries),
                 {
+                    // Threshold 0 in combinatie met de negatieve rootMargin: een item
+                    // wordt gereveald zodra het de onderste 12% van de viewport
+                    // binnenkomt. Een percentage van de eigen elementhoogte werkt hier
+                    // niet: op mobiel zijn secties vaak hoger dan de viewport, waardoor
+                    // die drempel te laat of nooit wordt gehaald.
                     rootMargin: `0px 0px -${BOTTOM_MARGIN_RATIO * 100}% 0px`,
-                    threshold: VISIBLE_THRESHOLD,
+                    threshold: 0,
                 },
             );
 
@@ -84,13 +88,12 @@ export default class extends Controller {
 
         const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
         const effectiveBottom = viewportHeight * (1 - BOTTOM_MARGIN_RATIO);
-        const visibleHeight = Math.min(rect.bottom, effectiveBottom) - Math.max(rect.top, 0);
 
-        if (visibleHeight <= 0) {
-            return false;
-        }
-
-        return (visibleHeight / rect.height) >= VISIBLE_THRESHOLD;
+        // Alles wat op dit moment ook maar deels binnen de effectieve viewport valt,
+        // ziet de bezoeker al staan en mag dus nooit verborgen worden. Dit moet
+        // dezelfde meetlat gebruiken als de observer hierboven, anders wordt content
+        // die al in beeld staat eerst weggehaald en daarna alsnog ingefade.
+        return rect.top < effectiveBottom && rect.bottom > 0;
     }
 
     handleEntries(entries) {

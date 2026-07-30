@@ -1,7 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 
 const CONSENT_KEY = 'jrw_cookie_consent';
-const GTM_SCRIPT_ID = 'gtm-script';
 
 const DEFAULT_CONSENT = {
     necessary: true,
@@ -11,8 +10,6 @@ const DEFAULT_CONSENT = {
 
 export default class extends Controller {
     connect() {
-        this.gtmCode = document.querySelector('meta[name="gtm-code"]')?.content?.trim() || null;
-
         this.ensureConsentDefaults();
 
         const consent = this.getConsent();
@@ -84,40 +81,51 @@ export default class extends Controller {
             window.dataLayer.push(arguments);
         };
 
-        window.gtag('consent', 'default', {
-            ad_storage: 'denied',
-            analytics_storage: 'denied',
-            functionality_storage: 'granted',
-            personalization_storage: 'denied',
-            security_storage: 'granted',
-        });
+        // De echte defaults staan inline in base.html.twig, zodat ze gegarandeerd
+        // vóór het GTM-snippet in de dataLayer staan. Deze fallback is er alleen
+        // voor het geval dit script op een pagina draait zonder dat snippet: dan
+        // is 'denied' het veilige startpunt.
+        if (!this.hasConsentDefaults()) {
+            window.gtag('consent', 'default', {
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied',
+                analytics_storage: 'denied',
+                personalization_storage: 'denied',
+                functionality_storage: 'granted',
+                security_storage: 'granted',
+            });
+        }
+    }
+
+    hasConsentDefaults() {
+        return (window.dataLayer || []).some(
+            (entry) => entry && entry[0] === 'consent' && entry[1] === 'default',
+        );
     }
 
     applyConsent(consent) {
+        const marketing = consent.marketing ? 'granted' : 'denied';
+        const analytics = consent.analytics ? 'granted' : 'denied';
+
         window.gtag('consent', 'update', {
-            ad_storage: consent.marketing ? 'granted' : 'denied',
-            analytics_storage: consent.analytics ? 'granted' : 'denied',
+            ad_storage: marketing,
+            ad_user_data: marketing,
+            ad_personalization: marketing,
+            analytics_storage: analytics,
+            personalization_storage: marketing,
             functionality_storage: 'granted',
-            personalization_storage: consent.marketing ? 'granted' : 'denied',
             security_storage: 'granted',
         });
 
-        if ((consent.analytics || consent.marketing) && this.gtmCode) {
-            this.injectGTM(this.gtmCode);
-        }
-    }
+        window.gtag('set', 'ads_data_redaction', marketing !== 'granted');
 
-    injectGTM(gtmId) {
-        if (!gtmId || document.getElementById(GTM_SCRIPT_ID)) {
-            return;
-        }
-
-        const script = document.createElement('script');
-        script.id = GTM_SCRIPT_ID;
-        script.async = true;
-        script.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(gtmId)}`;
-
-        document.head.appendChild(script);
+        // Eigen event zodat tags in GTM desgewenst op de keuze kunnen triggeren.
+        window.dataLayer.push({
+            event: 'cookie_consent_update',
+            cookie_consent_analytics: consent.analytics === true,
+            cookie_consent_marketing: consent.marketing === true,
+        });
     }
 
     showBanner() {

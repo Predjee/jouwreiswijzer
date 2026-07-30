@@ -5,6 +5,46 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    {# Google Consent Mode v2. Dit moet het eerste script op de pagina zijn: de
+       defaults moeten in de dataLayer staan voordat GTM wordt geladen (Sulu voegt
+       het GTM-snippet toe net voor </head>). De opgeslagen keuze wordt hier
+       synchroon uitgelezen zodat een terugkerende bezoeker direct de juiste
+       status meekrijgt en er geen meetgat van een paar honderd ms ontstaat. #}
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { window.dataLayer.push(arguments); }
+        (function () {
+            var raw = null;
+            try { raw = window.localStorage.getItem('jrw_cookie_consent'); } catch (e) { /* storage geblokkeerd */ }
+
+            var consent = null;
+            if (raw === 'accepted') {
+                consent = { analytics: true, marketing: true };
+            } else if (raw === 'declined') {
+                consent = { analytics: false, marketing: false };
+            } else if (raw) {
+                try { consent = JSON.parse(raw); } catch (e) { consent = null; }
+            }
+
+            var analytics = consent && consent.analytics === true ? 'granted' : 'denied';
+            var marketing = consent && consent.marketing === true ? 'granted' : 'denied';
+
+            gtag('consent', 'default', {
+                ad_storage: marketing,
+                ad_user_data: marketing,
+                ad_personalization: marketing,
+                analytics_storage: analytics,
+                personalization_storage: marketing,
+                functionality_storage: 'granted',
+                security_storage: 'granted',
+                wait_for_update: 500
+            });
+
+            gtag('set', 'ads_data_redaction', marketing !== 'granted');
+            gtag('set', 'url_passthrough', true);
+        })();
+    </script>
+
     {% block meta %}
         {% set seo_title = extension.seo.title|default(content.title|default('JouwReisWijzer - Persoonlijk reisadvies op maat'))|replace({
             'JouwReiswijzer': 'JouwReisWijzer',
